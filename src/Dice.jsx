@@ -1,4 +1,3 @@
-// Dice.jsx
 import React from 'react';
 import './Dice.css';
 
@@ -11,9 +10,9 @@ const dotPositions = {
     6: [0, 2, 3, 5, 6, 8],
 };
 
-export default function Dice({ value }) {
+export default function Dice({ value, held, onClick }) {
     return (
-        <div className="dice">
+        <div className={`dice ${held ? 'held' : ''}`} onClick={onClick}>
             {Array.from({ length: 9 }).map((_, i) => (
                 <div
                     key={i}

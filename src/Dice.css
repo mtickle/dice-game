@@ -19,3 +19,13 @@
   border-radius: 50%;
   margin: auto;
 }
+
+.dice {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.dice.held {
+  box-shadow: 0 0 0 4px #4caf50;
+  transform: scale(1.1);
+}
