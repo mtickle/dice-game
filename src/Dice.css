@@ -62,7 +62,39 @@
   margin-top: 20px;
   padding: 20px;
   border: 2px solid #444;
-  background-color: #f0f0f0;
+  background-color: #1e1e2f;
   text-align: center;
   border-radius: 10px;
 }
+
+
+.suggestion-card {
+  padding: 0.5rem 1rem;
+  background-color: #1e1e2f;
+  border: 1px solid #333a55;
+  border-radius: 0.75rem;
+  color: #cfd8ff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.suggestion-card:hover {
+  background-color: #2a2a44;
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(100, 150, 255, 0.2);
+}
+
+.suggestion-card.highlight {
+  border-color: #7f9fff;
+  box-shadow: 0 0 12px rgba(100, 150, 255, 0.5);
+}
+
+.suggestion-card .emoji {
+  font-size: 1.2rem;
+}
+
+

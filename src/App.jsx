@@ -13,7 +13,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Dice from './Dice';
-
+import { motion, AnimatePresence } from 'framer-motion';
 
 const initialScores = {
   ones: null,
@@ -47,6 +47,16 @@ function App() {
     5: [0, 2, 4, 6, 8],
     6: [0, 2, 3, 5, 6, 8],
   };
+
+  const iconMap = {
+  yahtzee: '🌟',
+  fullHouse: '🏠',
+  smallStraight: '➡️',
+  largeStraight: '⏩',
+  threeKind: '🎯',
+  fourKind: '💥',
+  chance: '🎲',
+};
 
   const [rollCount, setRollCount] = useState(0);
   const [scores, setScores] = useState(initialScores);
@@ -217,6 +227,41 @@ function App() {
     };
     return map[key] || key;
   };
+
+function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, rollCount }) {
+  const eligibleSuggestions = Object.entries(suggestedScores).filter(
+    ([category, score]) =>
+      scores[category] === null && score > 0 && rollCount > 0 && !turnComplete
+  );
+
+  if (eligibleSuggestions.length === 0) return null;
+
+  return (
+    <div className="mt-4">     
+      <div className="d-flex flex-wrap gap-2">
+        <AnimatePresence>
+          {eligibleSuggestions.map(([category, score]) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => applyScore(category)}
+              className={`suggestion-card ${
+                ['yahtzee', 'largeStraight', 'fourKind'].includes(category) ? 'highlight' : ''
+              }`}
+              title={`Score ${score} for ${prettyName(category)}`}
+            >
+              <span className="emoji">{iconMap[category] || '🎯'}</span>{' '}
+              <strong>{prettyName(category)}</strong>: {score}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
 
 
   return (
@@ -389,7 +434,7 @@ function App() {
                   Roll Dice ({rollCount}/3)
                 </button>
 
-                <button
+                {/* <button
                   onClick={() =>
                     setScores(prev => ({
                       ...prev,
@@ -403,7 +448,7 @@ function App() {
                   }
                 >
                   🔧 Simulate Bonus
-                </button>
+                </button> */}
 
                 {isGameOver && (
                   <div className="game-over">
@@ -414,21 +459,18 @@ function App() {
 
               </Card.Body>
             </Card>
-          &nbsp;
-             <Card>
+            &nbsp;
+            <Card>
               <Card.Header>Scoring Hints</Card.Header>
               <Card.Body bg="Secondary" >
-                
-            <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-              {Object.entries(suggestedScores)
-                .filter(([_, val]) => val > 0)
-                .sort((a, b) => b[1] - a[1]) // highest score first
-                .map(([category, value]) => (
-                  <li key={category}>
-                    <strong>{prettyName(category)}:</strong> {value} pts
-                  </li>
-                ))}
-            </ul>
+
+                <SuggestedScores
+                  suggestedScores={suggestedScores}
+                  applyScore={applyScore}
+                  scores={scores}
+                  turnComplete={turnComplete}
+                  rollCount={rollCount}
+                />
 
               </Card.Body>
             </Card>
