@@ -22,76 +22,200 @@ const initialScores = {
   fours: null,
   fives: null,
   sixes: null,
+  threeKind: null,
+  fourKind: null,
+  fullHouse: null,
+  smallStraight: null,
+  largeStraight: null,
+  yahtzee: null,
+  chance: null,
 };
 
 function App() {
 
+  // Dice state: 5 dice, each with value (1-6 or null) and held status
   const [dice, setDice] = useState(
-    Array(5).fill().map(() => ({ value: 1, held: false }))
+    Array(5).fill().map(() => ({ value: null, held: false }))
   );
+
+  // Dot positions for drawing dots on dice faces (0 to 8 grid positions)
+  const dotPositions = {
+    1: [4],
+    2: [0, 8],
+    3: [0, 4, 8],
+    4: [0, 2, 6, 8],
+    5: [0, 2, 4, 6, 8],
+    6: [0, 2, 3, 5, 6, 8],
+  };
 
   const [rollCount, setRollCount] = useState(0);
   const [scores, setScores] = useState(initialScores);
   const [turnComplete, setTurnComplete] = useState(false);
 
+  // Check if all categories scored → Game Over
+  const isGameOver = Object.values(scores).every(score => score !== null);
+
+  // Upper section categories
   const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
+  // Calculate subtotal of upper categories (treat null as zero)
   const subtotal = upperCategories.reduce(
     (sum, key) => sum + (scores[key] ?? 0),
     0
   );
 
+  // Bonus if subtotal >= 63
   const bonus = subtotal >= 63 ? 35 : 0;
   const upperTotal = subtotal + bonus;
 
+  // Roll dice (max 3 rolls, and only if turn not complete)
   const rollDice = () => {
-    if (rollCount >= 3 && !turnComplete) return;
+    if (rollCount >= 3 || turnComplete) return;
 
-    if (turnComplete) {
-      // Reset for a new turn
-      setDice(dice.map(d => ({ ...d, held: false })));
-      setRollCount(0);
-      setTurnComplete(false);
-    }
-
-    setDice(dice.map(die =>
-      die.held ? die : { ...die, value: Math.floor(Math.random() * 6) + 1 }
-    ));
+    setDice(prev =>
+      prev.map(die =>
+        die.held ? die : { ...die, value: Math.floor(Math.random() * 6) + 1 }
+      )
+    );
     setRollCount(prev => prev + 1);
   };
 
+  // Toggle hold/unhold die by index
   const toggleHold = (index) => {
+    if (turnComplete || rollCount === 0) return; // optional: prevent hold before first roll
     setDice(dice.map((die, i) =>
       i === index ? { ...die, held: !die.held } : die
     ));
   };
 
+  // Count dice values (array of counts for 1-6)
+  const getCounts = (dice) => {
+    const counts = Array(6).fill(0);
+    dice.forEach(d => {
+      if (d.value !== null) counts[d.value - 1]++;
+    });
+    return counts;
+  };
+
+  // Check if counts have a straight of given length
+  const hasStraight = (counts, length) => {
+    const binary = counts.map(c => (c > 0 ? 1 : 0)).join('');
+    // For length 4 or 5, check known straight patterns in the binary string
+    const straights = {
+      4: ['1111', '01111', '11110'],
+      5: ['11111', '011111', '111110'],
+    }[length];
+    return straights.some(pattern => binary.includes(pattern));
+  };
+
+  // Calculate score for lower section categories
+  const calculateScore = (category, dice) => {
+    const values = dice.map(d => d.value).filter(v => v !== null);
+    const counts = getCounts(dice);
+    const total = values.reduce((a, b) => a + b, 0);
+
+    switch (category) {
+      case 'threeKind':
+        return counts.some(c => c >= 3) ? total : 0;
+      case 'fourKind':
+        return counts.some(c => c >= 4) ? total : 0;
+      case 'fullHouse':
+        return counts.includes(3) && counts.includes(2) ? 25 : 0;
+      case 'smallStraight':
+        return hasStraight(counts, 4) ? 30 : 0;
+      case 'largeStraight':
+        return hasStraight(counts, 5) ? 40 : 0;
+      case 'yahtzee':
+        return counts.includes(5) ? 50 : 0;
+      case 'chance':
+        return total;
+      default:
+        return 0;
+    }
+  };
+
+  // Apply score for a category when user selects it
   const applyScore = (category) => {
     if (scores[category] !== null || turnComplete || rollCount === 0) return;
 
-    // Prevent any additional scoring instantly
     setTurnComplete(true);
 
-    const num = {
-      ones: 1,
-      twos: 2,
-      threes: 3,
-      fours: 4,
-      fives: 5,
-      sixes: 6,
-    }[category];
-
-    const count = dice.filter(d => d.value === num).length;
-    const score = count * num;
+    let score = 0;
+    if (upperCategories.includes(category)) {
+      const num = {
+        ones: 1, twos: 2, threes: 3,
+        fours: 4, fives: 5, sixes: 6,
+      }[category];
+      const count = dice.filter(d => d.value === num).length;
+      score = count * num;
+    } else {
+      score = calculateScore(category, dice);
+    }
 
     setScores(prev => ({ ...prev, [category]: score }));
 
-    // Reset dice and roll count after score is locked in
+    // Reset dice for next turn after short delay (for UI update)
     setTimeout(() => {
-      setDice(Array(5).fill().map(() => ({ value: 1, held: false })));
+      setDice(Array(5).fill().map(() => ({ value: null, held: false })));
       setRollCount(0);
       setTurnComplete(false);
-    }, 100); // Delay a bit so the score update visually completes
+    }, 100);
+  };
+
+  // Lower section categories
+  const lowerCategories = [
+    'threeKind', 'fourKind', 'fullHouse',
+    'smallStraight', 'largeStraight', 'yahtzee', 'chance'
+  ];
+
+  // Calculate lower total
+  const lowerTotal = lowerCategories.reduce(
+    (sum, key) => sum + (scores[key] ?? 0),
+    0
+  );
+
+  // Grand total
+  const grandTotal = upperTotal + lowerTotal;
+
+  // Calculate suggested scores for UI hints (only for unscored categories)
+  const suggestedScores = {};
+  Object.keys(scores).forEach(category => {
+    if (scores[category] === null) {
+      if (upperCategories.includes(category)) {
+        const num = {
+          ones: 1, twos: 2, threes: 3,
+          fours: 4, fives: 5, sixes: 6,
+        }[category];
+        const count = dice.filter(d => d.value === num).length;
+        suggestedScores[category] = count * num;
+      } else {
+        suggestedScores[category] = calculateScore(category, dice);
+      }
+    }
+  });
+
+  // Reset entire game state
+  function resetGame() {
+    setDice(Array(5).fill().map(() => ({ value: null, held: false })));
+    setScores({
+      ones: null, twos: null, threes: null, fours: null, fives: null, sixes: null,
+      threeKind: null, fourKind: null, fullHouse: null, smallStraight: null,
+      largeStraight: null, yahtzee: null, chance: null,
+    });
+    setRollCount(0);
+    setTurnComplete(false);
+  }
+
+  // Helper to pretty-print category names
+  const prettyName = (key) => {
+    const map = {
+      ones: 'Ones', twos: 'Twos', threes: 'Threes',
+      fours: 'Fours', fives: 'Fives', sixes: 'Sixes',
+      threeKind: '3 of a Kind', fourKind: '4 of a Kind',
+      fullHouse: 'Full House', smallStraight: 'Small Straight',
+      largeStraight: 'Large Straight', yahtzee: 'Yahtzee', chance: 'Chance',
+    };
+    return map[key] || key;
   };
 
 
@@ -149,48 +273,83 @@ function App() {
               <Card.Header>Lower Section</Card.Header>
               <Card.Body bg="Secondary" >
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="3ofakind">3 of a Kind: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">3 of a Kind:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.threeKind ?? ''}
+                    onClick={() => applyScore('threeKind')}
+                    disabled={scores.threeKind !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="4ofakind">4 of a Kind: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">4 of a Kind:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.fourKind ?? ''}
+                    onClick={() => applyScore('fourKind')}
+                    disabled={scores.fourKind !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="fullhouse">Full House: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Full House:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.fullHouse ?? ''}
+                    onClick={() => applyScore('fullHouse')}
+                    disabled={scores.fullHouse !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="smallstraight">Small Straight: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Small Straight:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.smallStraight ?? ''}
+                    onClick={() => applyScore('smallStraight')}
+                    disabled={scores.smallStraight !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="largestraight">Large Straight: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Large Straight:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.largeStraight ?? ''}
+                    onClick={() => applyScore('largeStraight')}
+                    disabled={scores.largeStraight !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="yahtzee">Yahtzee: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Yahtzee:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.yahtzee ?? ''}
+                    onClick={() => applyScore('yahtzee')}
+                    disabled={scores.yahtzee !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="chance">Chance: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Chance:</InputGroup.Text>
+                  <Form.Control
+                    readOnly
+                    value={scores.chance ?? ''}
+                    onClick={() => applyScore('chance')}
+                    disabled={scores.chance !== null || turnComplete}
+                  />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="lowertotal">Lower Total: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Lower Total:</InputGroup.Text>
+                  <Form.Control readOnly value={lowerTotal} />
                 </InputGroup>
 
                 <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="grandtotal">Grand Total: </InputGroup.Text>
-                  <Form.Control readOnly />
+                  <InputGroup.Text className="w-50">Grand Total:</InputGroup.Text>
+                  <Form.Control readOnly value={grandTotal} />
                 </InputGroup>
 
               </Card.Body>
@@ -202,9 +361,28 @@ function App() {
               <Card.Body bg="Secondary" >
 
                 <div className="field">
-                  {dice.map((die, idx) => (
-                    <Dice key={idx} value={die.value} held={die.held} onClick={() => toggleHold(idx)} />
+                  {dice.map((die, index) => (
+                    <div
+                      className={`die ${die.held ? 'held' : ''} ${die.value === null ? 'blank' : ''}`}
+                      key={index}
+                      onClick={() => toggleHold(index)}
+                    >
+                      {[...Array(9)].map((_, i) => (
+                        <span
+                          key={i}
+                          className="dot"
+                          style={{
+                            visibility:
+                              die.value !== null && dotPositions[die.value]?.includes(i)
+                                ? 'visible'
+                                : 'hidden',
+                          }}
+                        />
+                      ))}
+                    </div>
                   ))}
+
+
                 </div>
 
                 <button onClick={rollDice} disabled={rollCount >= 3}>
@@ -227,8 +405,27 @@ function App() {
                   🔧 Simulate Bonus
                 </button>
 
+                {isGameOver && (
+                  <div className="game-over">
+                    <h2>Game Over! 🎉</h2>
+                    <button onClick={resetGame}>New Game</button>
+                  </div>
+                )}
+
               </Card.Body>
             </Card>
+
+            <h5>Scoring Hints</h5>
+            <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+              {Object.entries(suggestedScores)
+                .filter(([_, val]) => val > 0)
+                .sort((a, b) => b[1] - a[1]) // highest score first
+                .map(([category, value]) => (
+                  <li key={category}>
+                    <strong>{prettyName(category)}:</strong> {value} pts
+                  </li>
+                ))}
+            </ul>
 
           </Col>
         </Row>

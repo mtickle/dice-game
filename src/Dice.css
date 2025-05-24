@@ -29,3 +29,40 @@
   box-shadow: 0 0 0 4px #4caf50;
   transform: scale(1.1);
 }
+
+.die.held {
+  background-color: #e0ffe0;
+  border-color: green;
+}
+
+.die {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 60px;
+  height: 60px;
+  background-color: white;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.placeholder {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.game-over {
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px solid #444;
+  background-color: #f0f0f0;
+  text-align: center;
+  border-radius: 10px;
+}
