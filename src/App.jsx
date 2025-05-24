@@ -414,8 +414,11 @@ function App() {
 
               </Card.Body>
             </Card>
-
-            <h5>Scoring Hints</h5>
+          &nbsp;
+             <Card>
+              <Card.Header>Scoring Hints</Card.Header>
+              <Card.Body bg="Secondary" >
+                
             <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
               {Object.entries(suggestedScores)
                 .filter(([_, val]) => val > 0)
@@ -426,6 +429,10 @@ function App() {
                   </li>
                 ))}
             </ul>
+
+              </Card.Body>
+            </Card>
+
 
           </Col>
         </Row>
