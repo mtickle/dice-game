@@ -68,6 +68,7 @@
 }
 
 
+/* Suggested Score Styling */
 .suggestion-card {
   padding: 0.5rem 1rem;
   background-color: #1e1e2f;
@@ -95,6 +96,43 @@
 
 .suggestion-card .emoji {
   font-size: 1.2rem;
+}
+
+/* Game Over Styling */
+.game-over-banner {
+  background-color: #111;
+  color: #f0f0f0;
+  padding: 1rem 2rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  font-size: 1.5rem;
+  font-weight: bold;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Confetti (optional styling container for canvas or bursts) */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: lighten;
 }
 
 

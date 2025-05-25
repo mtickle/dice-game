@@ -5,6 +5,7 @@ import viteLogo from '/vite.svg'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 
+
 //--- Bootstrap imports.
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -15,6 +16,13 @@ import Col from 'react-bootstrap/Col';
 import Dice from './Dice';
 import { motion, AnimatePresence } from 'framer-motion';
 
+//--- Components imports.
+import ScoreCardSection from './components/ScoreCardSection';
+import ScoreTotalsUpper from './components/ScoreTotalsUpper';
+import ScoreTotalsLower from './components/ScoreTotalsLower';
+import GameHistory from './components/GameHistory';
+
+//--- Initial scores object with all categories set to null
 const initialScores = {
   ones: null,
   twos: null,
@@ -33,12 +41,12 @@ const initialScores = {
 
 function App() {
 
-  // Dice state: 5 dice, each with value (1-6 or null) and held status
+  //--- Dice state: 5 dice, each with value (1-6 or null) and held status
   const [dice, setDice] = useState(
     Array(5).fill().map(() => ({ value: null, held: false }))
   );
 
-  // Dot positions for drawing dots on dice faces (0 to 8 grid positions)
+  //--- Dot positions for drawing dots on dice faces (0 to 8 grid positions)
   const dotPositions = {
     1: [4],
     2: [0, 8],
@@ -48,27 +56,33 @@ function App() {
     6: [0, 2, 3, 5, 6, 8],
   };
 
+  //--- This map is used to display emojis for each scoring category
   const iconMap = {
-  yahtzee: '🌟',
-  fullHouse: '🏠',
-  smallStraight: '➡️',
-  largeStraight: '⏩',
-  threeKind: '🎯',
-  fourKind: '💥',
-  chance: '🎲',
-};
+    yahtzee: '🌟',
+    fullHouse: '🏠',
+    smallStraight: '➡️',
+    largeStraight: '⏩',
+    threeKind: '🎯',
+    fourKind: '💥',
+    chance: '🎲',
+  };
 
   const [rollCount, setRollCount] = useState(0);
   const [scores, setScores] = useState(initialScores);
   const [turnComplete, setTurnComplete] = useState(false);
+  const [gameHistory, setGameHistory] = useState([]);
 
-  // Check if all categories scored → Game Over
+
+  //--- Check if all categories scored → Game Over
   const isGameOver = Object.values(scores).every(score => score !== null);
 
-  // Upper section categories
+  //--- Upper section categories
   const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
-  // Calculate subtotal of upper categories (treat null as zero)
+  //--- Lower section categories
+  const lowerCategories = ['threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
+
+  //--- Calculate subtotal of upper categories (treat null as zero)
   const subtotal = upperCategories.reduce(
     (sum, key) => sum + (scores[key] ?? 0),
     0
@@ -90,7 +104,7 @@ function App() {
     setRollCount(prev => prev + 1);
   };
 
-  // Toggle hold/unhold die by index
+  //--- Toggle hold/unhold die by index
   const toggleHold = (index) => {
     if (turnComplete || rollCount === 0) return; // optional: prevent hold before first roll
     setDice(dice.map((die, i) =>
@@ -118,7 +132,7 @@ function App() {
     return straights.some(pattern => binary.includes(pattern));
   };
 
-  // Calculate score for lower section categories
+  //--- Calculate score for lower section categories
   const calculateScore = (category, dice) => {
     const values = dice.map(d => d.value).filter(v => v !== null);
     const counts = getCounts(dice);
@@ -144,39 +158,49 @@ function App() {
     }
   };
 
-  // Apply score for a category when user selects it
+  //--- Apply score for a category when user selects it
   const applyScore = (category) => {
     if (scores[category] !== null || turnComplete || rollCount === 0) return;
 
     setTurnComplete(true);
 
     let score = 0;
-    if (upperCategories.includes(category)) {
+
+    // Upper section logic
+    if (['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].includes(category)) {
       const num = {
         ones: 1, twos: 2, threes: 3,
         fours: 4, fives: 5, sixes: 6,
       }[category];
+
       const count = dice.filter(d => d.value === num).length;
       score = count * num;
     } else {
+      // Lower section logic
       score = calculateScore(category, dice);
     }
 
-    setScores(prev => ({ ...prev, [category]: score }));
+    const updatedScores = { ...scores, [category]: score };
+    setScores(updatedScores);
 
-    // Reset dice for next turn after short delay (for UI update)
+    // Wait briefly before resetting turn
     setTimeout(() => {
       setDice(Array(5).fill().map(() => ({ value: null, held: false })));
       setRollCount(0);
       setTurnComplete(false);
+
+      const gameOver = Object.values(updatedScores).every(v => v !== null);
+      if (gameOver) {
+        const newRecord = {
+          timestamp: new Date().toLocaleString(),
+          upperTotal: calculateUpperTotal(updatedScores),
+          lowerTotal: calculateLowerTotal(updatedScores),
+          grandTotal: calculateGrandTotal(updatedScores),
+        };
+        setGameHistory(prev => [newRecord, ...prev]);
+      }
     }, 100);
   };
-
-  // Lower section categories
-  const lowerCategories = [
-    'threeKind', 'fourKind', 'fullHouse',
-    'smallStraight', 'largeStraight', 'yahtzee', 'chance'
-  ];
 
   // Calculate lower total
   const lowerTotal = lowerCategories.reduce(
@@ -186,6 +210,20 @@ function App() {
 
   // Grand total
   const grandTotal = upperTotal + lowerTotal;
+
+  const calculateUpperTotal = (scores) => {
+    const subtotal = upperCategories.reduce((sum, key) => sum + (scores[key] ?? 0), 0);
+    const bonus = subtotal >= 63 ? 35 : 0;
+    return subtotal + bonus;
+  };
+
+  const calculateLowerTotal = (scores) => {
+    return lowerCategories.reduce((sum, key) => sum + (scores[key] ?? 0), 0);
+  };
+
+  const calculateGrandTotal = (scores) => {
+    return calculateUpperTotal(scores) + calculateLowerTotal(scores);
+  };
 
   // Calculate suggested scores for UI hints (only for unscored categories)
   const suggestedScores = {};
@@ -228,40 +266,39 @@ function App() {
     return map[key] || key;
   };
 
-function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, rollCount }) {
-  const eligibleSuggestions = Object.entries(suggestedScores).filter(
-    ([category, score]) =>
-      scores[category] === null && score > 0 && rollCount > 0 && !turnComplete
-  );
+  function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, rollCount }) {
+    const eligibleSuggestions = Object.entries(suggestedScores).filter(
+      ([category, score]) =>
+        scores[category] === null && score > 0 && rollCount > 0 && !turnComplete
+    );
 
-  if (eligibleSuggestions.length === 0) return null;
+    if (eligibleSuggestions.length === 0) return null;
 
-  return (
-    <div className="mt-4">     
-      <div className="d-flex flex-wrap gap-2">
-        <AnimatePresence>
-          {eligibleSuggestions.map(([category, score]) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => applyScore(category)}
-              className={`suggestion-card ${
-                ['yahtzee', 'largeStraight', 'fourKind'].includes(category) ? 'highlight' : ''
-              }`}
-              title={`Score ${score} for ${prettyName(category)}`}
-            >
-              <span className="emoji">{iconMap[category] || '🎯'}</span>{' '}
-              <strong>{prettyName(category)}</strong>: {score}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+    return (
+      <div className="mt-4">
+        <div className="d-flex flex-wrap gap-2">
+          <AnimatePresence>
+            {eligibleSuggestions.map(([category, score]) => (
+              <motion.div
+                key={category}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => applyScore(category)}
+                className={`suggestion-card ${['yahtzee', 'largeStraight', 'fourKind'].includes(category) ? 'highlight' : ''
+                  }`}
+                title={`Score ${score} for ${prettyName(category)}`}
+              >
+                <span className="emoji">{iconMap[category] || '🎯'}</span>{' '}
+                <strong>{prettyName(category)}</strong>: {score}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 
   return (
@@ -273,42 +310,23 @@ function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, ro
             <Card>
               <Card.Header>Upper Section</Card.Header>
               <Card.Body bg="Secondary" >
-                {['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].map((category) => (
-                  <InputGroup className="mb-3" key={category}>
-                    <InputGroup.Text className="w-50" id={category}>
-                      {category[0].toUpperCase() + category.slice(1)}:
-                    </InputGroup.Text>
 
-                    <Form.Control
-                      readOnly
-                      disabled={scores[category] !== null || turnComplete}
-                      value={scores[category] ?? ''}
-                      onClick={() => applyScore(category)}
-                      style={{
-                        //backgroundColor: scores[category] !== null ? '#c0c0c0' : 'grey',
-                        cursor: scores[category] !== null || turnComplete ? 'not-allowed' : 'pointer'
-                      }}
-                    />
+                <ScoreCardSection
+                  title=""
+                  categories={upperCategories}
+                  scores={scores}
+                  suggestedScores={suggestedScores}
+                  applyScore={applyScore}
+                  rollCount={rollCount}
+                  turnComplete={turnComplete}
+                  prettyName={prettyName}
+                />
 
-                  </InputGroup>
-                ))}
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="subtotal">Subtotal: </InputGroup.Text>
-                  <Form.Control readOnly value={subtotal} />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="bonus">Bonus: </InputGroup.Text>
-                  <Form.Control style={{
-                    fontWeight: bonus > 0 ? 'bold' : 'normal',
-                    color: bonus > 0 ? '#00FF00' : 'inherit',
-                  }} readOnly value={bonus} />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50" id="uppertotal">Upper Total: </InputGroup.Text>
-                  <Form.Control readOnly value={upperTotal} />
-                </InputGroup>
+                <ScoreTotalsUpper
+                  subtotal={subtotal}
+                  bonus={bonus}
+                  upperTotal={upperTotal}
+                />
 
               </Card.Body>
             </Card>
@@ -317,85 +335,22 @@ function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, ro
             <Card>
               <Card.Header>Lower Section</Card.Header>
               <Card.Body bg="Secondary" >
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">3 of a Kind:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.threeKind ?? ''}
-                    onClick={() => applyScore('threeKind')}
-                    disabled={scores.threeKind !== null || turnComplete}
-                  />
-                </InputGroup>
 
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">4 of a Kind:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.fourKind ?? ''}
-                    onClick={() => applyScore('fourKind')}
-                    disabled={scores.fourKind !== null || turnComplete}
-                  />
-                </InputGroup>
+                <ScoreCardSection
+                  title=""
+                  categories={lowerCategories}
+                  scores={scores}
+                  suggestedScores={suggestedScores}
+                  applyScore={applyScore}
+                  rollCount={rollCount}
+                  turnComplete={turnComplete}
+                  prettyName={prettyName}
+                />
 
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Full House:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.fullHouse ?? ''}
-                    onClick={() => applyScore('fullHouse')}
-                    disabled={scores.fullHouse !== null || turnComplete}
-                  />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Small Straight:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.smallStraight ?? ''}
-                    onClick={() => applyScore('smallStraight')}
-                    disabled={scores.smallStraight !== null || turnComplete}
-                  />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Large Straight:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.largeStraight ?? ''}
-                    onClick={() => applyScore('largeStraight')}
-                    disabled={scores.largeStraight !== null || turnComplete}
-                  />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Yahtzee:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.yahtzee ?? ''}
-                    onClick={() => applyScore('yahtzee')}
-                    disabled={scores.yahtzee !== null || turnComplete}
-                  />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Chance:</InputGroup.Text>
-                  <Form.Control
-                    readOnly
-                    value={scores.chance ?? ''}
-                    onClick={() => applyScore('chance')}
-                    disabled={scores.chance !== null || turnComplete}
-                  />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Lower Total:</InputGroup.Text>
-                  <Form.Control readOnly value={lowerTotal} />
-                </InputGroup>
-
-                <InputGroup className="mb-3">
-                  <InputGroup.Text className="w-50">Grand Total:</InputGroup.Text>
-                  <Form.Control readOnly value={grandTotal} />
-                </InputGroup>
+                <ScoreTotalsLower
+                  lowerTotal={lowerTotal}
+                  grandTotal={grandTotal}
+                />
 
               </Card.Body>
             </Card>
@@ -434,22 +389,6 @@ function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, ro
                   Roll Dice ({rollCount}/3)
                 </button>
 
-                {/* <button
-                  onClick={() =>
-                    setScores(prev => ({
-                      ...prev,
-                      ones: 5,
-                      twos: 10,
-                      threes: 15,
-                      fours: 20,
-                      fives: 25,
-                      sixes: 30,
-                    }))
-                  }
-                >
-                  🔧 Simulate Bonus
-                </button> */}
-
                 {isGameOver && (
                   <div className="game-over">
                     <h2>Game Over! 🎉</h2>
@@ -474,6 +413,10 @@ function SuggestedScores({ suggestedScores, applyScore, scores, turnComplete, ro
 
               </Card.Body>
             </Card>
+            &nbsp;
+
+
+            <GameHistory history={gameHistory} />
 
 
           </Col>
