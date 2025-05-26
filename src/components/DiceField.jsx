@@ -1,8 +1,12 @@
 // DiceField.jsx
 import Card from 'react-bootstrap/Card';
-import '../Dice.css'; // Optional, if you're splitting CSS too
+import '../Dice.css';
+import SuggestedScores from './SuggestedScores';
 
-export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame }) {
+
+
+export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame, suggestedScores, applyScore, scores, turnComplete }) {
+
     return (
         <div>
             <Card>
@@ -35,6 +39,15 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                     <button onClick={rollDice} disabled={rollCount >= 3}>
                         Roll Dice ({rollCount}/3)
                     </button>
+
+                    <SuggestedScores
+                        suggestedScores={suggestedScores}
+                        applyScore={applyScore}
+                        scores={scores}
+                        turnComplete={turnComplete}
+                        rollCount={rollCount}
+                    />
+
                     {isGameOver && (
                         <div className="game-over">
                             <h2>Game Over! 🎉</h2>
