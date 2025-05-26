@@ -1,4 +1,3 @@
-import React from 'react';
 import ScoreRow from './ScoreRow';
 
 export default function ScoreCardSection({
@@ -13,7 +12,6 @@ export default function ScoreCardSection({
 }) {
     return (
         <div className="scorecard-section mb-4">
-            <h5 className="text-light">{title}</h5>
             {categories.map((key) => (
                 <ScoreRow
                     key={key}

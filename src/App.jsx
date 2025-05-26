@@ -1,26 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react';
 //--- CSS imports.
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css'
+import './App.css';
 
 
 //--- Bootstrap imports.
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { AnimatePresence, motion } from 'framer-motion';
 import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Dice from './Dice';
-import { motion, AnimatePresence } from 'framer-motion';
 
 //--- Components imports.
-import ScoreCardSection from './components/ScoreCardSection';
-import ScoreTotalsUpper from './components/ScoreTotalsUpper';
-import ScoreTotalsLower from './components/ScoreTotalsLower';
+import DiceField from './components/DiceField';
 import GameHistory from './components/GameHistory';
+import ScoreTotalsLower from './components/ScoreTotalsLower';
+import ScoreTotalsUpper from './components/ScoreTotalsUpper';
+import UnifiedScoreSection from './components/UnifiedScoreSection';
 
 //--- Initial scores object with all categories set to null
 const initialScores = {
@@ -37,6 +33,8 @@ const initialScores = {
   largeStraight: null,
   yahtzee: null,
   chance: null,
+  onePair: null,
+  twoPair: null
 };
 
 function App() {
@@ -80,7 +78,7 @@ function App() {
   const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
   //--- Lower section categories
-  const lowerCategories = ['threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
+  const lowerCategories = ['onePair', 'twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
   //--- Calculate subtotal of upper categories (treat null as zero)
   const subtotal = upperCategories.reduce(
@@ -139,6 +137,21 @@ function App() {
     const total = values.reduce((a, b) => a + b, 0);
 
     switch (category) {
+      case 'onePair': {
+        const pairs = counts
+          .map((count, i) => (count >= 2 ? i + 1 : 0))
+          .filter(v => v > 0);
+        return pairs.length ? Math.max(...pairs) * 2 : 0;
+      }
+
+      case 'twoPair': {
+        const pairs = counts
+          .map((count, i) => (count >= 2 ? i + 1 : 0))
+          .filter(v => v > 0)
+          .sort((a, b) => b - a); // highest first
+        return pairs.length >= 2 ? pairs[0] * 2 + pairs[1] * 2 : 0;
+      }
+
       case 'threeKind':
         return counts.some(c => c >= 3) ? total : 0;
       case 'fourKind':
@@ -247,7 +260,7 @@ function App() {
     setDice(Array(5).fill().map(() => ({ value: null, held: false })));
     setScores({
       ones: null, twos: null, threes: null, fours: null, fives: null, sixes: null,
-      threeKind: null, fourKind: null, fullHouse: null, smallStraight: null,
+      onePair: null, twoPair: null, threeKind: null, fourKind: null, fullHouse: null, smallStraight: null,
       largeStraight: null, yahtzee: null, chance: null,
     });
     setRollCount(0);
@@ -260,6 +273,7 @@ function App() {
       ones: 'Ones', twos: 'Twos', threes: 'Threes',
       fours: 'Fours', fives: 'Fives', sixes: 'Sixes',
       threeKind: '3 of a Kind', fourKind: '4 of a Kind',
+      onePair: 'One Pair', twoPair: 'Two Pair',
       fullHouse: 'Full House', smallStraight: 'Small Straight',
       largeStraight: 'Large Straight', yahtzee: 'Yahtzee', chance: 'Chance',
     };
@@ -303,101 +317,56 @@ function App() {
 
   return (
     <>
-
       <Container>
         <Row>
           <Col>
-            <Card>
-              <Card.Header>Upper Section</Card.Header>
-              <Card.Body bg="Secondary" >
-
-                <ScoreCardSection
-                  title=""
-                  categories={upperCategories}
-                  scores={scores}
-                  suggestedScores={suggestedScores}
-                  applyScore={applyScore}
-                  rollCount={rollCount}
-                  turnComplete={turnComplete}
-                  prettyName={prettyName}
-                />
-
+            <UnifiedScoreSection
+              title="Upper Section"
+              categories={upperCategories}
+              scores={scores}
+              suggestedScores={suggestedScores}
+              applyScore={applyScore}
+              rollCount={rollCount}
+              turnComplete={turnComplete}
+              prettyName={prettyName}
+              totalsNode={
                 <ScoreTotalsUpper
                   subtotal={subtotal}
                   bonus={bonus}
                   upperTotal={upperTotal}
                 />
-
-              </Card.Body>
-            </Card>
+              }
+            />
           </Col>
           <Col>
-            <Card>
-              <Card.Header>Lower Section</Card.Header>
-              <Card.Body bg="Secondary" >
-
-                <ScoreCardSection
-                  title=""
-                  categories={lowerCategories}
-                  scores={scores}
-                  suggestedScores={suggestedScores}
-                  applyScore={applyScore}
-                  rollCount={rollCount}
-                  turnComplete={turnComplete}
-                  prettyName={prettyName}
-                />
-
+            <UnifiedScoreSection
+              title="Lower Section"
+              categories={lowerCategories}
+              scores={scores}
+              suggestedScores={suggestedScores}
+              applyScore={applyScore}
+              rollCount={rollCount}
+              turnComplete={turnComplete}
+              prettyName={prettyName}
+              totalsNode={
                 <ScoreTotalsLower
-                  lowerTotal={lowerTotal}
+                  lowerTotal={upperTotal}
                   grandTotal={grandTotal}
                 />
-
-              </Card.Body>
-            </Card>
+              }
+            />
           </Col>
           <Col>
-            <Card>
-              <Card.Header>Play Field</Card.Header>
-              <Card.Body bg="Secondary" >
+            <DiceField
+              dice={dice}
+              toggleHold={toggleHold}
+              rollDice={rollDice}
+              rollCount={rollCount}
+              dotPositions={dotPositions}
+              isGameOver={isGameOver}
+              resetGame={resetGame}
+            />
 
-                <div className="field">
-                  {dice.map((die, index) => (
-                    <div
-                      className={`die ${die.held ? 'held' : ''} ${die.value === null ? 'blank' : ''}`}
-                      key={index}
-                      onClick={() => toggleHold(index)}
-                    >
-                      {[...Array(9)].map((_, i) => (
-                        <span
-                          key={i}
-                          className="dot"
-                          style={{
-                            visibility:
-                              die.value !== null && dotPositions[die.value]?.includes(i)
-                                ? 'visible'
-                                : 'hidden',
-                          }}
-                        />
-                      ))}
-                    </div>
-                  ))}
-
-
-                </div>
-
-                <button onClick={rollDice} disabled={rollCount >= 3}>
-                  Roll Dice ({rollCount}/3)
-                </button>
-
-                {isGameOver && (
-                  <div className="game-over">
-                    <h2>Game Over! 🎉</h2>
-                    <button onClick={resetGame}>New Game</button>
-                  </div>
-                )}
-
-              </Card.Body>
-            </Card>
             &nbsp;
             <Card>
               <Card.Header>Scoring Hints</Card.Header>

@@ -1,6 +1,5 @@
 // components/ScoreRow.jsx
-import React from 'react';
-import { InputGroup, Form } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 
 export default function ScoreRow({ category, label, score, onClick, clickable }) {
     return (

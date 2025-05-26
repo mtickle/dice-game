@@ -1,13 +1,10 @@
-import React from 'react';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 export default function ScoreTotalsUpper({
     subtotal,
     bonus,
     upperTotal,
-    lowerTotal,
-    grandTotal,
 }) {
     const rows = [
         { label: 'Subtotal', value: subtotal },
