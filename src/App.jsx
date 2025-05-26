@@ -1,7 +1,9 @@
 import { useState } from 'react';
 //--- CSS imports.
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import './styles/App.css';
+import './styles/Dice.css';
+import { dotPositions, initialScores, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 
 //--- Bootstrap imports.
@@ -16,25 +18,6 @@ import ScoreTotalsLower from './components/ScoreTotalsLower';
 import ScoreTotalsUpper from './components/ScoreTotalsUpper';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 
-//--- Initial scores object with all categories set to null
-const initialScores = {
-  ones: null,
-  twos: null,
-  threes: null,
-  fours: null,
-  fives: null,
-  sixes: null,
-  threeKind: null,
-  fourKind: null,
-  fullHouse: null,
-  smallStraight: null,
-  largeStraight: null,
-  yahtzee: null,
-  chance: null,
-  onePair: null,
-  twoPair: null
-};
-
 function App() {
 
   //--- Dice state: 5 dice, each with value (1-6 or null) and held status
@@ -42,41 +25,17 @@ function App() {
     Array(5).fill().map(() => ({ value: null, held: false }))
   );
 
-  //--- Dot positions for drawing dots on dice faces (0 to 8 grid positions)
-  const dotPositions = {
-    1: [4],
-    2: [0, 8],
-    3: [0, 4, 8],
-    4: [0, 2, 6, 8],
-    5: [0, 2, 4, 6, 8],
-    6: [0, 2, 3, 5, 6, 8],
-  };
-
-  //--- This map is used to display emojis for each scoring category
-  const iconMap = {
-    yahtzee: '🌟',
-    fullHouse: '🏠',
-    smallStraight: '➡️',
-    largeStraight: '⏩',
-    threeKind: '🎯',
-    fourKind: '💥',
-    chance: '🎲',
-  };
-
   const [rollCount, setRollCount] = useState(0);
   const [scores, setScores] = useState(initialScores);
   const [turnComplete, setTurnComplete] = useState(false);
   const [gameHistory, setGameHistory] = useState([]);
+  const [bonusMessage, setBonusMessage] = useState('');
+  const [bonusCategory, setBonusCategory] = useState(null);
+  const [bonusFadingOut, setBonusFadingOut] = useState(false);
 
 
   //--- Check if all categories scored → Game Over
   const isGameOver = Object.values(scores).every(score => score !== null);
-
-  //--- Upper section categories
-  const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
-
-  //--- Lower section categories
-  const lowerCategories = ['onePair', 'twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
   //--- Calculate subtotal of upper categories (treat null as zero)
   const subtotal = upperCategories.reduce(
@@ -176,6 +135,14 @@ function App() {
     setTurnComplete(true);
 
     let score = 0;
+    const qualifyingFirstRollBonusCategories = [
+      'threeKind',
+      'fourKind',
+      'yahtzee',
+      'fullHouse',
+      'smallStraight',
+      'largeStraight',
+    ];
 
     // Upper section logic
     if (['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].includes(category)) {
@@ -189,6 +156,27 @@ function App() {
     } else {
       // Lower section logic
       score = calculateScore(category, dice);
+
+      // Apply 10-point bonus if it's a first roll and a qualifying category that actually scored
+      if (
+        rollCount === 1 &&
+        qualifyingFirstRollBonusCategories.includes(category) &&
+        score > 0
+      ) {
+        score += 10;
+        setBonusMessage(`🎉 Bonus! +10 points for first-roll ${prettyName(category)}!`);
+        setBonusCategory(category);
+
+        setTimeout(() => {
+          setBonusFadingOut(true); // trigger CSS class
+
+          setTimeout(() => {
+            setBonusMessage('');
+            setBonusCategory(null);
+            setBonusFadingOut(false);
+          }, 300); // duration should match fadeOutSlide
+        }, 3000); // initial display time
+      }
     }
 
     const updatedScores = { ...scores, [category]: score };
@@ -213,6 +201,7 @@ function App() {
     }, 100);
   };
 
+  //---- CALCULATE TOTALS 
   // Calculate lower total
   const lowerTotal = lowerCategories.reduce(
     (sum, key) => sum + (scores[key] ?? 0),
@@ -235,6 +224,7 @@ function App() {
   const calculateGrandTotal = (scores) => {
     return calculateUpperTotal(scores) + calculateLowerTotal(scores);
   };
+
 
   // Calculate suggested scores for UI hints (only for unscored categories)
   const suggestedScores = {};
@@ -265,19 +255,6 @@ function App() {
     setTurnComplete(false);
   }
 
-  // Helper to pretty-print category names
-  const prettyName = (key) => {
-    const map = {
-      ones: 'Ones', twos: 'Twos', threes: 'Threes',
-      fours: 'Fours', fives: 'Fives', sixes: 'Sixes',
-      threeKind: '3 of a Kind', fourKind: '4 of a Kind',
-      onePair: 'One Pair', twoPair: 'Two Pair',
-      fullHouse: 'Full House', smallStraight: 'Small Straight',
-      largeStraight: 'Large Straight', yahtzee: 'Yahtzee', chance: 'Chance',
-    };
-    return map[key] || key;
-  };
-
   return (
     <>
       <Container>
@@ -292,6 +269,8 @@ function App() {
               rollCount={rollCount}
               turnComplete={turnComplete}
               prettyName={prettyName}
+              bonusCategory={bonusCategory}
+
               totalsNode={
                 <ScoreTotalsUpper
                   subtotal={subtotal}
@@ -311,6 +290,7 @@ function App() {
               rollCount={rollCount}
               turnComplete={turnComplete}
               prettyName={prettyName}
+              bonusCategory={bonusCategory}
               totalsNode={
                 <ScoreTotalsLower
                   lowerTotal={upperTotal}
@@ -331,16 +311,14 @@ function App() {
               resetGame={resetGame}
               scores={scores}
               applyScore={applyScore}
+              bonusMessage={bonusMessage}
+              bonusFadingOut={bonusFadingOut}
 
             />
-
             <GameHistory history={gameHistory} />
-
-
           </Col>
         </Row>
       </Container>
-
     </>
   )
 }

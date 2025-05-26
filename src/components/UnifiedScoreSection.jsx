@@ -1,6 +1,5 @@
 
 import Card from 'react-bootstrap/Card';
-
 import ScoreCardSection from './ScoreCardSection';
 
 export default function UnifiedScoreSection({
@@ -12,7 +11,8 @@ export default function UnifiedScoreSection({
     rollCount,
     turnComplete,
     prettyName,
-    totalsNode, // this will be a React element like <ScoreTotalsUpper ... />
+    totalsNode,
+    bonusCategory 
 }) {
     return (
         <Card>
@@ -27,6 +27,7 @@ export default function UnifiedScoreSection({
                     rollCount={rollCount}
                     turnComplete={turnComplete}
                     prettyName={prettyName}
+                    bonusCategory={bonusCategory}
                 />
                 {totalsNode}
             </Card.Body>

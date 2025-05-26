@@ -1,11 +1,13 @@
 // components/ScoreRow.jsx
 import { Form, InputGroup } from 'react-bootstrap';
 
-export default function ScoreRow({ category, label, score, onClick, clickable }) {
+export default function ScoreRow({ category, label, score, onClick, clickable, isBonus }) {
+    const className = `w-50 score-row ${clickable ? 'clickable' : ''} ${isBonus ? 'bonus-flash' : ''}`;
+
     return (
         <InputGroup className="mb-3">
             <InputGroup.Text
-                className="w-50"
+                className={className}
                 id={category}
                 onClick={clickable ? () => onClick(category) : undefined}
                 style={{
@@ -20,3 +22,4 @@ export default function ScoreRow({ category, label, score, onClick, clickable })
         </InputGroup>
     );
 }
+

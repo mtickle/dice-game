@@ -9,6 +9,7 @@ export default function ScoreCardSection({
     rollCount,
     turnComplete,
     prettyName,
+    bonusCategory = null,
 }) {
     return (
         <div className="scorecard-section mb-4">
@@ -20,6 +21,7 @@ export default function ScoreCardSection({
                     score={scores[key]}
                     onClick={applyScore}
                     clickable={scores[key] === null && rollCount > 0 && !turnComplete}
+                    isBonus={bonusCategory === key}
                 />
             ))}
         </div>
