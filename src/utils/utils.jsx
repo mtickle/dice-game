@@ -39,6 +39,7 @@ export const iconMap = {
     chance: '🎯',
 };
 
+
 export const dotPositions = {
     1: [4],
     2: [0, 8],

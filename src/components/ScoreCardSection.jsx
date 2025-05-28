@@ -12,7 +12,7 @@ export default function ScoreCardSection({
     bonusCategory = null,
 }) {
     return (
-        <div className="scorecard-section mb-4">
+        <div className="scorecard-section mb-2">
             {categories.map((key) => (
                 <ScoreRow
                     key={key}

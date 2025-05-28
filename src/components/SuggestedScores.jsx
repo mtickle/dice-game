@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { iconMap, prettyName } from '../utils/utils'; // adjust path as needed
+import { iconMap, prettyName } from '../utils/utils'; 
 
 export default function SuggestedScores({ suggestedScores = {}, applyScore, scores, turnComplete, rollCount, }) {
     const eligibleSuggestions = Object.entries(suggestedScores).filter(

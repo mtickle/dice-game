@@ -5,7 +5,7 @@ export default function ScoreRow({ category, label, score, onClick, clickable, i
     const className = `w-50 score-row ${clickable ? 'clickable' : ''} ${isBonus ? 'bonus-flash' : ''}`;
 
     return (
-        <InputGroup className="mb-3">
+        <InputGroup className="mb-2">
             <InputGroup.Text
                 className={className}
                 id={category}
@@ -17,8 +17,9 @@ export default function ScoreRow({ category, label, score, onClick, clickable, i
                 }}
             >
                 {label}:
+                {/* {iconMap[category]} */}
             </InputGroup.Text>
-            <Form.Control readOnly value={score ?? ''} />
+            <Form.Control className='w-50' readOnly value={score ?? ''} />
         </InputGroup>
     );
 }

@@ -15,7 +15,6 @@ import Row from 'react-bootstrap/Row';
 import DiceField from './components/DiceField';
 import GameHistory from './components/GameHistory';
 import ScoreTotalsLower from './components/ScoreTotalsLower';
-import ScoreTotalsUpper from './components/ScoreTotalsUpper';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 
 function App() {
@@ -165,7 +164,7 @@ function App() {
       ) {
         score += 10;
         setBonusMessage(`🎉 Bonus! +10 points for first-roll ${prettyName(category)}!`);
-        setBonusCategory(category);
+        //setBonusCategory(category);
 
         setTimeout(() => {
           setBonusFadingOut(true); // trigger CSS class
@@ -270,14 +269,7 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
-
-              totalsNode={
-                <ScoreTotalsUpper
-                  subtotal={subtotal}
-                  bonus={bonus}
-                  upperTotal={upperTotal}
-                />
-              }
+              totalsNode={null}
             />
           </Col>
           <Col>
@@ -293,7 +285,7 @@ function App() {
               bonusCategory={bonusCategory}
               totalsNode={
                 <ScoreTotalsLower
-                  lowerTotal={upperTotal}
+
                   grandTotal={grandTotal}
                 />
               }
