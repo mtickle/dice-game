@@ -2,7 +2,7 @@
 
 export const prettyName = (category) => {
     const names = {
-        ones: 'Ones',
+        ones: 'Aces',
         twos: 'Twos',
         threes: 'Threes',
         fours: 'Fours',
@@ -10,11 +10,11 @@ export const prettyName = (category) => {
         sixes: 'Sixes',
         onePair: 'One Pair',
         twoPair: 'Two Pair',
-        threeKind: 'Three of a Kind',
-        fourKind: 'Four of a Kind',
+        threeKind: '3 of a Kind',
+        fourKind: '4 of a Kind',
         fullHouse: 'Full House',
-        smallStraight: 'Small Straight',
-        largeStraight: 'Large Straight',
+        smallStraight: 'Sm. Straight',
+        largeStraight: 'Lg. Straight',
         yahtzee: 'Yahtzee',
         chance: 'Chance',
     };
@@ -53,7 +53,7 @@ export const dotPositions = {
 export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
 //--- Lower section categories
-export const lowerCategories = ['onePair', 'twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
+export const lowerCategories = ['twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
 export const initialScores = {
     ones: null,
@@ -62,6 +62,7 @@ export const initialScores = {
     fours: null,
     fives: null,
     sixes: null,
+    twoPair: null,
     threeKind: null,
     fourKind: null,
     fullHouse: null,
@@ -69,7 +70,6 @@ export const initialScores = {
     largeStraight: null,
     yahtzee: null,
     chance: null,
-    onePair: null,
-    twoPair: null
+
 };
 

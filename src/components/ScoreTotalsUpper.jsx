@@ -2,12 +2,12 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
 export default function ScoreTotalsUpper({
-    subtotal,
+    upperSubtotal,
     bonus,
     upperTotal,
 }) {
     const rows = [
-        { label: 'Subtotal', value: subtotal },
+        { label: 'Subtotal', value: upperSubtotal },
         { label: 'Bonus', value: bonus },
         { label: 'Upper Total', value: upperTotal },
     ];
@@ -15,7 +15,7 @@ export default function ScoreTotalsUpper({
     return (
         <div className="score-totals">
             {rows.map(({ label, value }) => (
-                <InputGroup className="mb-3" key={label}>
+                <InputGroup className="mb-2" key={label}>
                     <InputGroup.Text className="w-50">{label}:</InputGroup.Text>
                     <Form.Control readOnly value={value} />
                 </InputGroup>

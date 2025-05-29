@@ -6,7 +6,7 @@ export default function ScoreTotalsLower({
     grandTotal,
 }) {
     const rows = [
-        // { label: 'Lower Total', value: lowerTotal },
+        { label: 'Lower Total', value: lowerTotal },
         { label: 'Grand Total', value: grandTotal },
     ];
 

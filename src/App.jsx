@@ -14,8 +14,8 @@ import Row from 'react-bootstrap/Row';
 //--- Components imports.
 import DiceField from './components/DiceField';
 import GameHistory from './components/GameHistory';
-import ScoreTotalsLower from './components/ScoreTotalsLower';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
+import UnifiedSectionTotals from './components/UnifiedSectionTotals';
 
 function App() {
 
@@ -37,14 +37,14 @@ function App() {
   const isGameOver = Object.values(scores).every(score => score !== null);
 
   //--- Calculate subtotal of upper categories (treat null as zero)
-  const subtotal = upperCategories.reduce(
+  const upperSubtotal = upperCategories.reduce(
     (sum, key) => sum + (scores[key] ?? 0),
     0
   );
 
   // Bonus if subtotal >= 63
-  const bonus = subtotal >= 63 ? 35 : 0;
-  const upperTotal = subtotal + bonus;
+  const bonus = upperSubtotal >= 63 ? 35 : 0;
+  const upperTotal = upperSubtotal + bonus;
 
   // Roll dice (max 3 rolls, and only if turn not complete)
   const rollDice = () => {
@@ -93,12 +93,6 @@ function App() {
     const total = values.reduce((a, b) => a + b, 0);
 
     switch (category) {
-      case 'onePair': {
-        const pairs = counts
-          .map((count, i) => (count >= 2 ? i + 1 : 0))
-          .filter(v => v > 0);
-        return pairs.length ? Math.max(...pairs) * 2 : 0;
-      }
 
       case 'twoPair': {
         const pairs = counts
@@ -135,6 +129,7 @@ function App() {
 
     let score = 0;
     const qualifyingFirstRollBonusCategories = [
+      'twoPair',
       'threeKind',
       'fourKind',
       'yahtzee',
@@ -247,7 +242,7 @@ function App() {
     setDice(Array(5).fill().map(() => ({ value: null, held: false })));
     setScores({
       ones: null, twos: null, threes: null, fours: null, fives: null, sixes: null,
-      onePair: null, twoPair: null, threeKind: null, fourKind: null, fullHouse: null, smallStraight: null,
+      twoPair: null, threeKind: null, fourKind: null, fullHouse: null, smallStraight: null,
       largeStraight: null, yahtzee: null, chance: null,
     });
     setRollCount(0);
@@ -269,11 +264,7 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
-              totalsNode={null}
-            />
-          </Col>
-          <Col>
-            <UnifiedScoreSection
+            /><UnifiedScoreSection
               title="Lower Section"
               categories={lowerCategories}
               scores={scores}
@@ -283,15 +274,20 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
-              totalsNode={
-                <ScoreTotalsLower
-
-                  grandTotal={grandTotal}
-                />
-              }
             />
           </Col>
+          {/* <Col>
+
+          </Col> */}
           <Col>
+            <UnifiedSectionTotals
+              upperSubtotal={upperSubtotal}
+              bonus={bonus}
+              upperTotal={upperTotal}
+              lowerTotal={lowerTotal}
+              grandTotal={grandTotal}
+            />
+            &nbsp;
             <DiceField
               dice={dice}
               toggleHold={toggleHold}
@@ -307,6 +303,7 @@ function App() {
               bonusFadingOut={bonusFadingOut}
 
             />
+
             <GameHistory history={gameHistory} />
           </Col>
         </Row>
