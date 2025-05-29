@@ -18,6 +18,7 @@ export default function ScoreTotalsLower({
                     <Form.Control readOnly value={value} />
                 </InputGroup>
             ))}
+
         </div>
     );
 }

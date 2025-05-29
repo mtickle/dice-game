@@ -12,7 +12,8 @@ export default function UnifiedScoreSection({
     turnComplete,
     prettyName,
     totalsNode,
-    bonusCategory 
+    bonusCategory,
+    grandTotal
 }) {
     return (
         <Card>
@@ -28,8 +29,10 @@ export default function UnifiedScoreSection({
                     turnComplete={turnComplete}
                     prettyName={prettyName}
                     bonusCategory={bonusCategory}
+                    totalsNode={totalsNode}
+                    grandTotal={grandTotal}
                 />
-                {totalsNode}
+
             </Card.Body>
         </Card>
     );

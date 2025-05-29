@@ -25,14 +25,12 @@
   cursor: pointer;
 }
 
-.dice.held {
-  box-shadow: 0 0 0 4px #4caf50;
-  transform: scale(1.1);
-}
-
 .die.held {
-  background-color: #e0ffe0;
-  border-color: green;
+  background-color: #ffffff;
+  /* border-color: rgb(255, 0, 0); */
+  /* box-shadow: 0 0 0 2px #e5ff00; */
+
+  box-shadow: rgb(229, 255, 0) 0px 0px 0px 2px;
 }
 
 .die {

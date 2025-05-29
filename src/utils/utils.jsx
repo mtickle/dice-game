@@ -8,7 +8,6 @@ export const prettyName = (category) => {
         fours: 'Fours',
         fives: 'Fives',
         sixes: 'Sixes',
-        onePair: 'One Pair',
         twoPair: 'Two Pair',
         threeKind: '3 of a Kind',
         fourKind: '4 of a Kind',

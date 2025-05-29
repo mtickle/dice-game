@@ -11,7 +11,7 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
 
         <div>
             <Card>
-                <Card.Header>Play Field</Card.Header>
+                {/* <Card.Header>Play Field</Card.Header> */}
                 <Card.Body bg="Secondary">
                     <div className="dice-field">
                         <div className="field">

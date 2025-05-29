@@ -1,5 +1,7 @@
 import ScoreRow from './ScoreRow';
 
+import UnifiedSectionTotals from './UnifiedSectionTotals';
+
 export default function ScoreCardSection({
     title,
     categories,
@@ -10,6 +12,8 @@ export default function ScoreCardSection({
     turnComplete,
     prettyName,
     bonusCategory = null,
+    totalsNode = null,
+    grandTotal
 }) {
     return (
         <div className="scorecard-section mb-2">
@@ -24,6 +28,14 @@ export default function ScoreCardSection({
                     isBonus={bonusCategory === key}
                 />
             ))}
+            {grandTotal !== null && (
+                <UnifiedSectionTotals
+                    grandTotal={grandTotal}
+                />
+            )}
+
         </div>
+
+
     );
 }

@@ -13,9 +13,7 @@ import Row from 'react-bootstrap/Row';
 
 //--- Components imports.
 import DiceField from './components/DiceField';
-import GameHistory from './components/GameHistory';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
-import UnifiedSectionTotals from './components/UnifiedSectionTotals';
 
 function App() {
 
@@ -264,7 +262,13 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
-            /><UnifiedScoreSection
+              grandTotal={null}
+            />
+            &nbsp;
+
+          </Col>
+          <Col>
+            <UnifiedScoreSection
               title="Lower Section"
               categories={lowerCategories}
               scores={scores}
@@ -274,12 +278,11 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
+              totalsNode={null}
+              grandTotal={grandTotal}
             />
           </Col>
           {/* <Col>
-
-          </Col> */}
-          <Col>
             <UnifiedSectionTotals
               upperSubtotal={upperSubtotal}
               bonus={bonus}
@@ -288,24 +291,27 @@ function App() {
               grandTotal={grandTotal}
             />
             &nbsp;
-            <DiceField
-              dice={dice}
-              toggleHold={toggleHold}
-              rollDice={rollDice}
-              rollCount={rollCount}
-              suggestedScores={suggestedScores}
-              dotPositions={dotPositions}
-              isGameOver={isGameOver}
-              resetGame={resetGame}
-              scores={scores}
-              applyScore={applyScore}
-              bonusMessage={bonusMessage}
-              bonusFadingOut={bonusFadingOut}
 
-            />
 
             <GameHistory history={gameHistory} />
-          </Col>
+          </Col> */}
+        </Row>
+        <Row>
+          <DiceField
+            dice={dice}
+            toggleHold={toggleHold}
+            rollDice={rollDice}
+            rollCount={rollCount}
+            suggestedScores={suggestedScores}
+            dotPositions={dotPositions}
+            isGameOver={isGameOver}
+            resetGame={resetGame}
+            scores={scores}
+            applyScore={applyScore}
+            bonusMessage={bonusMessage}
+            bonusFadingOut={bonusFadingOut}
+
+          />
         </Row>
       </Container>
     </>
