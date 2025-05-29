@@ -262,7 +262,10 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
+              isUpperSection={true}
+              upperTotal={upperTotal}
               grandTotal={null}
+
             />
             &nbsp;
 
@@ -278,6 +281,7 @@ function App() {
               turnComplete={turnComplete}
               prettyName={prettyName}
               bonusCategory={bonusCategory}
+              isUpperSection={false}
               totalsNode={null}
               grandTotal={grandTotal}
             />

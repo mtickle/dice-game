@@ -1,5 +1,6 @@
 import ScoreRow from './ScoreRow';
 
+import BonusProgressBar from './BonusProgressBar';
 import UnifiedSectionTotals from './UnifiedSectionTotals';
 
 export default function ScoreCardSection({
@@ -11,8 +12,10 @@ export default function ScoreCardSection({
     rollCount,
     turnComplete,
     prettyName,
+    isUpperSection,
     bonusCategory = null,
     totalsNode = null,
+    upperTotal = 0,
     grandTotal
 }) {
     return (
@@ -32,6 +35,11 @@ export default function ScoreCardSection({
                 <UnifiedSectionTotals
                     grandTotal={grandTotal}
                 />
+            )}
+            {isUpperSection && (
+                <div className="text-sm mt-2 space-y-2">
+                    <BonusProgressBar upperTotal={upperTotal} />
+                </div>
             )}
 
         </div>
