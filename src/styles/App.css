@@ -21,3 +21,29 @@ button {
   border: none;
   cursor: pointer;
 }
+
+/* App.css */
+.app {
+  min-height: 100vh;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.dark-theme {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.content-box {
+  background-color: #1e1e1e;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+header,
+footer {
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}

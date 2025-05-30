@@ -249,7 +249,22 @@ function App() {
 
   return (
     <>
+
+
+
+
+
+
+
       <Container>
+        <Row className="middle-row mb-3">
+          <Col md={6} className="mb-3 mb-md-0">
+            <div className="content-box">Left Column</div>
+          </Col>
+          <Col md={6}>
+            <div className="content-box">Right Column</div>
+          </Col>
+        </Row>
         <Row>
           <Col>
             <UnifiedScoreSection
