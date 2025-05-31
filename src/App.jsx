@@ -14,6 +14,7 @@ import Row from 'react-bootstrap/Row';
 //--- Components imports.
 import DiceField from './components/DiceField';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
+import UnifiedSectionTotals from './components/UnifiedSectionTotals';
 
 function App() {
 
@@ -249,22 +250,7 @@ function App() {
 
   return (
     <>
-
-
-
-
-
-
-
       <Container>
-        <Row className="middle-row mb-3">
-          <Col md={6} className="mb-3 mb-md-0">
-            <div className="content-box">Left Column</div>
-          </Col>
-          <Col md={6}>
-            <div className="content-box">Right Column</div>
-          </Col>
-        </Row>
         <Row>
           <Col>
             <UnifiedScoreSection
@@ -278,9 +264,17 @@ function App() {
               prettyName={prettyName}
               bonusCategory={bonusCategory}
               isUpperSection={true}
+              isLowerSection={false}
               upperTotal={upperTotal}
-              grandTotal={null}
-
+              totalsNode={
+                <UnifiedSectionTotals
+                  upperSubtotal={upperSubtotal}
+                  bonus={bonus}
+                  upperTotal={upperTotal}
+                  lowerTotal={lowerTotal}
+                  grandTotal={grandTotal}
+                />
+              }
             />
             &nbsp;
 
@@ -297,9 +291,36 @@ function App() {
               prettyName={prettyName}
               bonusCategory={bonusCategory}
               isUpperSection={false}
-              totalsNode={null}
-              grandTotal={grandTotal}
+              isLowerSection={true}
+              upperTotal={upperTotal}
+              totalsNode={
+                <UnifiedSectionTotals
+                  upperSubtotal={upperSubtotal}
+                  bonus={bonus}
+                  upperTotal={upperTotal}
+                  lowerTotal={lowerTotal}
+                  grandTotal={grandTotal}
+                />
+              }
             />
+          </Col>
+          <Col>
+            <DiceField
+              dice={dice}
+              toggleHold={toggleHold}
+              rollDice={rollDice}
+              rollCount={rollCount}
+              suggestedScores={suggestedScores}
+              dotPositions={dotPositions}
+              isGameOver={isGameOver}
+              resetGame={resetGame}
+              scores={scores}
+              applyScore={applyScore}
+              bonusMessage={bonusMessage}
+              bonusFadingOut={bonusFadingOut}
+
+            />
+
           </Col>
           {/* <Col>
             <UnifiedSectionTotals
@@ -316,21 +337,6 @@ function App() {
           </Col> */}
         </Row>
         <Row>
-          <DiceField
-            dice={dice}
-            toggleHold={toggleHold}
-            rollDice={rollDice}
-            rollCount={rollCount}
-            suggestedScores={suggestedScores}
-            dotPositions={dotPositions}
-            isGameOver={isGameOver}
-            resetGame={resetGame}
-            scores={scores}
-            applyScore={applyScore}
-            bonusMessage={bonusMessage}
-            bonusFadingOut={bonusFadingOut}
-
-          />
         </Row>
       </Container>
     </>

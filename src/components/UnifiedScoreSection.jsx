@@ -31,12 +31,11 @@ export default function UnifiedScoreSection({
                     turnComplete={turnComplete}
                     prettyName={prettyName}
                     bonusCategory={bonusCategory}
-                    totalsNode={totalsNode}
                     isUpperSection={isUpperSection}
                     upperTotal={upperTotal}
                     grandTotal={grandTotal}
+                    totalsNode={totalsNode}
                 />
-
             </Card.Body>
         </Card>
     );
