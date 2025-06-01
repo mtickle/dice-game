@@ -14,7 +14,10 @@ export default function UnifiedScoreSection({
     totalsNode,
     isUpperSection,
     bonusCategory,
+    upperSubtotal,
+    bonus,
     upperTotal,
+    lowerTotal,
     grandTotal
 }) {
     return (
@@ -32,7 +35,10 @@ export default function UnifiedScoreSection({
                     prettyName={prettyName}
                     bonusCategory={bonusCategory}
                     isUpperSection={isUpperSection}
+                    upperSubtotal={upperSubtotal}
+                    bonus={bonus}
                     upperTotal={upperTotal}
+                    lowerTotal={lowerTotal}
                     grandTotal={grandTotal}
                     totalsNode={totalsNode}
                 />

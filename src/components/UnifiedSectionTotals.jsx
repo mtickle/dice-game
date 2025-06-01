@@ -1,3 +1,4 @@
+import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
@@ -18,14 +19,17 @@ export default function UnifiedSectionTotals({
     ];
 
     return (
-        <div className="score-totals">
-            {rows.map(({ label, value }) => (
-                <InputGroup className="mb-2" key={label}>
-                    <InputGroup.Text className="w-50">{label}:</InputGroup.Text>
-                    <Form.Control readOnly value={value} />
-                </InputGroup>
-            ))}
-        </div>
+        <Card>
+            <Card.Header>Scores</Card.Header>
+            <Card.Body bg="Secondary">
+                {rows.map(({ label, value }) => (
+                    <InputGroup className="mb-2" key={label}>
+                        <InputGroup.Text className="w-50">{label}:</InputGroup.Text>
+                        <Form.Control readOnly value={value} />
+                    </InputGroup>
+                ))}
+            </Card.Body>
+        </Card>
 
     );
 }

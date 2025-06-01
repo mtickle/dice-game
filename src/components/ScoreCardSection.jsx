@@ -32,6 +32,8 @@ export default function ScoreCardSection({
                     onClick={applyScore}
                     clickable={scores[key] === null && rollCount > 0 && !turnComplete}
                     isBonus={bonusCategory === key}
+                    bonusBadge={bonusCategory === key}
+                    suggested={suggestedScores?.[key]}
                 />
             ))}
             {/* {grandTotal !== null && (

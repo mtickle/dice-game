@@ -1,8 +1,13 @@
 // components/ScoreRow.jsx
 import { Form, InputGroup } from 'react-bootstrap';
 
-export default function ScoreRow({ category, label, score, onClick, clickable, isBonus }) {
-    const className = `w-50 score-row ${clickable ? 'clickable' : ''} ${isBonus ? 'bonus-flash' : ''}`;
+export default function ScoreRow({ category, label, score, onClick, clickable, isBonus, bonusBadge, suggested }) {
+    const className = `w-50 score-row 
+        ${clickable ? 'clickable' : ''} 
+        
+        ${suggested ? 'suggested-glow' : ''}`;
+
+    const showSuggested = score === null && suggested !== undefined;
 
     return (
         <InputGroup className="mb-2">
@@ -17,9 +22,13 @@ export default function ScoreRow({ category, label, score, onClick, clickable, i
                 }}
             >
                 {label}:
-                {/* {iconMap[category]} */}
+                {bonusBadge && <span className="bonus-badge ms-2">+10</span>}
             </InputGroup.Text>
-            <Form.Control className='w-50' readOnly value={score ?? ''} />
+            <Form.Control
+                className={showSuggested ? 'text-muted' : ''}
+                readOnly
+                value={score ?? (showSuggested ? suggested : '')}
+            />
         </InputGroup>
     );
 }

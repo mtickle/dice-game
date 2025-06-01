@@ -157,14 +157,14 @@ function App() {
         score > 0
       ) {
         score += 10;
-        setBonusMessage(`🎉 Bonus! +10 points for first-roll ${prettyName(category)}!`);
-        //setBonusCategory(category);
+        //setBonusMessage(`🎉 Bonus! +10 points for first-roll ${prettyName(category)}!`);
+        setBonusCategory(category);
 
         setTimeout(() => {
           setBonusFadingOut(true); // trigger CSS class
 
           setTimeout(() => {
-            setBonusMessage('');
+            //setBonusMessage('');
             setBonusCategory(null);
             setBonusFadingOut(false);
           }, 300); // duration should match fadeOutSlide
@@ -266,15 +266,7 @@ function App() {
               isUpperSection={true}
               isLowerSection={false}
               upperTotal={upperTotal}
-              totalsNode={
-                <UnifiedSectionTotals
-                  upperSubtotal={upperSubtotal}
-                  bonus={bonus}
-                  upperTotal={upperTotal}
-                  lowerTotal={lowerTotal}
-                  grandTotal={grandTotal}
-                />
-              }
+              totalsNode={null}
             />
             &nbsp;
 
@@ -292,16 +284,12 @@ function App() {
               bonusCategory={bonusCategory}
               isUpperSection={false}
               isLowerSection={true}
+              upperSubtotal={upperSubtotal}
+              bonus={bonus}
               upperTotal={upperTotal}
-              totalsNode={
-                <UnifiedSectionTotals
-                  upperSubtotal={upperSubtotal}
-                  bonus={bonus}
-                  upperTotal={upperTotal}
-                  lowerTotal={lowerTotal}
-                  grandTotal={grandTotal}
-                />
-              }
+              lowerTotal={lowerTotal}
+              grandTotal={grandTotal}
+              totalsNode={null}
             />
           </Col>
           <Col>
@@ -321,8 +309,8 @@ function App() {
 
             />
 
-          </Col>
-          {/* <Col>
+            &nbsp;
+
             <UnifiedSectionTotals
               upperSubtotal={upperSubtotal}
               bonus={bonus}
@@ -333,8 +321,8 @@ function App() {
             &nbsp;
 
 
-            <GameHistory history={gameHistory} />
-          </Col> */}
+            {/* <GameHistory history={gameHistory} /> */}
+          </Col>
         </Row>
         <Row>
         </Row>
