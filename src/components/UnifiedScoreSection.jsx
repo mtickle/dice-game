@@ -35,6 +35,7 @@ export default function UnifiedScoreSection({
                     bonusCategory={bonusCategory}
                     isUpperSection={isUpperSection}
                     bonus={bonus}
+                    upperTotal={upperTotal}
                 />
             </Card.Body>
         </Card>

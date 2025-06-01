@@ -4,7 +4,7 @@ import '../styles/Dice.css';
 
 //const [bonusFadingOut, setBonusFadingOut] = useState(false);
 
-export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame, bonusMessage, bonusFadingOut }) {
+export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame }) {
 
     return (
 
@@ -39,7 +39,7 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                     <button onClick={rollDice} disabled={rollCount >= 3}>
                         Roll Dice ({rollCount}/3)
                     </button>
-
+                    {/* 
                     {bonusMessage && (
                         <div
                             className={`bonus-message alert alert-success text-center my-3 ${bonusFadingOut ? 'fade-out' : 'fade-in'
@@ -47,7 +47,7 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                         >
                             {bonusMessage}
                         </div>
-                    )}
+                    )} */}
 
                     {isGameOver && (
                         <div className="game-over">
