@@ -1,11 +1,10 @@
 // DiceField.jsx
 import Card from 'react-bootstrap/Card';
 import '../styles/Dice.css';
-import SuggestedScores from './SuggestedScores';
 
 //const [bonusFadingOut, setBonusFadingOut] = useState(false);
 
-export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame, suggestedScores, applyScore, scores, turnComplete, bonusMessage, bonusFadingOut }) {
+export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame, bonusMessage, bonusFadingOut }) {
 
     return (
 
@@ -49,15 +48,6 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                             {bonusMessage}
                         </div>
                     )}
-
-
-                    <SuggestedScores
-                        suggestedScores={suggestedScores}
-                        applyScore={applyScore}
-                        scores={scores}
-                        turnComplete={turnComplete}
-                        rollCount={rollCount}
-                    />
 
                     {isGameOver && (
                         <div className="game-over">

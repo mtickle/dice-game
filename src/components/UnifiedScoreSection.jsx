@@ -25,7 +25,6 @@ export default function UnifiedScoreSection({
             <Card.Header>{title}</Card.Header>
             <Card.Body bg="Secondary">
                 <ScoreCardSection
-                    title=""
                     categories={categories}
                     scores={scores}
                     suggestedScores={suggestedScores}
@@ -35,12 +34,7 @@ export default function UnifiedScoreSection({
                     prettyName={prettyName}
                     bonusCategory={bonusCategory}
                     isUpperSection={isUpperSection}
-                    upperSubtotal={upperSubtotal}
                     bonus={bonus}
-                    upperTotal={upperTotal}
-                    lowerTotal={lowerTotal}
-                    grandTotal={grandTotal}
-                    totalsNode={totalsNode}
                 />
             </Card.Body>
         </Card>

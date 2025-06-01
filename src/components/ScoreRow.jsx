@@ -1,7 +1,7 @@
 // components/ScoreRow.jsx
 import { Form, InputGroup } from 'react-bootstrap';
 
-export default function ScoreRow({ category, label, score, onClick, clickable, isBonus, bonusBadge, suggested }) {
+export default function ScoreRow({ category, label, score, onClick, clickable, bonusBadge, suggested }) {
     const className = `w-50 score-row 
         ${clickable ? 'clickable' : ''} 
         
