@@ -38,7 +38,6 @@ export const iconMap = {
     chance: '🎯',
 };
 
-
 export const dotPositions = {
     1: [4],
     2: [0, 8],
@@ -48,10 +47,8 @@ export const dotPositions = {
     6: [0, 2, 3, 5, 6, 8],
 };
 
-//--- Upper section categories
 export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
-//--- Lower section categories
 export const lowerCategories = ['twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
 export const initialScores = {

@@ -39,15 +39,7 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                     <button onClick={rollDice} disabled={rollCount >= 3}>
                         Roll Dice ({rollCount}/3)
                     </button>
-                    {/* 
-                    {bonusMessage && (
-                        <div
-                            className={`bonus-message alert alert-success text-center my-3 ${bonusFadingOut ? 'fade-out' : 'fade-in'
-                                }`}
-                        >
-                            {bonusMessage}
-                        </div>
-                    )} */}
+
 
                     {isGameOver && (
                         <div className="game-over">

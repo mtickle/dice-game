@@ -11,7 +11,6 @@ export default function UnifiedScoreSection({
     rollCount,
     turnComplete,
     prettyName,
-    totalsNode,
     isUpperSection,
     bonusCategory,
     upperSubtotal,

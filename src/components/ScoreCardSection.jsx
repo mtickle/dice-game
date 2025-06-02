@@ -1,5 +1,5 @@
-import ScoreRow from './ScoreRow';
 import BonusProgressBar from './BonusProgressBar';
+import ScoreRow from './ScoreRow';
 
 export default function ScoreCardSection({
     categories,
@@ -13,9 +13,16 @@ export default function ScoreCardSection({
     bonusCategory = null,
     upperTotal = 0,
 }) {
+
+
+    console.log('Scores is:', scores);
+    console.log('Type:', typeof scores);
+    console.log('Keys:', Object.keys(scores));
+
     return (
         <div className="scorecard-section mb-2">
             {categories.map((key) => (
+
                 <ScoreRow
                     key={key}
                     category={key}

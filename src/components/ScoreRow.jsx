@@ -7,8 +7,15 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
         ${suggested ? 'suggested-glow' : ''}`;
 
     const showSuggested = score === null && suggested !== undefined;
+    // console.log(`Rendering ScoreRow for category: ${category} with score: ${score}, suggested: ${suggested}`);
+
+    if (score === null && typeof suggested === 'number' && Number.isNaN(suggested)) {
+        console.warn(`⚠️ NaN detected in category ${category}`);
+    }
 
     return (
+
+
         <InputGroup className="mb-2">
             <InputGroup.Text
                 className={className}
@@ -26,7 +33,13 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
             <Form.Control
                 className={showSuggested ? 'text-muted' : ''}
                 readOnly
-                value={score ?? (showSuggested ? suggested : '')}
+                value={
+                    score !== null
+                        ? String(score)
+                        : showSuggested && typeof suggested === 'number' && !Number.isNaN(suggested)
+                            ? String(suggested)
+                            : ''
+                }
             />
         </InputGroup>
     );

@@ -1,6 +1,7 @@
 // utils/scoreUtils.js
 
 import { getCounts } from './diceUtils';
+import { lowerCategories, upperCategories } from './utils';
 
 export function calculateScore(category, dice) {
     const counts = getCounts(dice);
@@ -92,5 +93,17 @@ export function calculateGrandTotal(scores) {
     const lower = calculateLowerTotal(scores);
     const bonus = calculateBonus(scores);
     return upper + lower + bonus;
+}
+
+export function getSuggestedScores(currentScores, dice) {
+    const suggestions = {};
+
+    [...upperCategories, ...lowerCategories].forEach(category => {
+        if (currentScores[category] === null) {
+            suggestions[category] = calculateScore(category, dice);
+        }
+    });
+
+    return suggestions;
 }
 

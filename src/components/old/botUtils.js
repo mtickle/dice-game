@@ -28,6 +28,7 @@ export function getSuggestedScores(currentScores, dice) {
     return suggestions;
 }
 
+
 export function chooseBestCategory(dice, scores) {
     let bestCategory = null;
     let bestScore = -1;

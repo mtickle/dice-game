@@ -3,7 +3,6 @@ import './styles/App.css';
 import './styles/Dice.css';
 
 import { useGameLogic } from './hooks/useGameLogic';
-
 import { dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 import Col from 'react-bootstrap/Col';
@@ -15,29 +14,44 @@ import UnifiedScoreSection from './components/UnifiedScoreSection';
 import UnifiedSectionTotals from './components/UnifiedSectionTotals';
 
 function App() {
+
   const {
-    players,
-    currentPlayer,
+    scores,
     dice,
     rollCount,
+    turnComplete,
     bonusCategory,
+    bonusMessage,
+    bonusFadingOut,
     rollDice,
     toggleHold,
     applyScore,
     resetGame,
-    currentPlayerIndex,
-    scores = currentPlayer?.scores || {},
-    turnComplete,
-    suggestedScores,
-    bonusMessage,
-    bonusFadingOut,
     isGameOver,
-    upperSubtotal,
-    bonus,
-    upperTotal,
-    lowerTotal,
-    grandTotal,
+    suggestedScores,
   } = useGameLogic();
+
+
+  // Totals for UI display
+  const safeScore = (val) => (typeof val === 'number' && !isNaN(val) ? val : 0);
+
+  const upperSubtotal = upperCategories.reduce(
+    (sum, key) => sum + safeScore(scores[key]),
+    0
+  );
+
+  const bonus = upperSubtotal >= 63 ? 35 : 0;
+  const upperTotal = upperSubtotal + bonus;
+
+  const lowerTotal = lowerCategories.reduce(
+    (sum, key) => sum + safeScore(scores[key]),
+    0
+  );
+
+  const grandTotal = upperTotal + lowerTotal;
+
+  console.log("Upper category values:", upperCategories.map(key => [key, scores[key]]));
+  console.log("Lower category values:", lowerCategories.map(key => [key, scores[key]]));
 
   return (
     <Container>
@@ -56,7 +70,6 @@ function App() {
             isUpperSection={true}
             isLowerSection={false}
             upperTotal={upperTotal}
-            totalsNode={null}
           />
         </Col>
         <Col>
@@ -72,11 +85,6 @@ function App() {
             bonusCategory={bonusCategory}
             isUpperSection={false}
             isLowerSection={true}
-            upperSubtotal={upperSubtotal}
-            bonus={bonus}
-            upperTotal={upperTotal}
-            lowerTotal={lowerTotal}
-            totalsNode={null}
           />
         </Col>
         <Col>
