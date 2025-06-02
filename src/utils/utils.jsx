@@ -54,20 +54,20 @@ export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'six
 //--- Lower section categories
 export const lowerCategories = ['twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
-// export const initialScores = {
-//     ones: null,
-//     twos: null,
-//     threes: null,
-//     fours: null,
-//     fives: null,
-//     sixes: null,
-//     twoPair: null,
-//     threeKind: null,
-//     fourKind: null,
-//     fullHouse: null,
-//     smallStraight: null,
-//     largeStraight: null,
-//     yahtzee: null,
-//     chance: null,
-// };
+export const initialScores = {
+    ones: null,
+    twos: null,
+    threes: null,
+    fours: null,
+    fives: null,
+    sixes: null,
+    twoPair: null,
+    threeKind: null,
+    fourKind: null,
+    fullHouse: null,
+    smallStraight: null,
+    largeStraight: null,
+    yahtzee: null,
+    chance: null,
+};
 

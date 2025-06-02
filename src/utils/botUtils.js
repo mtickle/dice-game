@@ -2,6 +2,7 @@
 
 import { getCounts } from './diceUtils';
 import { calculateScore } from './scoreUtils';
+import { lowerCategories, upperCategories } from './utils'; // adjust path if needed
 
 // Prioritized categories for targeting
 const priorityCategories = [
@@ -14,6 +15,18 @@ const priorityCategories = [
     'twoPair',
     'chance',
 ];
+
+export function getSuggestedScores(currentScores, dice) {
+    const suggestions = {};
+
+    [...upperCategories, ...lowerCategories].forEach(category => {
+        if (currentScores[category] === null) {
+            suggestions[category] = calculateScore(category, dice);
+        }
+    });
+
+    return suggestions;
+}
 
 export function chooseBestCategory(dice, scores) {
     let bestCategory = null;
