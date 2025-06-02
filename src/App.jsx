@@ -3,8 +3,11 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/App.css';
 import './styles/Dice.css';
-import { dotPositions, initialScores, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
+//--- Utility imports.
+import { initialScores, rollCount, rollDice } from './hooks/useGameLogic';
+import { calculateGrandTotal, calculateLowerTotal, calculateScore, calculateUpperTotal } from './utils/scoreUtils';
+import { dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 //--- Bootstrap imports.
 import Col from 'react-bootstrap/Col';
@@ -18,12 +21,13 @@ import UnifiedSectionTotals from './components/UnifiedSectionTotals';
 
 function App() {
 
+
   //--- Dice state: 5 dice, each with value (1-6 or null) and held status
   const [dice, setDice] = useState(
     Array(5).fill().map(() => ({ value: null, held: false }))
   );
 
-  const [rollCount, setRollCount] = useState(0);
+  //const [rollCount, setRollCount] = useState(0);
   const [scores, setScores] = useState(initialScores);
   const [turnComplete, setTurnComplete] = useState(false);
   const [gameHistory, setGameHistory] = useState([]);
@@ -35,27 +39,24 @@ function App() {
   //--- Check if all categories scored → Game Over
   const isGameOver = Object.values(scores).every(score => score !== null);
 
-  //--- Calculate subtotal of upper categories (treat null as zero)
+
+  //--- EXTRA SCORING TOOLS.
+  //--- These are being passed into the scoring components below.
   const upperSubtotal = upperCategories.reduce(
     (sum, key) => sum + (scores[key] ?? 0),
     0
   );
 
-  // Bonus if subtotal >= 63
   const bonus = upperSubtotal >= 63 ? 35 : 0;
   const upperTotal = upperSubtotal + bonus;
 
-  // Roll dice (max 3 rolls, and only if turn not complete)
-  const rollDice = () => {
-    if (rollCount >= 3 || turnComplete) return;
 
-    setDice(prev =>
-      prev.map(die =>
-        die.held ? die : { ...die, value: Math.floor(Math.random() * 6) + 1 }
-      )
-    );
-    setRollCount(prev => prev + 1);
-  };
+  const lowerTotal = lowerCategories.reduce(
+    (sum, key) => sum + (scores[key] ?? 0),
+    0
+  );
+
+  const grandTotal = upperTotal + lowerTotal;
 
   //--- Toggle hold/unhold die by index
   const toggleHold = (index) => {
@@ -63,61 +64,6 @@ function App() {
     setDice(dice.map((die, i) =>
       i === index ? { ...die, held: !die.held } : die
     ));
-  };
-
-  // Count dice values (array of counts for 1-6)
-  const getCounts = (dice) => {
-    const counts = Array(6).fill(0);
-    dice.forEach(d => {
-      if (d.value !== null) counts[d.value - 1]++;
-    });
-    return counts;
-  };
-
-  // Check if counts have a straight of given length
-  const hasStraight = (counts, length) => {
-    const binary = counts.map(c => (c > 0 ? 1 : 0)).join('');
-    // For length 4 or 5, check known straight patterns in the binary string
-    const straights = {
-      4: ['1111', '01111', '11110'],
-      5: ['11111', '011111', '111110'],
-    }[length];
-    return straights.some(pattern => binary.includes(pattern));
-  };
-
-  //--- Calculate score for lower section categories
-  const calculateScore = (category, dice) => {
-    const values = dice.map(d => d.value).filter(v => v !== null);
-    const counts = getCounts(dice);
-    const total = values.reduce((a, b) => a + b, 0);
-
-    switch (category) {
-
-      case 'twoPair': {
-        const pairs = counts
-          .map((count, i) => (count >= 2 ? i + 1 : 0))
-          .filter(v => v > 0)
-          .sort((a, b) => b - a); // highest first
-        return pairs.length >= 2 ? pairs[0] * 2 + pairs[1] * 2 : 0;
-      }
-
-      case 'threeKind':
-        return counts.some(c => c >= 3) ? total : 0;
-      case 'fourKind':
-        return counts.some(c => c >= 4) ? total : 0;
-      case 'fullHouse':
-        return counts.includes(3) && counts.includes(2) ? 25 : 0;
-      case 'smallStraight':
-        return hasStraight(counts, 4) ? 30 : 0;
-      case 'largeStraight':
-        return hasStraight(counts, 5) ? 40 : 0;
-      case 'yahtzee':
-        return counts.includes(5) ? 50 : 0;
-      case 'chance':
-        return total;
-      default:
-        return 0;
-    }
   };
 
   //--- Apply score for a category when user selects it
@@ -196,27 +142,6 @@ function App() {
 
   //---- CALCULATE TOTALS 
   // Calculate lower total
-  const lowerTotal = lowerCategories.reduce(
-    (sum, key) => sum + (scores[key] ?? 0),
-    0
-  );
-
-  // Grand total
-  const grandTotal = upperTotal + lowerTotal;
-
-  const calculateUpperTotal = (scores) => {
-    const subtotal = upperCategories.reduce((sum, key) => sum + (scores[key] ?? 0), 0);
-    const bonus = subtotal >= 63 ? 35 : 0;
-    return subtotal + bonus;
-  };
-
-  const calculateLowerTotal = (scores) => {
-    return lowerCategories.reduce((sum, key) => sum + (scores[key] ?? 0), 0);
-  };
-
-  const calculateGrandTotal = (scores) => {
-    return calculateUpperTotal(scores) + calculateLowerTotal(scores);
-  };
 
 
   // Calculate suggested scores for UI hints (only for unscored categories)
@@ -288,7 +213,7 @@ function App() {
               bonus={bonus}
               upperTotal={upperTotal}
               lowerTotal={lowerTotal}
-              grandTotal={grandTotal}
+              //grandTotal={grandTotal}
               totalsNode={null}
             />
           </Col>

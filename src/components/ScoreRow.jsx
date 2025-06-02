@@ -3,8 +3,7 @@ import { Form, InputGroup } from 'react-bootstrap';
 
 export default function ScoreRow({ category, label, score, onClick, clickable, bonusBadge, suggested }) {
     const className = `w-50 score-row 
-        ${clickable ? 'clickable' : ''} 
-        
+        ${clickable ? 'clickable' : ''}         
         ${suggested ? 'suggested-glow' : ''}`;
 
     const showSuggested = score === null && suggested !== undefined;

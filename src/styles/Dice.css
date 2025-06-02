@@ -10,6 +10,8 @@
   grid-template-rows: repeat(3, 1fr);
   padding: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .dot {
@@ -20,16 +22,8 @@
   margin: auto;
 }
 
-.dice {
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
 .die.held {
   background-color: #ffffff;
-  /* border-color: rgb(255, 0, 0); */
-  /* box-shadow: 0 0 0 2px #e5ff00; */
-
   box-shadow: rgb(229, 255, 0) 0px 0px 0px 2px;
 }
 
@@ -208,21 +202,6 @@
   margin-bottom: 1rem;
 }
 
-@keyframes flash {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1);
-  }
-}
-
 .bonus-container {
   margin-top: 10px;
   width: 100%;
@@ -337,8 +316,23 @@
 
 .suggested-glow {
   animation: pulseHighlight 1.5s infinite;
-  border: 2px solid #ffd700;
-  box-shadow: 0 0 8px #ffd700aa;
+  border: 2px solid #3ec500;
+  box-shadow: 0 0 8px #3ec500aa;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
 }
 
 @keyframes pulseHighlight {
