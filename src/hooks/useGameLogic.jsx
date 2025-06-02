@@ -1,7 +1,7 @@
 import { useState } from 'react';
 // import { getSuggestedScores } from '../utils/botUtils';
 import { initialScores } from '../utils/constants';
-import { calculateScore, getSuggestedScores } from '../utils/scoreUtils';
+import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
 
 export function useGameLogic() {
 
@@ -12,9 +12,9 @@ export function useGameLogic() {
     const [bonusCategory, setBonusCategory] = useState(null);
     const [bonusMessage, setBonusMessage] = useState('');
     const [bonusFadingOut, setBonusFadingOut] = useState(false);
-
+    const suggestedScores = calculateSuggestedScores(dice);
     const isGameOver = Object.values(scores).every(score => score !== null);
-    const suggestedScores = getSuggestedScores(scores, dice);
+    //const suggestedScores = getSuggestedScores(scores, dice);
 
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;

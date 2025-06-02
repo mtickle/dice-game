@@ -1,109 +1,124 @@
 // utils/scoreUtils.js
 
-import { getCounts } from './diceUtils';
-import { lowerCategories, upperCategories } from './utils';
-
-export function calculateScore(category, dice) {
-    const counts = getCounts(dice);
-    const total = dice.reduce((sum, d) => sum + (d.value || 0), 0);
-
-    //--- Exit if we somehow have no dice or an empty array
-    if (!Array.isArray(dice) || dice.length === 0) return 0;
+export function calculateScore(category, diceObjs) {
+    const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
+    const counts = Array(7).fill(0); // Index 1–6
+    dice.forEach(d => counts[d]++);
+    const total = dice.reduce((a, b) => a + b, 0);
 
     switch (category) {
-
         case 'ones':
         case 'twos':
         case 'threes':
         case 'fours':
         case 'fives':
-        case 'sixes':
-            const face = parseInt(category[0]); // or use a map
-            return counts[face - 1] * face;
-
-        case 'twoPair': {
-            const pairs = counts
-                .map((count, i) => (count >= 2 ? i + 1 : 0))
-                .filter((v) => v > 0)
-                .sort((a, b) => b - a);
-            return pairs.length >= 2 ? pairs[0] * 2 + pairs[1] * 2 : 0;
+        case 'sixes': {
+            const num = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].indexOf(category) + 1;
+            return dice.filter(d => d === num).reduce((a, b) => a + b, 0);
         }
 
         case 'threeKind':
-            return counts.some((c) => c >= 3) ? total : 0;
+            return counts.some(c => c >= 3) ? total : 0;
 
         case 'fourKind':
-            return counts.some((c) => c >= 4) ? total : 0;
+            return counts.some(c => c >= 4) ? total : 0;
+
+        case 'fullHouse':
+            return counts.includes(3) && counts.includes(2) ? 25 : 0;
+
+        case 'smallStraight':
+            return hasSmallStraight(dice) ? 30 : 0;
+
+        case 'largeStraight':
+            return hasLargeStraight(dice) ? 40 : 0;
 
         case 'yahtzee':
-            return counts.some((c) => c === 5) ? 50 : 0;
-
-        case 'fullHouse': {
-            const hasThree = counts.some(c => c === 3);
-            const hasTwo = counts.some(c => c === 2);
-            return hasThree && hasTwo ? 25 : 0;
-        }
-
-        case 'smallStraight': {
-            const joined = counts.map(c => (c > 0 ? '1' : '0')).join('');
-            return /1111/.test(joined) ? 30 : 0;
-        }
-
-        case 'largeStraight': {
-            const joined = counts.map(c => (c > 0 ? '1' : '0')).join('');
-            return /11111/.test(joined) ? 40 : 0;
-        }
+            return counts.includes(5) ? 50 : 0;
 
         case 'chance':
             return total;
+
+        case 'twoPair':
+            return hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
 
         default:
             return 0;
     }
 }
 
-export function calculateUpperTotal(scores) {
-    return ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes']
-        .map((key) => scores[key] || 0)
-        .reduce((a, b) => a + b, 0);
-}
+export function calculateSuggestedScores(diceObjs, currentScores = {}) {
+    const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
+    const counts = Array(7).fill(0);
+    dice.forEach(die => counts[die]++);
 
-export function calculateLowerTotal(scores) {
-    return [
-        'twoPair',
-        'threeKind',
-        'fourKind',
-        'fullHouse',
-        'smallStraight',
-        'largeStraight',
-        'yahtzee',
-        'chance',
-    ]
-        .map((key) => scores[key] || 0)
-        .reduce((a, b) => a + b, 0);
-}
+    const total = dice.reduce((a, b) => a + b, 0);
+    const score = {};
 
-export function calculateBonus(scores) {
-    const upper = calculateUpperTotal(scores);
-    return upper >= 63 ? 35 : 0;
-}
-
-export function calculateGrandTotal(scores) {
-    const upper = calculateUpperTotal(scores);
-    const lower = calculateLowerTotal(scores);
-    const bonus = calculateBonus(scores);
-    return upper + lower + bonus;
-}
-
-export function getSuggestedScores(currentScores, dice) {
-    const suggestions = {};
-
-    [...upperCategories, ...lowerCategories].forEach(category => {
-        if (currentScores[category] === null) {
-            suggestions[category] = calculateScore(category, dice);
+    for (let i = 1; i <= 6; i++) {
+        const cat = getCategoryName(i);
+        if (currentScores[cat] === null) {
+            score[cat] = dice.filter(d => d === i).reduce((a, b) => a + b, 0);
         }
-    });
+    }
 
-    return suggestions;
+    if (currentScores.threeKind === null)
+        score.threeKind = counts.some(c => c >= 3) ? total : 0;
+
+    if (currentScores.fourKind === null)
+        score.fourKind = counts.some(c => c >= 4) ? total : 0;
+
+    if (currentScores.fullHouse === null)
+        score.fullHouse = counts.includes(3) && counts.includes(2) ? 25 : 0;
+
+    if (currentScores.smallStraight === null)
+        score.smallStraight = hasSmallStraight(dice) ? 30 : 0;
+
+    if (currentScores.largeStraight === null)
+        score.largeStraight = hasLargeStraight(dice) ? 40 : 0;
+
+    if (currentScores.yahtzee === null)
+        score.yahtzee = counts.includes(5) ? 50 : 0;
+
+    if (currentScores.chance === null)
+        score.chance = total;
+
+    if (currentScores.twoPair === null)
+        score.twoPair = hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
+
+    return score;
 }
 
+function getCategoryName(i) {
+    return ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'][i - 1];
+}
+
+function hasSmallStraight(dice) {
+    const unique = [...new Set(dice)].sort();
+    const straights = [
+        [1, 2, 3, 4],
+        [2, 3, 4, 5],
+        [3, 4, 5, 6]
+    ];
+    return straights.some(s => s.every(n => unique.includes(n)));
+}
+
+function hasLargeStraight(dice) {
+    const sorted = [...new Set(dice)].sort();
+    return JSON.stringify(sorted) === JSON.stringify([1, 2, 3, 4, 5]) ||
+        JSON.stringify(sorted) === JSON.stringify([2, 3, 4, 5, 6]);
+}
+
+function hasTwoPair(counts) {
+    return counts.filter(c => c >= 2).length >= 2;
+}
+
+function getTwoPairScore(counts) {
+    let pairs = [];
+    for (let i = 1; i <= 6; i++) {
+        if (counts[i] >= 2) {
+            pairs.push(i);
+            if (pairs.length === 2) break;
+        }
+    }
+    return pairs.reduce((acc, val) => acc + val * 2, 0);
+}

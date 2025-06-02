@@ -50,9 +50,6 @@ function App() {
 
   const grandTotal = upperTotal + lowerTotal;
 
-  console.log("Upper category values:", upperCategories.map(key => [key, scores[key]]));
-  console.log("Lower category values:", lowerCategories.map(key => [key, scores[key]]));
-
   return (
     <Container>
       <Row>

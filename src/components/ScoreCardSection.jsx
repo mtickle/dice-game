@@ -14,11 +14,6 @@ export default function ScoreCardSection({
     upperTotal = 0,
 }) {
 
-
-    console.log('Scores is:', scores);
-    console.log('Type:', typeof scores);
-    console.log('Keys:', Object.keys(scores));
-
     return (
         <div className="scorecard-section mb-2">
             {categories.map((key) => (
