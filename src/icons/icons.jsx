@@ -142,12 +142,18 @@ export function TwoPairIcon({ size = 24, color = 'black', className = '' }) {
             strokeLinejoin="round"
         >
             <rect width="24" height="24" fill="white" stroke={color} strokeWidth="1.5" rx="4" ry="4" />
-            {/* Left pair */}
-            <circle cx="7" cy="8" r="1.5" fill={color} />
-            <circle cx="7" cy="16" r="1.5" fill={color} />
-            {/* Right pair */}
-            <circle cx="17" cy="8" r="1.5" fill={color} />
-            <circle cx="17" cy="16" r="1.5" fill={color} />
+            <text
+                x="12"
+                y="18"
+                textAnchor="middle"
+                fontSize="16"
+                fill={color}
+                fontWeight="normal"
+                fontFamily="Arial, sans-serif"
+                pointerEvents="none"
+            >
+                2x
+            </text>
         </svg>
     );
 }
@@ -254,10 +260,25 @@ export function SmallStraightIcon({ size = 24, color = 'black', className = '' }
             strokeLinejoin="round"
         >
             <rect width="24" height="24" fill="white" stroke={color} strokeWidth="1.5" rx="4" ry="4" />
-            <circle cx="6" cy="12" r="1.5" fill={color} />
-            <circle cx="12" cy="12" r="1.5" fill={color} />
-            <circle cx="18" cy="12" r="1.5" fill={color} />
-            <circle cx="24" cy="12" r="1.5" fill={color} />
+            <g stroke={color} strokeWidth="0.6" fill="none" transform="translate(4, 4)">
+                <rect x="0" y="0" width="4" height="6" rx="0.5" transform="rotate(-15 0 0)" />
+                <rect x="1" y="0" width="4" height="6" rx="0.5" transform="rotate(-5 1 0)" />
+                <rect x="2" y="0" width="4" height="6" rx="0.5" transform="rotate(5 2 0)" />
+                <rect x="3" y="0" width="4" height="6" rx="0.5" transform="rotate(15 3 0)" />
+            </g>
+
+            {/* Text "SMALL" */}
+            <text
+                x="12"
+                y="18"
+                fontSize="6"
+                fill={color}
+                textAnchor="middle"
+                fontFamily="Arial, sans-serif"
+                pointerEvents="none"
+            >
+                SMALL
+            </text>
         </svg>
     );
 }
