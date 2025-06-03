@@ -1,5 +1,6 @@
 // components/ScoreRow.jsx
 import { Form, InputGroup } from 'react-bootstrap';
+import { iconLibrary } from '../icons/icons';
 
 export default function ScoreRow({ category, label, score, onClick, clickable, bonusBadge, suggested }) {
     const className = `w-50 score-row 
@@ -7,13 +8,8 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
         ${suggested ? 'suggested-glow' : ''}`;
 
     const showSuggested = score === null && suggested !== undefined;
-
-    //console.log(`ScoreRow props: category=${category}, label=${label}, score=${score}, suggested=${suggested}, clickable=${clickable}, bonusBadge=${bonusBadge}`);
-    //console.log(`Rendering ScoreRow for category: ${category} with score: ${score}, suggested: ${suggested}`);
-
-    if (score === null && typeof suggested === 'number' && Number.isNaN(suggested)) {
-        console.warn(`⚠️ NaN detected in category ${category}`);
-    }
+    const iconSize = 32; // Default icon size, can be adjusted as needed
+    const Icon = iconLibrary[category];
 
     return (
 
@@ -29,7 +25,8 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
                     color: score !== null ? '#ccc' : undefined,
                 }}
             >
-                {label}:
+                {Icon && <Icon size={iconSize} className="text-current" />}
+                {/* {label}: */}
                 {bonusBadge && <span className="bonus-badge ms-2">+10</span>}
             </InputGroup.Text>
             <Form.Control
