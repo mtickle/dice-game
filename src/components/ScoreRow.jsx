@@ -25,8 +25,7 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
                     color: score !== null ? '#ccc' : undefined,
                 }}
             >
-                {Icon && <Icon size={iconSize} className="text-current" />}
-                {/* {label}: */}
+                {Icon && <Icon size={iconSize} className="text-current" />} &nbsp; {label}:
                 {bonusBadge && <span className="bonus-badge ms-2">+10</span>}
             </InputGroup.Text>
             <Form.Control
