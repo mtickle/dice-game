@@ -7,7 +7,9 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
         ${suggested ? 'suggested-glow' : ''}`;
 
     const showSuggested = score === null && suggested !== undefined;
-    // console.log(`Rendering ScoreRow for category: ${category} with score: ${score}, suggested: ${suggested}`);
+
+    //console.log(`ScoreRow props: category=${category}, label=${label}, score=${score}, suggested=${suggested}, clickable=${clickable}, bonusBadge=${bonusBadge}`);
+    //console.log(`Rendering ScoreRow for category: ${category} with score: ${score}, suggested: ${suggested}`);
 
     if (score === null && typeof suggested === 'number' && Number.isNaN(suggested)) {
         console.warn(`⚠️ NaN detected in category ${category}`);

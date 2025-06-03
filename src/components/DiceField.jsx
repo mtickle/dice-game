@@ -9,7 +9,7 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
     return (
 
         <div>
-            <Card>
+            <Card className='mb-4'>
                 <Card.Header>Play Field</Card.Header>
                 <Card.Body bg="Secondary">
                     <div className="dice-field">

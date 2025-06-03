@@ -4,7 +4,7 @@ import ScoreRow from './ScoreRow';
 export default function ScoreCardSection({
     categories,
     scores,
-    suggestedScores = {},
+    suggestedScores,
     applyScore,
     rollCount,
     turnComplete,

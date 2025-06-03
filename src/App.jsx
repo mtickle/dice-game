@@ -48,6 +48,8 @@ function App() {
     0
   );
 
+  //const suggestedScores = calculateSuggestedScores(dice, currentPlayerScores);
+
   const grandTotal = upperTotal + lowerTotal;
 
   return (

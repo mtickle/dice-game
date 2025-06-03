@@ -48,45 +48,63 @@ export function calculateScore(category, diceObjs) {
 
 export function calculateSuggestedScores(diceObjs, currentScores = {}) {
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
-    const counts = Array(7).fill(0);
+    const counts = Array(7).fill(0); // 0-6, index 1–6 used
     dice.forEach(die => counts[die]++);
 
     const total = dice.reduce((a, b) => a + b, 0);
     const score = {};
 
+
     for (let i = 1; i <= 6; i++) {
         const cat = getCategoryName(i);
         if (currentScores[cat] === null) {
-            score[cat] = dice.filter(d => d === i).reduce((a, b) => a + b, 0);
+            const val = dice.filter(d => d === i).reduce((a, b) => a + b, 0);
+            if (val > 0) score[cat] = val;
         }
     }
 
-    if (currentScores.threeKind === null)
-        score.threeKind = counts.some(c => c >= 3) ? total : 0;
+    if (currentScores.threeKind === null) {
+        const val = counts.some(c => c >= 3) ? total : 0;
+        if (val > 0) score.threeKind = val;
+    }
 
-    if (currentScores.fourKind === null)
-        score.fourKind = counts.some(c => c >= 4) ? total : 0;
+    if (currentScores.fourKind === null) {
+        const val = counts.some(c => c >= 4) ? total : 0;
+        if (val > 0) score.fourKind = val;
+    }
 
-    if (currentScores.fullHouse === null)
-        score.fullHouse = counts.includes(3) && counts.includes(2) ? 25 : 0;
+    if (currentScores.fullHouse === null) {
+        const val = (counts.includes(3) && counts.includes(2)) ? 25 : 0;
+        if (val > 0) score.fullHouse = val;
+    }
 
-    if (currentScores.smallStraight === null)
-        score.smallStraight = hasSmallStraight(dice) ? 30 : 0;
+    if (currentScores.smallStraight === null) {
+        const val = hasSmallStraight(dice) ? 30 : 0;
+        if (val > 0) score.smallStraight = val;
+    }
 
-    if (currentScores.largeStraight === null)
-        score.largeStraight = hasLargeStraight(dice) ? 40 : 0;
+    if (currentScores.largeStraight === null) {
+        const val = hasLargeStraight(dice) ? 40 : 0;
+        if (val > 0) score.largeStraight = val;
+    }
 
-    if (currentScores.yahtzee === null)
-        score.yahtzee = counts.includes(5) ? 50 : 0;
+    if (currentScores.yahtzee === null) {
+        const val = counts.includes(5) ? 50 : 0;
+        if (val > 0) score.yahtzee = val;
+    }
 
-    if (currentScores.chance === null)
-        score.chance = total;
+    if (currentScores.chance === null) {
+        if (total > 0) score.chance = total;
+    }
 
-    if (currentScores.twoPair === null)
-        score.twoPair = hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
+    if (currentScores.twoPair === null) {
+        const val = hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
+        if (val > 0) score.twoPair = val;
+    }
 
     return score;
 }
+
 
 function getCategoryName(i) {
     return ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'][i - 1];

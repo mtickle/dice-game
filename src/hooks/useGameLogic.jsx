@@ -1,7 +1,6 @@
 import { useState } from 'react';
-// import { getSuggestedScores } from '../utils/botUtils';
-import { initialScores } from '../utils/constants';
 import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
+import { initialScores } from '../utils/utils';
 
 export function useGameLogic() {
 
@@ -12,9 +11,8 @@ export function useGameLogic() {
     const [bonusCategory, setBonusCategory] = useState(null);
     const [bonusMessage, setBonusMessage] = useState('');
     const [bonusFadingOut, setBonusFadingOut] = useState(false);
-    const suggestedScores = calculateSuggestedScores(dice);
+    const suggestedScores = calculateSuggestedScores(dice, scores);
     const isGameOver = Object.values(scores).every(score => score !== null);
-    //const suggestedScores = getSuggestedScores(scores, dice);
 
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
@@ -36,6 +34,7 @@ export function useGameLogic() {
         setTurnComplete(true);
 
         if (rollCount === 1 && score >= 10) {
+            console.log(`First roll bonus for ${category}: +10 points so now you have ${score + 10} points!`);
             setBonusCategory(category);
             setBonusMessage(`🎉 Bonus! +10 points for first-roll ${category}!`);
 
@@ -45,7 +44,7 @@ export function useGameLogic() {
                     setBonusCategory(null);
                     setBonusMessage('');
                     setBonusFadingOut(false);
-                }, 500);
+                }, 3000);
             }, 3000);
         }
 

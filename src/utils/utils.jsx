@@ -20,6 +20,26 @@ export const prettyName = (category) => {
     return names[category] || category;
 };
 
+export const prettyNameWords = (category) => {
+    const names = {
+        ones: 'Aces',
+        twos: 'Twos',
+        threes: 'Threes',
+        fours: 'Fours',
+        fives: 'Fives',
+        sixes: 'Sixes',
+        twoPair: 'Two Pair',
+        threeKind: '3 of a Kind',
+        fourKind: '4 of a Kind',
+        fullHouse: 'Full House',
+        smallStraight: 'Sm. Straight',
+        largeStraight: 'Lg. Straight',
+        yahtzee: 'Yahtzee',
+        chance: 'Chance',
+    };
+    return names[category] || category;
+};
+
 export const iconMap = {
     ones: '1️⃣',
     twos: '2️⃣',
