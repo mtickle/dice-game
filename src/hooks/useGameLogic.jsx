@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { createGameLogEntry } from '../utils/gameLogUtils';
 import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
+import { getStrategyAdvice } from '../utils/strategyUtils';
+//import { getAdviceForRoll } from '../utils/strategyUtils';
 import { initialScores } from '../utils/utils';
 
 export function useGameLogic() {
-
     const [scores, setScores] = useState({ ...initialScores });
     const [dice, setDice] = useState(Array(5).fill().map(() => ({ value: null, held: false })));
     const [rollCount, setRollCount] = useState(0);
@@ -12,72 +13,74 @@ export function useGameLogic() {
     const [bonusCategory, setBonusCategory] = useState(null);
     const [bonusMessage, setBonusMessage] = useState('');
     const [bonusFadingOut, setBonusFadingOut] = useState(false);
-    const suggestedScores = calculateSuggestedScores(dice, scores);
+    const [turn, setTurn] = useState(1);
+    const [adviceText, setAdviceText] = useState('');
+    const [gameLog, setGameLog] = useState([]);
+
     const isGameOver = Object.values(scores).every(score => score !== null);
-    const gameLog = []; // Placeholder for game log entries
+    const suggestedScores = calculateSuggestedScores(dice, scores);
 
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
-        setDice(dice.map(d => d.held ? d : { ...d, value: Math.floor(Math.random() * 6) + 1 }));
-        setRollCount(c => c + 1);
+
+        const newDice = dice.map(d => d.held ? d : { ...d, value: Math.floor(Math.random() * 6) + 1 });
+        setDice(newDice);
+        setRollCount(prev => prev + 1);
+
+        const advice = getStrategyAdvice(newDice, scores);
+        setAdviceText(advice);
     };
 
-    const toggleHold = (i) => {
+    const toggleHold = (index) => {
         if (rollCount === 0 || turnComplete) return;
-        setDice(dice.map((d, idx) => idx === i ? { ...d, held: !d.held } : d));
+        setDice(dice.map((d, i) => i === index ? { ...d, held: !d.held } : d));
     };
 
     const applyScore = (category) => {
         if (turnComplete || scores[category] !== null || rollCount === 0) return;
 
-        //--- Calculate the score for the selected category
-        const score = calculateScore(category, dice);
-        const newScores = { ...scores, [category]: score };
-        setScores(newScores);
-        setTurnComplete(true);
-        console.log(score);
+        let score = calculateScore(category, dice);
+        const isFirstRollBonus = rollCount === 1 && score >= 10;
 
-        //--- This is for the first roll bonus. We'll add ten points if the first roll is a valid score.
-        if (rollCount === 1 && score >= 10) {
-            console.log(`First roll bonus for ${category}: +10 points so now you have ${score + 10} points!`);
-
+        if (isFirstRollBonus) {
+            score += 10;
             setBonusCategory(category);
-
-            //setBonusMessage(`🎉 Bonus! +10 points for first-roll ${category}!`);
-
-            setScores(prevScores => ({
-                ...prevScores,
-                [category]: score + 10
-            }));
+            setBonusMessage(`🎉 Bonus! +10 points for first-roll ${category}!`);
+            setBonusFadingOut(false);
             setTimeout(() => {
                 setBonusFadingOut(true);
                 setTimeout(() => {
                     setBonusCategory(null);
-                    //setBonusMessage('');
-                    //setBonusFadingOut(false);
+                    setBonusMessage('');
+                    setBonusFadingOut(false);
                 }, 3000);
             }, 3000);
         }
 
-        gameLog.push(createGameLogEntry({
+        const updatedScores = { ...scores, [category]: score };
+        setScores(updatedScores);
+        setTurnComplete(true);
+
+        const logEntry = createGameLogEntry({
             type: 'score',
             player: 'player',
             dice,
             category,
             score,
-            //advice: currentAdvice,
-            bonus: bonusCategory === category ? 10 : null,
-            //turn: currentTurn,
-        }));
+            advice: adviceText,
+            bonus: isFirstRollBonus ? 10 : null,
+            turn
+        });
 
-        //--- Reset the dice and roll count for the next turn.
+        setGameLog(prev => [...prev, logEntry]);
+
         setTimeout(() => {
             setDice(Array(5).fill().map(() => ({ value: null, held: false })));
             setRollCount(0);
             setTurnComplete(false);
             setBonusCategory(null);
-            //setBonusMessage('');
-            //setBonusFadingOut(false);
+            setAdviceText('');
+            setTurn(prev => prev + 1);
         }, 100);
     };
 
@@ -87,12 +90,15 @@ export function useGameLogic() {
         setRollCount(0);
         setTurnComplete(false);
         setBonusCategory(null);
-        //setBonusMessage('');
-        //setBonusFadingOut(false);
+        setBonusMessage('');
+        setBonusFadingOut(false);
+        setAdviceText('');
+        setGameLog([]);
+        setTurn(1);
     };
 
     return {
-        players: [], // Placeholder for player data
+        players: [], // future expansion
         initialScores,
         scores,
         dice,
@@ -107,6 +113,9 @@ export function useGameLogic() {
         resetGame,
         isGameOver,
         suggestedScores,
+        adviceText,
+        turn,
+        gameLog,
     };
 }
 

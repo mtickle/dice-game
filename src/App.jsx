@@ -11,6 +11,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 
 import DiceField from './components/DiceField';
+import GameLogPanel from './components/GameLogPanel';
 import StrategyPanel from './components/StrategyPanel';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 import UnifiedSectionTotals from './components/UnifiedSectionTotals';
@@ -30,6 +31,7 @@ function App() {
     resetGame,
     isGameOver,
     suggestedScores,
+    gameLog
   } = useGameLogic();
 
 
@@ -103,7 +105,7 @@ function App() {
             strategy={strategy}
             rollCount={rollCount}
           />
-
+          <GameLogPanel gameLog={gameLog} />
           <UnifiedSectionTotals
             upperSubtotal={upperSubtotal}
             bonus={bonus}
