@@ -27,6 +27,7 @@ export default function ScoreCardSection({
                     clickable={scores[key] === null && rollCount > 0 && !turnComplete}
                     bonusBadge={bonusCategory === key}
                     suggested={suggestedScores?.[key]}
+                    isUpperSection={isUpperSection}
                 />
             ))}
 

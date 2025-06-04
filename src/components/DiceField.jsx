@@ -2,8 +2,6 @@
 import Card from 'react-bootstrap/Card';
 import '../styles/Dice.css';
 
-//const [bonusFadingOut, setBonusFadingOut] = useState(false);
-
 export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame }) {
 
     return (

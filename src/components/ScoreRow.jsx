@@ -2,7 +2,7 @@
 import { Form, InputGroup } from 'react-bootstrap';
 import { iconLibrary } from '../icons/icons';
 
-export default function ScoreRow({ category, label, score, onClick, clickable, bonusBadge, suggested }) {
+export default function ScoreRow({ category, label, score, onClick, clickable, bonusBadge, suggested, isUpperSection }) {
     const className = `w-50 score-row 
         ${clickable ? 'clickable' : ''}         
         ${suggested ? 'suggested-glow' : ''}`;
@@ -25,7 +25,12 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
                     color: score !== null ? '#ccc' : undefined,
                 }}
             >
-                {Icon && <Icon size={iconSize} className="text-current" />} &nbsp; {label}:
+
+                {isUpperSection && (
+                    Icon && <Icon size={iconSize} className="text-current me-2" />
+                )}
+
+                {label}:
                 {bonusBadge && <span className="bonus-badge ms-2">+10</span>}
             </InputGroup.Text>
             <Form.Control

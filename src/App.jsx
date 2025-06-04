@@ -3,6 +3,7 @@ import './styles/App.css';
 import './styles/Dice.css';
 
 import { useGameLogic } from './hooks/useGameLogic';
+import { getStrategyAdvice } from './utils/strategyUtils';
 import { dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 import Col from 'react-bootstrap/Col';
@@ -10,9 +11,9 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 
 import DiceField from './components/DiceField';
+import StrategyPanel from './components/StrategyPanel';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 import UnifiedSectionTotals from './components/UnifiedSectionTotals';
-
 function App() {
 
   const {
@@ -42,15 +43,12 @@ function App() {
 
   const bonus = upperSubtotal >= 63 ? 35 : 0;
   const upperTotal = upperSubtotal + bonus;
-
   const lowerTotal = lowerCategories.reduce(
     (sum, key) => sum + safeScore(scores[key]),
     0
   );
-
-  //const suggestedScores = calculateSuggestedScores(dice, currentPlayerScores);
-
   const grandTotal = upperTotal + lowerTotal;
+  const strategy = getStrategyAdvice(dice, scores);
 
   return (
     <Container>
@@ -101,6 +99,11 @@ function App() {
             bonusMessage={bonusMessage}
             bonusFadingOut={bonusFadingOut}
           />
+          <StrategyPanel
+            strategy={strategy}
+            rollCount={rollCount}
+          />
+
           <UnifiedSectionTotals
             upperSubtotal={upperSubtotal}
             bonus={bonus}

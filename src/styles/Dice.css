@@ -158,7 +158,6 @@
 
 .bonus-message {
   font-size: 1.2rem;
-
   animation: fadeInSlide 0.3s ease-out;
   box-shadow: 0 0 10px rgba(0, 255, 100, 0.3);
 }
@@ -316,8 +315,8 @@
 
 .suggested-glow {
   animation: pulseHighlight 1.5s infinite;
-  border: 2px solid #3ec500;
-  box-shadow: 0 0 8px #3ec500aa;
+  border: 2px solid #ff0000;
+  box-shadow: 0 0 8px #a7554aaa;
 }
 
 @keyframes flash {
@@ -340,7 +339,7 @@
     box-shadow: 0 0 4px #ffd70066;
   }
   50% {
-    box-shadow: 0 0 12px #ffd700cc;
+    box-shadow: 0 0 12px #ff562ccc;
   }
   100% {
     box-shadow: 0 0 4px #ffd70066;
@@ -372,4 +371,10 @@
     transform: scale(1.1);
     opacity: 1;
   }
+}
+
+.strategy-panel {
+  position: sticky;
+  top: 10px;
+  z-index: 10;
 }
