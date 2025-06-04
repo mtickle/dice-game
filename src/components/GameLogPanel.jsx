@@ -19,16 +19,16 @@ export default function GameLogPanel({ gameLog }) {
                     <Accordion.Body>
                         {entry.advice && typeof entry.advice === 'object' ? (
                             <div>
-                                <strong>Advice at time:</strong><br />
+
                                 <ul className="mb-1">
-                                    {entry.advice.summary && <li><em>{entry.advice.summary}</em></li>}
-                                    {entry.advice.advice && <li>{entry.advice.advice}</li>}
-                                    {entry.advice.odds !== undefined && <li>Odds: {(entry.advice.odds * 100).toFixed(1)}%</li>}
-                                    {entry.advice.target && <li>Target: {entry.advice.target}</li>}
+                                    {entry.advice.summary && <li>Advice: <em>{entry.advice.summary}</em></li>}
+                                    {/* {entry.advice.advice && <li>{entry.advice.advice}</li>} */}
+                                    {/* {entry.advice.odds !== undefined && <li>Odds: {(entry.advice.odds * 100).toFixed(1)}%</li>} */}
+                                    {entry.advice.target && <li>Played: {entry.advice.target} for {entry.score}</li>}
                                 </ul>
                             </div>
-                        ) : entry.advice ? (
-                            <div><strong>Advice at time:</strong> {entry.advice}</div>
+                            // ) : entry.advice ? (
+                            //     <div><strong>Advice at time:</strong> {entry.advice}</div>
                         ) : null}
 
                         <strong>Dice:</strong> {entry.dice.map(d => d.value).join(', ')} <br />
