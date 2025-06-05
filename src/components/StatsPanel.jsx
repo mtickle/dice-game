@@ -3,7 +3,6 @@ import Card from 'react-bootstrap/Card';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import Form from 'react-bootstrap/Form';
 import { computeStats } from '../utils/statsUtils';
-import { prettyName } from '../utils/utils';
 
 export default function StatsPanel({ gameLog, resetGameLog, resetGame }) {
     const stats = computeStats(gameLog);
@@ -42,14 +41,14 @@ export default function StatsPanel({ gameLog, resetGameLog, resetGame }) {
                 </InputGroup>
 
 
-                <h6 className="mt-3">Average Score by Category</h6>
+                {/* <h6 className="mt-3">Average Score by Category</h6>
                 <ul className="mb-0">
                     {Object.entries(stats.averageScoreByCategory).map(([category, avg]) => (
                         <li key={category}>
                             {prettyName(category)}: {avg}
                         </li>
                     ))}
-                </ul>
+                </ul> */}
                 <Button variant="danger" size="sm" onClick={resetGameLog}>
                     Clear Stats
                 </Button>

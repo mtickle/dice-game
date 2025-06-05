@@ -30,9 +30,10 @@ export default function GameLogPanel({ gameLog }) {
                                 {entry.advice && typeof entry.advice === 'object' ? (
                                     <div class="text-start">
                                         <div>Suggested: <em>{entry.advice.summary}</em></div>
-                                        <div>Scored: {prettyName(entry.advice.target)} for {entry.score}</div>
+                                        <div>Actual: {prettyName(entry.category)} for {entry.score}</div>
                                         <div>Dice: {entry.dice.map(d => d.value).join(', ')}</div>
-                                        <div>Bonus: +{entry.bonus} points</div>
+                                        {entry.bonus ? <div>Bonus: +{entry.bonus} points</div> : null}
+                                        {/* <div>Bonus: +{entry.bonus} points</div> */}
                                     </div>
                                 ) : null}
 
