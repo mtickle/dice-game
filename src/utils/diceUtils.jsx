@@ -1,4 +1,3 @@
-// utils/diceUtils.js
 
 export function generateNewDice() {
     return Array.from({ length: 5 }, () => ({

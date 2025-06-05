@@ -12,8 +12,6 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
     const Icon = iconLibrary[category];
 
     return (
-
-
         <InputGroup className="mb-2">
             <InputGroup.Text
                 className={className}

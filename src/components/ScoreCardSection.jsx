@@ -11,7 +11,10 @@ export default function ScoreCardSection({
     prettyName,
     isUpperSection,
     bonusCategory = null,
+    upperSubtotal = 0,
+    bonus = 0,
     upperTotal = 0,
+    totalsNode = null
 }) {
 
     return (
@@ -34,6 +37,12 @@ export default function ScoreCardSection({
             {isUpperSection && (
                 <div className="text-sm mt-2 space-y-2">
                     <BonusProgressBar upperTotal={upperTotal} />
+                </div>
+            )}
+
+            {totalsNode && (
+                <div className="mt-2">
+                    {totalsNode}
                 </div>
             )}
 

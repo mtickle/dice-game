@@ -25,9 +25,10 @@ export function getStrategyAdvice(dice, scores) {
         .map(([k]) => k);
 
     const hasTriple = counts.includes(3);
-    const hasPair = counts.includes(2);
+    // const hasPair = counts.includes(2);
     const hasQuad = counts.includes(4);
     const hasFive = counts.includes(5);
+    const hasPair = counts.filter(c => c === 2).length >= 1;
 
     if (hasFive && scores.yahtzee === null) {
         advice.push("🎯 Yahtzee! Score it now.");
@@ -52,6 +53,11 @@ export function getStrategyAdvice(dice, scores) {
         advice.push(`👌 Three of a kind! ${total} points.`);
         target = "threeKind";
         odds = rollOdds.threeKind;
+    } else if (hasPair && scores.onePair === null) {
+        const bestPairValue = counts.lastIndexOf(2);
+        advice.push(`👥 One Pair of ${bestPairValue + 1}s for ${(bestPairValue + 1) * 2} points.`);
+        target ||= 'onePair';
+        odds = rollOdds.onePair;
     } else if (scores.chance === null) {
         advice.push(`🎲 Consider scoring Chance for ${total} points.`);
         target = "chance";

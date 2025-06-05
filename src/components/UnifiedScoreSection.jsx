@@ -1,6 +1,7 @@
 
 import Card from 'react-bootstrap/Card';
 import ScoreCardSection from './ScoreCardSection';
+import UnifiedSectionTotals from './UnifiedSectionTotals';
 
 export default function UnifiedScoreSection({
     title,
@@ -16,6 +17,7 @@ export default function UnifiedScoreSection({
     upperSubtotal,
     bonus,
     upperTotal,
+    totalsNode,
     lowerTotal,
     grandTotal
 }) {
@@ -33,8 +35,19 @@ export default function UnifiedScoreSection({
                     prettyName={prettyName}
                     bonusCategory={bonusCategory}
                     isUpperSection={isUpperSection}
+                    upperSubtotal={upperSubtotal}
                     bonus={bonus}
                     upperTotal={upperTotal}
+                    totalsNode={
+                        <UnifiedSectionTotals
+                            upperSubtotal={upperSubtotal}
+                            bonus={bonus}
+                            upperTotal={upperTotal}
+                            lowerTotal={lowerTotal}
+                            grandTotal={grandTotal}
+                        />
+                    }
+
                 />
             </Card.Body>
         </Card>

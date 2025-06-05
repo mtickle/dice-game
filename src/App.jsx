@@ -12,10 +12,10 @@ import Row from 'react-bootstrap/Row';
 
 import DiceField from './components/DiceField';
 import GameLogPanel from './components/GameLogPanel';
+import HelperPanel from './components/HelperPanel';
 import StatsPanel from './components/StatsPanel';
 import StrategyPanel from './components/StrategyPanel';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
-import UnifiedSectionTotals from './components/UnifiedSectionTotals';
 
 function App() {
 
@@ -71,7 +71,9 @@ function App() {
             bonusCategory={bonusCategory}
             isUpperSection={true}
             isLowerSection={false}
+            upperSubtotal={upperSubtotal}
             upperTotal={upperTotal}
+            bonus={bonus}
           />
         </Col>
         <Col>
@@ -87,6 +89,8 @@ function App() {
             bonusCategory={bonusCategory}
             isUpperSection={false}
             isLowerSection={true}
+            lowerTotal={lowerTotal}
+            grandTotal={grandTotal}
           />
         </Col>
         <Col>
@@ -108,22 +112,17 @@ function App() {
             strategy={strategy}
             rollCount={rollCount}
           />
+          <HelperPanel
+            resetGameLog={resetGameLog}
+            resetGame={resetGame} />
 
-          <UnifiedSectionTotals
-            upperSubtotal={upperSubtotal}
-            bonus={bonus}
-            upperTotal={upperTotal}
-            lowerTotal={lowerTotal}
-            grandTotal={grandTotal}
-          />
+
         </Col>
       </Row>
       <Row className="mt-4">
         <Col>
           <StatsPanel
             gameLog={gameLog}
-            resetGameLog={resetGameLog}
-            resetGame={resetGame}
           />
         </Col>
         <Col>

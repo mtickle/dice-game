@@ -8,6 +8,7 @@ export const prettyName = (category) => {
         fours: 'Fours',
         fives: 'Fives',
         sixes: 'Sixes',
+        onePair: 'One Pair',
         twoPair: 'Two Pair',
         threeKind: '3 of a Kind',
         fourKind: '4 of a Kind',
@@ -69,7 +70,7 @@ export const dotPositions = {
 
 export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
 
-export const lowerCategories = ['twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
+export const lowerCategories = ['onePair', 'twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
 export const initialScores = {
     ones: null,
@@ -78,6 +79,7 @@ export const initialScores = {
     fours: null,
     fives: null,
     sixes: null,
+    onePair: null,
     twoPair: null,
     threeKind: null,
     fourKind: null,

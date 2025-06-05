@@ -30,11 +30,17 @@ export function useGameLogic() {
     const [bonusFadingOut, setBonusFadingOut] = useState(false);
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
-    //const [gameLog, setGameLog] = useState([]);
     const [gameLog, setGameLog] = useState(loadGameLog());
 
     const isGameOver = Object.values(scores).every(score => score !== null);
     const suggestedScores = calculateSuggestedScores(dice, scores);
+
+    const qualifyingFirstRollBonusCategories = [
+        'fullHouse',
+        'smallStraight',
+        'largeStraight',
+        'fourKind',
+    ];
 
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
@@ -56,7 +62,7 @@ export function useGameLogic() {
         if (turnComplete || scores[category] !== null || rollCount === 0) return;
 
         let score = calculateScore(category, dice);
-        const isFirstRollBonus = rollCount === 1 && score >= 10;
+        const isFirstRollBonus = rollCount === 1 && qualifyingFirstRollBonusCategories.includes(category);
 
         if (isFirstRollBonus) {
             score += 10;
@@ -142,6 +148,9 @@ export function useGameLogic() {
         turn,
         gameLog,
     };
+
+
+
 }
 
 export default useGameLogic;

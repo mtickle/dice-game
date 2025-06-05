@@ -41,6 +41,15 @@ export function calculateScore(category, diceObjs) {
         case 'twoPair':
             return hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
 
+        case 'onePair': {
+            for (let i = 5; i >= 1; i--) {
+                if (counts[i] >= 2) {
+                    return i * 2; // Only one pair — the highest
+                }
+            }
+            return 0;
+        }
+
         default:
             return 0;
     }
@@ -101,6 +110,8 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
         const val = hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
         if (val > 0) score.twoPair = val;
     }
+
+
 
     return score;
 }
