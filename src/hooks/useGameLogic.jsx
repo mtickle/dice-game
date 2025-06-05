@@ -2,8 +2,23 @@ import { useState } from 'react';
 import { createGameLogEntry } from '../utils/gameLogUtils';
 import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
 import { getStrategyAdvice } from '../utils/strategyUtils';
-//import { getAdviceForRoll } from '../utils/strategyUtils';
 import { initialScores } from '../utils/utils';
+
+// Helpers for localStorage
+const loadGameLog = () => {
+    try {
+        const saved = localStorage.getItem('yahtzeeGameLog');
+        return saved ? JSON.parse(saved) : [];
+    } catch {
+        return [];
+    }
+};
+
+const saveGameLog = (log) => {
+    try {
+        localStorage.setItem('yahtzeeGameLog', JSON.stringify(log));
+    } catch { }
+};
 
 export function useGameLogic() {
     const [scores, setScores] = useState({ ...initialScores });
@@ -15,7 +30,8 @@ export function useGameLogic() {
     const [bonusFadingOut, setBonusFadingOut] = useState(false);
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
-    const [gameLog, setGameLog] = useState([]);
+    //const [gameLog, setGameLog] = useState([]);
+    const [gameLog, setGameLog] = useState(loadGameLog());
 
     const isGameOver = Object.values(scores).every(score => score !== null);
     const suggestedScores = calculateSuggestedScores(dice, scores);
@@ -61,6 +77,7 @@ export function useGameLogic() {
         setScores(updatedScores);
         setTurnComplete(true);
 
+        //--- Create game log entry
         const logEntry = createGameLogEntry({
             type: 'score',
             player: 'player',
@@ -72,7 +89,9 @@ export function useGameLogic() {
             turn
         });
 
-        setGameLog(prev => [...prev, logEntry]);
+        const newLog = [...gameLog, logEntry];
+        setGameLog(newLog);
+        saveGameLog(newLog);
 
         setTimeout(() => {
             setDice(Array(5).fill().map(() => ({ value: null, held: false })));
@@ -97,6 +116,11 @@ export function useGameLogic() {
         setTurn(1);
     };
 
+    const resetGameLog = () => {
+        setGameLog([]);
+        localStorage.removeItem('yahtzeeGameLog');
+    };
+
     return {
         players: [], // future expansion
         initialScores,
@@ -111,6 +135,7 @@ export function useGameLogic() {
         toggleHold,
         applyScore,
         resetGame,
+        resetGameLog,
         isGameOver,
         suggestedScores,
         adviceText,

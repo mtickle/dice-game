@@ -12,9 +12,11 @@ import Row from 'react-bootstrap/Row';
 
 import DiceField from './components/DiceField';
 import GameLogPanel from './components/GameLogPanel';
+import StatsPanel from './components/StatsPanel';
 import StrategyPanel from './components/StrategyPanel';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 import UnifiedSectionTotals from './components/UnifiedSectionTotals';
+
 function App() {
 
   const {
@@ -29,6 +31,7 @@ function App() {
     toggleHold,
     applyScore,
     resetGame,
+    resetGameLog,
     isGameOver,
     suggestedScores,
     gameLog
@@ -105,13 +108,28 @@ function App() {
             strategy={strategy}
             rollCount={rollCount}
           />
-          <GameLogPanel gameLog={gameLog} />
+
           <UnifiedSectionTotals
             upperSubtotal={upperSubtotal}
             bonus={bonus}
             upperTotal={upperTotal}
             lowerTotal={lowerTotal}
             grandTotal={grandTotal}
+          />
+        </Col>
+      </Row>
+      <Row className="mt-4">
+        <Col>
+          <StatsPanel
+            gameLog={gameLog}
+            resetGameLog={resetGameLog}
+            resetGame={resetGame}
+          />
+        </Col>
+        <Col>
+          <GameLogPanel
+            gameLog={gameLog}
+            prettyName={prettyName}
           />
         </Col>
       </Row>
