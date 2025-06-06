@@ -114,10 +114,10 @@ export function useGameLogic() {
         setDice(Array(5).fill().map(() => ({ value: null, held: false })));
         setRollCount(0);
         setTurnComplete(false);
-        setBonusCategory(null);
-        setBonusMessage('');
-        setBonusFadingOut(false);
-        setAdviceText('');
+        //setBonusCategory(null);
+        //setBonusMessage('');
+        //setBonusFadingOut(false);
+        //setAdviceText('');
         setGameLog([]);
         setTurn(1);
     };
