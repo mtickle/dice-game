@@ -6,11 +6,21 @@ export function generateNewDice() {
     }));
 }
 
+// export function getCounts(dice) {
+//     const counts = Array(6).fill(0);
+//     dice.forEach((d) => {
+//         if (d.value != null) counts[d.value - 1]++;
+//     });
+//     return counts;
+// }
+
 export function getCounts(dice) {
-    const counts = Array(6).fill(0);
-    dice.forEach((d) => {
-        if (d.value != null) counts[d.value - 1]++;
-    });
+    const counts = [0, 0, 0, 0, 0, 0]; // Only six entries: for 1–6
+    for (const die of dice) {
+        if (die?.value != null && die.value >= 1 && die.value <= 6) {
+            counts[die.value - 1]++;
+        }
+    }
     return counts;
 }
 

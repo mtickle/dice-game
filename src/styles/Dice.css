@@ -59,7 +59,7 @@
   border-radius: 10px;
 }
 
-/* Suggested Score Styling */
+/* Suggested Score Styling
 .suggestion-card {
   padding: 0.5rem 1rem;
   background-color: #1e1e2f;
@@ -87,7 +87,7 @@
 
 .suggestion-card .emoji {
   font-size: 1.2rem;
-}
+} */
 
 /* Game Over Styling */
 .game-over-banner {
@@ -156,11 +156,11 @@
   animation: fadeOutSlide 0.3s ease-in forwards;
 }
 
-.bonus-message {
+/* .bonus-message {
   font-size: 1.2rem;
   animation: fadeInSlide 0.3s ease-out;
   box-shadow: 0 0 10px rgba(0, 255, 100, 0.3);
-}
+} */
 
 @keyframes pop-in {
   from {
@@ -173,11 +173,11 @@
   }
 }
 
-.bonus-flash {
+/* .bonus-flash {
   animation: flash 1s ease-in-out;
   background-color: #fff3cd !important;
   border-left: 4px solid #ffc107;
-}
+} */
 
 @keyframes flash {
   0% {

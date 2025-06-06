@@ -1,10 +1,13 @@
-// utils/scoreUtils.js
 
 export function calculateScore(category, diceObjs) {
+
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
-    const counts = Array(7).fill(0); // Index 1–6
-    dice.forEach(d => counts[d]++);
+    const counts = Array(6).fill(0); // Index 0–5 for values 1–6
+    dice.forEach(d => counts[d - 1]++);
     const total = dice.reduce((a, b) => a + b, 0);
+
+    // console.log('Raw diceObjs:', diceObjs);
+    // console.log('Mapped dice values:', dice);
 
     switch (category) {
         case 'ones':
@@ -42,14 +45,17 @@ export function calculateScore(category, diceObjs) {
             return hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
 
         case 'onePair': {
-            for (let i = 5; i >= 1; i--) {
+            // Find the highest value with at least two dice
+            for (let i = 5; i >= 0; i--) {
                 if (counts[i] >= 2) {
-                    return i * 2; // Only one pair — the highest
+                    const score = (i + 1) * 2;
+                    console.log(`Found pair of ${(i + 1)}s, score: ${score}`);
+                    return score;
                 }
             }
+
             return 0;
         }
-
         default:
             return 0;
     }
@@ -57,13 +63,12 @@ export function calculateScore(category, diceObjs) {
 
 export function calculateSuggestedScores(diceObjs, currentScores = {}) {
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
-    const counts = Array(7).fill(0); // 0-6, index 1–6 used
-    dice.forEach(die => counts[die]++);
-
+    const counts = Array(6).fill(0); // Index 0–5 for values 1–6
+    dice.forEach(d => counts[d - 1]++);
     const total = dice.reduce((a, b) => a + b, 0);
     const score = {};
 
-
+    // Upper section (ones through sixes)
     for (let i = 1; i <= 6; i++) {
         const cat = getCategoryName(i);
         if (currentScores[cat] === null) {
@@ -72,49 +77,151 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
         }
     }
 
+    // Three of a Kind
     if (currentScores.threeKind === null) {
         const val = counts.some(c => c >= 3) ? total : 0;
         if (val > 0) score.threeKind = val;
     }
 
+    // Four of a Kind
     if (currentScores.fourKind === null) {
         const val = counts.some(c => c >= 4) ? total : 0;
         if (val > 0) score.fourKind = val;
     }
 
+    // Full House
     if (currentScores.fullHouse === null) {
         const val = (counts.includes(3) && counts.includes(2)) ? 25 : 0;
         if (val > 0) score.fullHouse = val;
     }
 
+    // Small Straight
     if (currentScores.smallStraight === null) {
         const val = hasSmallStraight(dice) ? 30 : 0;
         if (val > 0) score.smallStraight = val;
     }
 
+    // Large Straight
     if (currentScores.largeStraight === null) {
         const val = hasLargeStraight(dice) ? 40 : 0;
         if (val > 0) score.largeStraight = val;
     }
 
+    // Yahtzee
     if (currentScores.yahtzee === null) {
         const val = counts.includes(5) ? 50 : 0;
         if (val > 0) score.yahtzee = val;
     }
 
+    // Chance
     if (currentScores.chance === null) {
         if (total > 0) score.chance = total;
     }
 
+    // Two Pair
     if (currentScores.twoPair === null) {
         const val = hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
         if (val > 0) score.twoPair = val;
     }
 
-
+    // One Pair
+    if (currentScores.onePair === null) {
+        let val = 0;
+        for (let i = 5; i >= 0; i--) {
+            if (counts[i] >= 2) {
+                val = (i + 1) * 2;
+                break;
+            }
+        }
+        if (val > 0) score.onePair = val;
+    }
 
     return score;
 }
+
+
+// export function calculateSuggestedScores(diceObjs, currentScores = {}) {
+
+//     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
+//     const counts = Array(6).fill(0); // Index 0–5 for values 1–6
+//     dice.forEach(d => counts[d - 1]++);
+//     const total = dice.reduce((a, b) => a + b, 0);
+//     const score = {};
+
+//     for (let i = 1; i <= 6; i++) {
+//         const cat = getCategoryName(i);
+//         if (currentScores[cat] === null) {
+//             const val = dice.filter(d => d === i).reduce((a, b) => a + b, 0);
+//             if (val > 0) score[cat] = val;
+//         }
+//     }
+
+//     if (currentScores.threeKind === null) {
+//         const val = counts.some(c => c >= 3) ? total : 0;
+//         if (val > 0) score.threeKind = val;
+//     }
+
+//     if (currentScores.fourKind === null) {
+//         const val = counts.some(c => c >= 4) ? total : 0;
+//         if (val > 0) score.fourKind = val;
+//     }
+
+//     if (currentScores.fullHouse === null) {
+//         const val = (counts.includes(3) && counts.includes(2)) ? 25 : 0;
+//         if (val > 0) score.fullHouse = val;
+//     }
+
+//     if (currentScores.smallStraight === null) {
+//         const val = hasSmallStraight(dice) ? 30 : 0;
+//         if (val > 0) score.smallStraight = val;
+//     }
+
+//     if (currentScores.largeStraight === null) {
+//         const val = hasLargeStraight(dice) ? 40 : 0;
+//         if (val > 0) score.largeStraight = val;
+//     }
+
+//     if (currentScores.yahtzee === null) {
+//         const val = counts.includes(5) ? 50 : 0;
+//         if (val > 0) score.yahtzee = val;
+//     }
+
+//     if (currentScores.chance === null) {
+//         if (total > 0) score.chance = total;
+//     }
+
+//     if (currentScores.twoPair === null) {
+//         const val = hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
+//         if (val > 0) score.twoPair = val;
+//     }
+
+//     if (currentScores.onePair === null) {
+
+
+
+//         // const val = counts.findIndex(c => c >= 2);
+//         // // Find the highest value with at least two dice
+//         // if (val >= 0) {
+//         //     const score = (val + 1) * 2; // Convert index to value (1-6)
+//         //     console.log(`Found pair of ${(val + 1)}s, score: ${score}`);
+//         //     score.onePair = score;
+//         // }
+
+//         // for (let i = 5; i >= 0; i--) {
+//         //     if (counts[i] >= 2) {
+//         //         const score = (i + 1) * 2;
+//         //         console.log(`Found pair of ${(i + 1)}s, score: ${score}`);
+//         //     }
+//         // }
+//         // if (val > 0) score.onePair = val;
+
+
+//         //const val = counts.findIndex(c => c >= 2);
+//         //if (val > 0) score.onePair = val * 2; // Only one pair — the highest
+//     }
+
+//     return score;
+// }
 
 
 function getCategoryName(i) {
