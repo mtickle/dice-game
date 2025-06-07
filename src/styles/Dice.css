@@ -343,20 +343,20 @@ button {
   /* animation: pulseHighlight 1.5s infinite; */
   /* border: 1px solid #ff0000; */
   /* box-shadow: 0 0 2px #a7554aaa; */
-  border-top: 1px solid #0084ff;
-  border-bottom: 1px solid #0084ff;
-  border-left: 1px solid #0084ff;
-  background-color: #326372;
+  border-top: 1px solid #ff00ff;
+  border-bottom: 1px solid #ff00ff;
+  border-left: 1px solid #ff00ff;
+  background-color: #5e5e5e;
 }
 
 .suggested-right {
   /* animation: pulseHighlight 1.5s infinite; */
   /* border: 1px solid #ff0000; */
   /* box-shadow: 0 0 2px #a7554aaa; */
-  border-top: 1px solid #0084ff;
-  border-bottom: 1px solid #0084ff;
-  border-right: 1px solid #0084ff;
-  background-color: #326372;
+  border-top: 1px solid #ff00ff;
+  border-bottom: 1px solid #ff00ff;
+  border-right: 1px solid #ff00ff;
+  background-color: #5e5e5e;
 }
 
 @keyframes flash {

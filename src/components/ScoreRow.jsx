@@ -36,7 +36,6 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
                 {bonusBadge && <span className="bonus-badge ms-2">+10</span>}
             </InputGroup.Text>
             <Form.Control
-                //className={showSuggested ? 'text-muted' : ''}
                 className={scoreBlockClassName}
                 readOnly
                 value={
