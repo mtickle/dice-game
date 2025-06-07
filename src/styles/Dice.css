@@ -335,8 +335,28 @@ button {
   /* animation: pulseHighlight 1.5s infinite; */
   /* border: 1px solid #ff0000; */
   /* box-shadow: 0 0 2px #a7554aaa; */
-  border: 1px solid #000000;
-  background-color: #828b00;
+  border: 1px solid #0084ff;
+  background-color: #575858;
+}
+
+.suggested-left {
+  /* animation: pulseHighlight 1.5s infinite; */
+  /* border: 1px solid #ff0000; */
+  /* box-shadow: 0 0 2px #a7554aaa; */
+  border-top: 1px solid #0084ff;
+  border-bottom: 1px solid #0084ff;
+  border-left: 1px solid #0084ff;
+  background-color: #326372;
+}
+
+.suggested-right {
+  /* animation: pulseHighlight 1.5s infinite; */
+  /* border: 1px solid #ff0000; */
+  /* box-shadow: 0 0 2px #a7554aaa; */
+  border-top: 1px solid #0084ff;
+  border-bottom: 1px solid #0084ff;
+  border-right: 1px solid #0084ff;
+  background-color: #326372;
 }
 
 @keyframes flash {
@@ -368,7 +388,7 @@ button {
 
 .form-control.text-muted {
   font-style: italic;
-  opacity: 0.7;
+  /* opacity: 0.7; */
 }
 
 .bonus-badge {

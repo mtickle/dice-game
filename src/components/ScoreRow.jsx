@@ -5,7 +5,11 @@ import { iconLibrary } from '../icons/icons';
 export default function ScoreRow({ category, label, score, onClick, clickable, bonusBadge, suggested, isUpperSection }) {
     const className = `w-50 score-row 
         ${clickable ? 'clickable' : ''}         
-        ${suggested ? 'suggested-glow' : ''}`;
+        ${suggested ? 'suggested-left' : ''}`;
+
+    const scoreBlockClassName = `w-50 score-row 
+        ${clickable ? 'clickable' : ''}         
+        ${suggested ? 'suggested-right text-muted' : ''}`;
 
     const showSuggested = score === null && suggested !== undefined;
     const iconSize = 32; // Default icon size, can be adjusted as needed
@@ -32,7 +36,8 @@ export default function ScoreRow({ category, label, score, onClick, clickable, b
                 {bonusBadge && <span className="bonus-badge ms-2">+10</span>}
             </InputGroup.Text>
             <Form.Control
-                className={showSuggested ? 'text-muted' : ''}
+                //className={showSuggested ? 'text-muted' : ''}
+                className={scoreBlockClassName}
                 readOnly
                 value={
                     score !== null
