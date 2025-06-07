@@ -38,7 +38,10 @@ function App() {
   } = useGameLogic();
 
 
+
   // Totals for UI display
+
+
   const safeScore = (val) => (typeof val === 'number' && !isNaN(val) ? val : 0);
 
   const upperSubtotal = upperCategories.reduce(

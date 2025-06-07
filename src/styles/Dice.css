@@ -332,9 +332,11 @@ button {
 }
 
 .suggested-glow {
-  animation: pulseHighlight 1.5s infinite;
-  border: 1px solid #ff0000;
-  box-shadow: 0 0 2px #a7554aaa;
+  /* animation: pulseHighlight 1.5s infinite; */
+  /* border: 1px solid #ff0000; */
+  /* box-shadow: 0 0 2px #a7554aaa; */
+  border: 1px solid #000000;
+  background-color: #828b00;
 }
 
 @keyframes flash {
