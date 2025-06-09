@@ -1,6 +1,7 @@
 // DiceField.jsx
+import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import '../styles/Dice.css';
+
 
 export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame }) {
 
@@ -14,7 +15,7 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                         <div className="field">
                             {dice.map((die, index) => (
                                 <div
-                                    className={`die ${die.held ? 'held' : ''} ${die.value === null ? 'blank' : ''}`}
+                                    className={`die ${die.held ? 'held' : ''} ${die.value === null ? 'blank' : ''} ${die.rolling ? 'rolling' : ''}`}
                                     key={index}
                                     onClick={() => toggleHold(index)}
                                 >
@@ -31,13 +32,13 @@ export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPo
                                         />
                                     ))}
                                 </div>
+
                             ))}
                         </div>
                     </div>
-                    <button onClick={rollDice} disabled={rollCount >= 3}>
-                        Roll Dice ({rollCount}/3)
-                    </button>
-
+                    <Button variant="secondary" size="md" width="100%" onClick={rollDice} disabled={rollCount >= 3}>
+                        Roll Dice  ({rollCount}/3)
+                    </Button>
 
                     {isGameOver && (
                         <div className="game-over">

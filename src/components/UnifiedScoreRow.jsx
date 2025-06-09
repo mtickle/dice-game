@@ -2,7 +2,7 @@
 import { useScoreAnimation } from '../hooks/useScoreAnimation';
 import { iconLibrary } from '../icons/icons';
 
-export default function ScoreRow({
+export default function UnifiedScoreRow({
     category,
     label,
     score,

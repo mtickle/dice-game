@@ -1,5 +1,22 @@
 // src/utils.js
 
+export function DiceBreakerLogo() {
+    return (
+        <svg
+            className="dice-logo"
+            width="32"
+            height="32"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <rect x="10" y="10" width="80" height="80" rx="15" ry="15" fill="#111" stroke="#FF00CC" strokeWidth="5" />
+            <circle cx="30" cy="30" r="6" fill="#00FFD5" />
+            <circle cx="50" cy="50" r="6" fill="#FFD700" />
+            <circle cx="70" cy="70" r="6" fill="#00FFD5" />
+        </svg>
+    );
+}
+
 export const prettyName = (category) => {
     const names = {
         ones: 'Aces',

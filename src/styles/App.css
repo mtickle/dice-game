@@ -10,3 +10,24 @@ footer {
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
+
+.dice-logo {
+  animation: subtle-bounce 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes subtle-bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #ff00cc, #00ffd5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

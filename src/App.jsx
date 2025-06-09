@@ -1,13 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect } from 'react';
 import './styles/App.css';
 import './styles/Dice.css';
+import './styles/ScoreRow.css';
 
 import { useGameLogic } from './hooks/useGameLogic';
 import { getStrategyAdvice } from './utils/strategyUtils';
-import { dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
+import { DiceBreakerLogo, dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
 import Row from 'react-bootstrap/Row';
 
 import DiceField from './components/DiceField';
@@ -18,6 +21,18 @@ import StrategyPanel from './components/StrategyPanel';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 
 function App() {
+
+  useEffect(() => {
+    // Clear the entire localStorage
+    localStorage.clear();
+
+    // Or if you only want to remove specific keys:
+    // localStorage.removeItem('yourGameStateKey');
+    // localStorage.removeItem('yourOtherKey');
+
+    console.log('localStorage cleared on game start');
+  }, []); // Empty dependency array means this runs once on mount
+
 
   const {
     scores,
@@ -58,8 +73,21 @@ function App() {
   const grandTotal = upperTotal + lowerTotal;
   const strategy = getStrategyAdvice(dice, scores);
 
+
+
   return (
     <Container>
+      <Navbar bg="dark" variant="dark" className="mb-4">
+        <Container className="d-flex justify-content-between align-items-center">
+          <Navbar.Brand className="d-flex align-items-center gap-2">
+            <DiceBreakerLogo />
+            <span className="fw-bold text-gradient">Dice Breaker</span>
+          </Navbar.Brand>
+          <span className="text-light fst-italic d-none d-md-block">
+            Crack the combos. Rule the roll.
+          </span>
+        </Container>
+      </Navbar>
       <Row>
         <Col>
           <UnifiedScoreSection

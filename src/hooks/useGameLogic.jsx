@@ -42,16 +42,39 @@ export function useGameLogic() {
         'fourKind',
     ];
 
+    // const rollDice = () => {
+    //     if (rollCount >= 3 || turnComplete || isGameOver) return;
+
+    //     const newDice = dice.map(d => d.held ? d : { ...d, value: Math.floor(Math.random() * 6) + 1 });
+    //     setDice(newDice);
+    //     setRollCount(prev => prev + 1);
+
+    //     const advice = getStrategyAdvice(newDice, scores);
+    //     setAdviceText(advice);
+    // };
+
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
 
-        const newDice = dice.map(d => d.held ? d : { ...d, value: Math.floor(Math.random() * 6) + 1 });
-        setDice(newDice);
-        setRollCount(prev => prev + 1);
+        // Mark dice as "rolling"
+        const diceWithAnimation = dice.map(d => d.held ? d : { ...d, rolling: true });
+        setDice(diceWithAnimation);
 
-        const advice = getStrategyAdvice(newDice, scores);
-        setAdviceText(advice);
+        // Wait briefly to let animation play
+        setTimeout(() => {
+            const newDice = diceWithAnimation.map(d =>
+                d.held
+                    ? d
+                    : { value: Math.floor(Math.random() * 6) + 1, held: false, rolling: false }
+            );
+            setDice(newDice);
+            setRollCount(prev => prev + 1);
+
+            const advice = getStrategyAdvice(newDice, scores);
+            setAdviceText(advice);
+        }, 300); // 300ms matches animation duration
     };
+
 
     const toggleHold = (index) => {
         if (rollCount === 0 || turnComplete) return;

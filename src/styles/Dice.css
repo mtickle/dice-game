@@ -1,5 +1,6 @@
 /* Dice.css */
 
+/* This is used for the background of just the dice. */
 .field {
   display: flex;
   gap: 20px;
@@ -7,31 +8,7 @@
   justify-content: center;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  border-radius: 8px;
-  background: #333;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.dice {
-  width: 80px;
-  height: 80px;
-  background: white;
-  border: 4px solid #333;
-  border-radius: 12px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  padding: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
+/* What follows is Dice styles. */
 .dot {
   width: 12px;
   height: 12px;
@@ -57,17 +34,29 @@ button {
   padding: 5px;
 }
 
-.placeholder {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-  font-size: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0.3;
-  pointer-events: none;
+.die.rolling {
+  animation: roll-zoom 0.3s ease-in-out;
 }
 
+@keyframes roll-zoom {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.2) rotate(15deg);
+  }
+  50% {
+    transform: scale(0.9) rotate(-10deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Game Over Styling */
 .game-over {
   margin-top: 20px;
   padding: 20px;
@@ -77,37 +66,6 @@ button {
   border-radius: 10px;
 }
 
-/* Suggested Score Styling
-.suggestion-card {
-  padding: 0.5rem 1rem;
-  background-color: #1e1e2f;
-  border: 1px solid #333a55;
-  border-radius: 0.75rem;
-  color: #cfd8ff;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.suggestion-card:hover {
-  background-color: #2a2a44;
-  transform: scale(1.03);
-  box-shadow: 0 2px 6px rgba(100, 150, 255, 0.2);
-}
-
-.suggestion-card.highlight {
-  border-color: #7f9fff;
-  box-shadow: 0 0 12px rgba(100, 150, 255, 0.5);
-}
-
-.suggestion-card .emoji {
-  font-size: 1.2rem;
-} */
-
-/* Game Over Styling */
 .game-over-banner {
   background-color: #111;
   color: #f0f0f0;
@@ -132,47 +90,13 @@ button {
   }
 }
 
-/* Confetti (optional styling container for canvas or bursts) */
-#confetti-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: lighten;
-}
-
-@keyframes fadeInSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeOutSlide {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-
-.fade-in {
+/* .fade-in {
   animation: fadeInSlide 0.3s ease-out forwards;
 }
 
 .fade-out {
   animation: fadeOutSlide 0.3s ease-in forwards;
-}
+} */
 
 /* .bonus-message {
   font-size: 1.2rem;
@@ -180,7 +104,7 @@ button {
   box-shadow: 0 0 10px rgba(0, 255, 100, 0.3);
 } */
 
-@keyframes pop-in {
+/* @keyframes pop-in {
   from {
     opacity: 0;
     transform: scale(0.95);
@@ -189,7 +113,7 @@ button {
     opacity: 1;
     transform: scale(1);
   }
-}
+} */
 
 /* .bonus-flash {
   animation: flash 1s ease-in-out;
@@ -209,6 +133,7 @@ button {
   }
 }
 
+/* This is the bonus progress bar and message styling */
 .bonus-flash-message {
   animation: flash 1s ease-in-out;
   background-color: #d4edda;
@@ -220,7 +145,7 @@ button {
 }
 
 .bonus-container {
-  /* margin-top: 10px; */
+  margin-top: 10px;
   width: 100%;
 }
 
@@ -248,18 +173,7 @@ button {
   background-color: #22c55e; /* green */
 }
 
-.bot-scores-section {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 1rem;
-  background-color: #f8f9fa;
-  border-radius: 5px;
-}
-.bot-scores-section h4 {
-  margin-bottom: 10px;
-}
-
-.topbar {
+/* .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -267,14 +181,14 @@ button {
   padding: 10px 15px;
   border-bottom: 2px solid #d9a900;
   height: 60px;
-}
+} */
 
-.topbar-left,
+/* .topbar-left,
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
-}
+} */
 
 .dice-icon {
   font-size: 18px;
@@ -340,23 +254,17 @@ button {
 }
 
 .suggested-left {
-  /* animation: pulseHighlight 1.5s infinite; */
-  /* border: 1px solid #ff0000; */
-  /* box-shadow: 0 0 2px #a7554aaa; */
-  border-top: 1px solid #ff00ff;
-  border-bottom: 1px solid #ff00ff;
-  border-left: 1px solid #ff00ff;
-  background-color: #5e5e5e;
+  border-top: 1px solid #ce9bf8;
+  border-bottom: 1px solid #ce9bf8;
+  border-left: 1px solid #ce9bf8;
+  /* background-color: #5e5e5e; */
 }
 
 .suggested-right {
-  /* animation: pulseHighlight 1.5s infinite; */
-  /* border: 1px solid #ff0000; */
-  /* box-shadow: 0 0 2px #a7554aaa; */
-  border-top: 1px solid #ff00ff;
-  border-bottom: 1px solid #ff00ff;
-  border-right: 1px solid #ff00ff;
-  background-color: #5e5e5e;
+  border-top: 1px solid #ce9bf8;
+  border-bottom: 1px solid #ce9bf8;
+  border-right: 1px solid #ce9bf8;
+  /* background-color: #5e5e5e; */
 }
 
 @keyframes flash {
@@ -418,3 +326,117 @@ button {
   top: 10px;
   z-index: 10;
 }
+
+.score-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-right {
+  min-width: 32px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.3s ease, color 0.3s ease;
+  color: #ddd;
+}
+
+.bonus-badge {
+  background-color: #ff9800;
+  color: black;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  font-size: 0.8rem;
+}
+
+/* Icon tweak */
+.icon {
+  flex-shrink: 0;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+}
+.total-label {
+  flex: 1 1 auto;
+  text-align: left;
+  /* font-style: italic; */
+  color: #bbb;
+}
+
+.total-value {
+  flex: 0 0 60px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #eee;
+  /* transition: color 0.3s ease, transform 0.3s ease; */
+}
+
+.score-animate .total-value {
+  color: #4caf50; /* keep the green highlight */
+  transform: none; /* remove scaling */
+  transition: color 0.2s ease; /* just color transition */
+}
+
+.score-row-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid #444;
+  user-select: none;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.score-row-container.clickable:hover,
+.score-row-container.clickable:focus {
+  background-color: #333;
+  outline: none;
+}
+
+.score-label {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+}
+
+.bonus-badge {
+  background-color: #4caf50;
+  color: white;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0 6px;
+  font-size: 0.8rem;
+  margin-left: 8px;
+  user-select: none;
+}
+
+.score-number {
+  min-width: 40px;
+  text-align: right;
+  white-space: nowrap;
+  color: #ccc;
+  transition: color 0.25s ease;
+}
+
+.score-animate {
+  color: #4caf50;
+}
+
+.score-animate {
+  color: #4caf50; /* green highlight */
+  transform: none; /* no scaling or pulsing */
+  transition: color 0.25s ease; /* smooth color transition */
+}
+

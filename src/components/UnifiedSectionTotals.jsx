@@ -1,5 +1,4 @@
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { useEffect, useState } from 'react';
 
 export default function UnifiedSectionTotals({
     upperSubtotal,
@@ -8,27 +7,60 @@ export default function UnifiedSectionTotals({
     lowerTotal,
     grandTotal,
 }) {
+    // Prepare rows array with labels and values
     const rows = [
-        { label: 'Upper Subtotal ➡️', value: upperSubtotal },
-        { label: 'Bonus 🎆', value: bonus },
-        { label: 'Upper Total ➡️', value: upperTotal },
-        { label: 'Lower Total ➡️', value: lowerTotal },
-        { label: 'Grand Total ➡️', value: grandTotal },
-
+        { label: 'Upper Subtotal', value: upperSubtotal },
+        { label: 'Bonus', value: bonus },
+        { label: 'Upper Total', value: upperTotal },
+        { label: 'Lower Total', value: lowerTotal },
+        { label: 'Grand Total', value: grandTotal },
     ];
 
+    // Local state for animated display of values per row (optional but cool)
+    // Store display values in a map keyed by label for convenience
+    const [displayValues, setDisplayValues] = useState(
+        () =>
+            rows.reduce((acc, row) => {
+                acc[row.label] = row.value;
+                return acc;
+            }, {})
+    );
+
+    const [animatingLabels, setAnimatingLabels] = useState({});
+
+    useEffect(() => {
+        rows.forEach(({ label, value }) => {
+            if (value !== displayValues[label]) {
+                // Trigger animation on change for each differing value
+                setAnimatingLabels((prev) => ({ ...prev, [label]: true }));
+                setTimeout(() => {
+                    setDisplayValues((prev) => ({ ...prev, [label]: value }));
+                    setAnimatingLabels((prev) => ({ ...prev, [label]: false }));
+                }, 200); // shorter animation delay
+            }
+        });
+    }, [rows, displayValues]);
+
     return (
-
-
         <div>
             <div className="mb-1">&nbsp;</div>
             {rows.map(({ label, value }) => {
-                if (value == null) return null; // skip if null or undefined
+                if (value == null) return null; // skip null or undefined
+
+                const isAnimating = animatingLabels[label];
+
                 return (
-                    <InputGroup className="mb-2" key={label}>
-                        <InputGroup.Text className="w-50 text-right"><em>{label}:</em></InputGroup.Text>
-                        <Form.Control readOnly value={value} />
-                    </InputGroup>
+                    <div
+                        key={label}
+                        className={`total-row ${isAnimating ? 'score-animate' : ''}`}
+                        aria-label={`${label} total`}
+                        role="group"
+                    >
+                        <div className="total-label">
+                            <em>{label}</em>
+                        </div>
+                        <div className="total-value">{displayValues[label]}</div>
+                    </div>
                 );
             })}
         </div>

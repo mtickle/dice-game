@@ -1,5 +1,5 @@
 import BonusProgressBar from './BonusProgressBar';
-import ScoreRow from './ScoreRow';
+import UnifiedScoreRow from './UnifiedScoreRow';
 
 export default function ScoreCardSection({
     categories,
@@ -21,7 +21,7 @@ export default function ScoreCardSection({
         <div className="scorecard-section mb-2">
             {categories.map((key) => (
 
-                <ScoreRow
+                <UnifiedScoreRow
                     key={key}
                     category={key}
                     label={prettyName(key)}
