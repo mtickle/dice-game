@@ -17,7 +17,7 @@ export default function ScoreCardSection({
 }) {
 
     return (
-        <div className="scorecard-section mb-1 ">
+        <div className="scorecard-section">
             {categories.map((key) => (
 
                 <UnifiedScoreRow

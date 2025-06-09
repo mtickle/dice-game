@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 12px;
+  padding: 6px 6px;
   border: 2px solid transparent; /* Reserve space to prevent jiggling */
   border-radius: 3px;
   user-select: none;

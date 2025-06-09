@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import './styles/App.css';
 import './styles/Dice.css';
 import './styles/ScoreRow.css';
+import './styles/ScoreTotals.css';
 
 import { useGameLogic } from './hooks/useGameLogic';
 import { getStrategyAdvice } from './utils/strategyUtils';
@@ -89,7 +90,7 @@ function App() {
         </Container>
       </Navbar>
       <Row>
-        <Col>
+        <Col md={3}>
           <UnifiedScoreSection
             title="Upper Section"
             categories={upperCategories}
@@ -107,7 +108,7 @@ function App() {
             bonus={bonus}
           />
         </Col>
-        <Col>
+        <Col md={3}>
           <UnifiedScoreSection
             title="Lower Section"
             categories={lowerCategories}
@@ -124,7 +125,7 @@ function App() {
             grandTotal={grandTotal}
           />
         </Col>
-        <Col>
+        <Col md={6}>
           <DiceField
             dice={dice}
             toggleHold={toggleHold}

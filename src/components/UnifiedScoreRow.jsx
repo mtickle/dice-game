@@ -26,7 +26,7 @@ export default function UnifiedScoreRow({
                 backgroundColor: score !== null ? '#222' : 'transparent',
                 color: score !== null ? '#ccc' : undefined,
             }}
-            aria-label={`${label} score${clickable ? ', clickable' : ''}`}
+            aria-label={`${label} score ${clickable ? ', clickable' : ''}`}
             role={clickable ? 'button' : undefined}
             tabIndex={clickable ? 0 : undefined}
             onKeyDown={
@@ -39,6 +39,7 @@ export default function UnifiedScoreRow({
                     : undefined
             }
         >
+
             <div className="score-label">
                 {isUpperSection && Icon && (
                     <Icon size={24} className="icon me-2" aria-hidden="true" />

@@ -39,7 +39,7 @@ export default function UnifiedSectionTotals({
 
     return (
         <div>
-            <div className="mb-1">&nbsp;</div>
+            <div className="mb-1 score-total-section">&nbsp;</div>
             {rows.map(({ label, value }) => {
                 if (value == null) return null;
 
