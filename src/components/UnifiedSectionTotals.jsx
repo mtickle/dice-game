@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import BonusProgressBar from './BonusProgressBar';
 
 export default function UnifiedSectionTotals({
     upperSubtotal,
@@ -7,47 +8,43 @@ export default function UnifiedSectionTotals({
     lowerTotal,
     grandTotal,
 }) {
-    // Prepare rows array with labels and values
-    const rows = [
+    const rows = useMemo(() => [
         { label: 'Upper Subtotal', value: upperSubtotal },
         { label: 'Bonus', value: bonus },
         { label: 'Upper Total', value: upperTotal },
         { label: 'Lower Total', value: lowerTotal },
         { label: 'Grand Total', value: grandTotal },
-    ];
+    ], [upperSubtotal, bonus, upperTotal, lowerTotal, grandTotal]);
 
-    // Local state for animated display of values per row (optional but cool)
-    // Store display values in a map keyed by label for convenience
-    const [displayValues, setDisplayValues] = useState(
-        () =>
-            rows.reduce((acc, row) => {
-                acc[row.label] = row.value;
-                return acc;
-            }, {})
+    const [displayValues, setDisplayValues] = useState(() =>
+        rows.reduce((acc, row) => {
+            acc[row.label] = row.value;
+            return acc;
+        }, {})
     );
 
     const [animatingLabels, setAnimatingLabels] = useState({});
 
     useEffect(() => {
         rows.forEach(({ label, value }) => {
-            if (value !== displayValues[label]) {
-                // Trigger animation on change for each differing value
+            if (displayValues[label] !== value) {
                 setAnimatingLabels((prev) => ({ ...prev, [label]: true }));
                 setTimeout(() => {
                     setDisplayValues((prev) => ({ ...prev, [label]: value }));
                     setAnimatingLabels((prev) => ({ ...prev, [label]: false }));
-                }, 200); // shorter animation delay
+                }, 200);
             }
         });
-    }, [rows, displayValues]);
+    }, [rows]);
 
     return (
         <div>
             <div className="mb-1">&nbsp;</div>
             {rows.map(({ label, value }) => {
-                if (value == null) return null; // skip null or undefined
+                if (value == null) return null;
 
                 const isAnimating = animatingLabels[label];
+                const isBonusRow = label === 'Bonus';
 
                 return (
                     <div
@@ -56,13 +53,18 @@ export default function UnifiedSectionTotals({
                         aria-label={`${label} total`}
                         role="group"
                     >
-                        <div className="total-label">
+                        <div className="total-label d-flex align-items-center gap-2">
                             <em>{label}</em>
+                            {isBonusRow && <BonusProgressBar upperTotal={upperSubtotal} />}
                         </div>
-                        <div className="total-value">{displayValues[label]}</div>
+
+                        {!isBonusRow && (
+                            <div className="total-value">{displayValues[label]}</div>
+                        )}
                     </div>
                 );
             })}
+
         </div>
     );
 }

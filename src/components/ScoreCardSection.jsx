@@ -1,4 +1,3 @@
-import BonusProgressBar from './BonusProgressBar';
 import UnifiedScoreRow from './UnifiedScoreRow';
 
 export default function ScoreCardSection({
@@ -18,7 +17,7 @@ export default function ScoreCardSection({
 }) {
 
     return (
-        <div className="scorecard-section mb-2">
+        <div className="scorecard-section mb-1 ">
             {categories.map((key) => (
 
                 <UnifiedScoreRow
@@ -33,12 +32,6 @@ export default function ScoreCardSection({
                     isUpperSection={isUpperSection}
                 />
             ))}
-
-            {isUpperSection && (
-                <div className="text-sm mt-2 space-y-2">
-                    <BonusProgressBar upperTotal={upperTotal} />
-                </div>
-            )}
 
             {totalsNode && (
                 <div className="mt-2">

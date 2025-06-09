@@ -5,12 +5,12 @@
   align-items: center;
   padding: 6px 12px;
   border: 2px solid transparent; /* Reserve space to prevent jiggling */
-  border-radius: 6px;
+  border-radius: 3px;
   user-select: none;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1rem;
   color: #ccc;
-  background-color: transparent;
+  background-color: red;
 }
 
 /* Highlight suggested scores without causing layout shift */
@@ -36,7 +36,7 @@
 .score-label {
   display: flex;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
