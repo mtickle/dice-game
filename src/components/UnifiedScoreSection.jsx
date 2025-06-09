@@ -19,8 +19,11 @@ export default function UnifiedScoreSection({
     upperTotal,
     totalsNode,
     lowerTotal,
-    grandTotal
+    grandTotal,
+    earnedBonuses,
 }) {
+
+
     return (
         <Card>
             <Card.Header>{title}</Card.Header>
@@ -38,6 +41,7 @@ export default function UnifiedScoreSection({
                     upperSubtotal={upperSubtotal}
                     bonus={bonus}
                     upperTotal={upperTotal}
+                    earnedBonuses={earnedBonuses}
                     totalsNode={
                         <UnifiedSectionTotals
                             upperSubtotal={upperSubtotal}

@@ -251,16 +251,6 @@
   /* opacity: 0.7; */
 }
 
-.bonus-badge {
-  background-color: #28a745;
-  color: white;
-  font-size: 0.75rem;
-  padding: 2px 6px;
-  border-radius: 6px;
-  margin-left: 8px;
-  animation: pulse 1s ease-in-out infinite;
-}
-
 @keyframes pulse {
   0%,
   100% {
@@ -293,16 +283,6 @@
   color: #ddd;
 }
 
-.bonus-badge {
-  background-color: #ff9800;
-  color: black;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 12px;
-  margin-left: 8px;
-  font-size: 0.8rem;
-}
-
 /* Icon tweak */
 .icon {
   flex-shrink: 0;
@@ -333,17 +313,6 @@
   color: #4caf50; /* keep the green highlight */
   transform: none; /* remove scaling */
   transition: color 0.2s ease; /* just color transition */
-}
-
-.bonus-badge {
-  background-color: #4caf50;
-  color: white;
-  font-weight: 700;
-  border-radius: 12px;
-  padding: 0 6px;
-  font-size: 0.8rem;
-  margin-left: 8px;
-  user-select: none;
 }
 
 .score-number {

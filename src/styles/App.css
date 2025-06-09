@@ -31,3 +31,8 @@ footer {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.container-area {
+  border: 1px solid pink;
+  margin-top: 1rem;
+}

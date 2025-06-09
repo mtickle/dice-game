@@ -50,7 +50,8 @@ function App() {
     resetGameLog,
     isGameOver,
     suggestedScores,
-    gameLog
+    gameLog,
+    earnedBonuses
   } = useGameLogic();
 
 
@@ -74,11 +75,9 @@ function App() {
   const grandTotal = upperTotal + lowerTotal;
   const strategy = getStrategyAdvice(dice, scores);
 
-
-
   return (
-    <Container>
-      <Navbar bg="dark" variant="dark" className="mb-4">
+    <Container className="container-area">
+      < Navbar bg="dark" variant="dark" className="mb-4" >
         <Container className="d-flex justify-content-between align-items-center">
           <Navbar.Brand className="d-flex align-items-center gap-2">
             <DiceBreakerLogo />
@@ -88,7 +87,7 @@ function App() {
             Crack the combos. Rule the roll.
           </span>
         </Container>
-      </Navbar>
+      </Navbar >
       <Row>
         <Col md={3}>
           <UnifiedScoreSection
@@ -106,6 +105,7 @@ function App() {
             upperSubtotal={upperSubtotal}
             upperTotal={upperTotal}
             bonus={bonus}
+            earnedBonuses={earnedBonuses}
           />
         </Col>
         <Col md={3}>
@@ -164,7 +164,7 @@ function App() {
           />
         </Col>
       </Row>
-    </Container>
+    </Container >
   );
 }
 

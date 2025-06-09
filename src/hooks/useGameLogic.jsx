@@ -27,6 +27,7 @@ export function useGameLogic() {
     const [turnComplete, setTurnComplete] = useState(false);
     const [bonusCategory, setBonusCategory] = useState(null);
     const [bonusMessage, setBonusMessage] = useState('');
+    const [earnedBonuses, setEarnedBonuses] = useState({});
     const [bonusFadingOut, setBonusFadingOut] = useState(false);
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
@@ -77,18 +78,13 @@ export function useGameLogic() {
         const isFirstRollBonus = rollCount === 1 && qualifyingFirstRollBonusCategories.includes(category);
 
         if (isFirstRollBonus) {
-            score += 10;
-            setBonusCategory(category);
-            setBonusMessage(`🎉 Bonus! +10 points for first-roll ${category}!`);
-            setBonusFadingOut(false);
-            setTimeout(() => {
-                setBonusFadingOut(true);
-                setTimeout(() => {
-                    setBonusCategory(null);
-                    setBonusMessage('');
-                    setBonusFadingOut(false);
-                }, 3000);
-            }, 3000);
+            score += 10; // Apply first roll bonus
+            console.log(`First roll bonus applied for category: ${category}`);
+            setEarnedBonuses(prev => {
+                const updated = { ...prev, [category]: true };
+                console.log('earnedBonuses updated:', updated);
+                return updated;
+            });
         }
 
         const updatedScores = { ...scores, [category]: score };
@@ -126,10 +122,6 @@ export function useGameLogic() {
         setDice(Array(5).fill().map(() => ({ value: null, held: false })));
         setRollCount(0);
         setTurnComplete(false);
-        //setBonusCategory(null);
-        //setBonusMessage('');
-        //setBonusFadingOut(false);
-        //setAdviceText('');
         setGameLog([]);
         setTurn(1);
     };
@@ -159,6 +151,7 @@ export function useGameLogic() {
         adviceText,
         turn,
         gameLog,
+        earnedBonuses,
     };
 
 
