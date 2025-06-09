@@ -15,7 +15,8 @@
 
 /* Highlight suggested scores without causing layout shift */
 .score-row-container.suggested {
-  border-color: #a525fa; /* Green dashed look */
+  border-color: #a525fa;
+  /*border-left: solid 6px #a525fa; */ /* Purple border for suggested scores */
 }
 
 /* Hover + click behavior */
@@ -24,6 +25,11 @@
   background-color: #333;
   cursor: pointer;
   outline: none;
+}
+
+.score-row-container.scored {
+  background-color: #222;
+  color: #aaa;
 }
 
 /* Category label area */

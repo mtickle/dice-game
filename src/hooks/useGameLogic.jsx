@@ -42,17 +42,6 @@ export function useGameLogic() {
         'fourKind',
     ];
 
-    // const rollDice = () => {
-    //     if (rollCount >= 3 || turnComplete || isGameOver) return;
-
-    //     const newDice = dice.map(d => d.held ? d : { ...d, value: Math.floor(Math.random() * 6) + 1 });
-    //     setDice(newDice);
-    //     setRollCount(prev => prev + 1);
-
-    //     const advice = getStrategyAdvice(newDice, scores);
-    //     setAdviceText(advice);
-    // };
-
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
 
