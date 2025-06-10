@@ -1,8 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
 import './styles/App.css';
+import './styles/ClassicScoreCard.css';
 import './styles/Dice.css';
-import './styles/ScoreRow.css';
+//import './styles/ScoreRow.css';
 import './styles/ScoreTotals.css';
 
 import { useGameLogic } from './hooks/useGameLogic';
@@ -14,6 +15,7 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Row from 'react-bootstrap/Row';
 
+import ClassicScoreCard from './components/ClassicScoreCard';
 import DiceField from './components/DiceField';
 import HelperPanel from './components/HelperPanel';
 import StrategyPanel from './components/StrategyPanel';
@@ -86,6 +88,18 @@ function App() {
           </span>
         </Container>
       </Navbar >
+      <Row>
+        <Col md={6}>
+          <ClassicScoreCard
+            scores={scores}
+            suggestedScores={suggestedScores}
+            onScore={applyScore}
+          />
+        </Col>
+        <Col md={6}>
+
+        </Col>
+      </Row>
       <Row>
         <Col md={3}>
           <UnifiedScoreSection
