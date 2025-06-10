@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
 import './styles/App.css';
 import './styles/ClassicScoreCard.css';
+import './styles/ClassicScoreRow.css';
 import './styles/Dice.css';
 //import './styles/ScoreRow.css';
 import './styles/ScoreTotals.css';

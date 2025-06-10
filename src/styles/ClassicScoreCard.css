@@ -56,3 +56,13 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.classic-scorecard {
+  background: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+  background-size: cover;
+  padding: 20px;
+  border-radius: 12px;
+  font-family: "Press Start 2P", monospace;
+  color: #f0e7d5;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}

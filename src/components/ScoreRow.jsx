@@ -16,7 +16,6 @@ export default function ScoreRow({
     const Icon = iconLibrary[category];
     const showSuggested = score === null && suggested !== undefined;
 
-    console.log(`Rendering ScoreRow for category: ${category}, score: ${score}, suggested: ${suggested}`);
 
     const containerClass = [
         'score-row-container',

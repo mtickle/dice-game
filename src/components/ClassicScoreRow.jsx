@@ -7,7 +7,7 @@ export default function ClassicScoreRow({ category, score, suggested, onClick })
 
     return (
         <div
-            className={`score-row ${isScored ? 'scored' : ''} ${isSuggested ? 'suggested' : ''}`}
+            className={`classic-score-row ${isScored ? 'scored' : ''} ${isSuggested ? 'suggested' : ''}`}
             onClick={!isScored ? onClick : undefined}
         >
             <span className="label">

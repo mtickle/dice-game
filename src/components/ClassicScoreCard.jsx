@@ -1,4 +1,4 @@
-import ScoreRow from './ScoreRow';
+import ClassicScoreRow from './ClassicScoreRow';
 
 export default function ClassicScoreCard({ scores, suggestedScores, onScore }) {
     const upper = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
@@ -16,7 +16,8 @@ export default function ClassicScoreCard({ scores, suggestedScores, onScore }) {
             <div className="score-section">
                 <h4>Upper Section</h4>
                 {upper.map(category => (
-                    <ScoreRow
+                    console.log(`Rendering score row for ${category}`),
+                    <ClassicScoreRow
                         key={category}
                         category={category}
                         score={scores[category]}
@@ -37,7 +38,7 @@ export default function ClassicScoreCard({ scores, suggestedScores, onScore }) {
             <div className="score-section">
                 <h4>Lower Section</h4>
                 {lower.map(category => (
-                    <ScoreRow
+                    <ClassicScoreRow
                         key={category}
                         category={category}
                         score={scores[category]}
