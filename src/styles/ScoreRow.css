@@ -3,12 +3,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 6px;
+  padding: 5px 5px 5px 5px;
   border: 2px solid transparent; /* Reserve space to prevent jiggling */
-  border-radius: 3px;
+  border-radius: 2px;
   user-select: none;
-  font-weight: 400;
-  font-size: 1rem;
   color: #ccc;
   background-color: red;
 }
@@ -16,24 +14,26 @@
 /* Highlight suggested scores without causing layout shift */
 .score-row-container.suggested {
   border-color: #a525fa;
+  background-color: #a525fa; /* Dark background for suggested scores */
   /*border-left: solid 6px #a525fa; */ /* Purple border for suggested scores */
 }
 
 /* Hover + click behavior */
-.score-row-container.clickable:hover,
+/* .score-row-container.clickable:hover,
 .score-row-container.clickable:focus {
   background-color: #333;
   cursor: pointer;
   outline: none;
-}
+} */
 
 .score-row-container.scored {
-  background-color: #222;
+  background-color: #ffffff;
   color: #aaa;
 }
 
 /* Category label area */
 .score-label {
+  /* border: #28a745 solid 1px; */
   display: flex;
   align-items: center;
   font-size: 1rem;

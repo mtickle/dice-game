@@ -28,8 +28,9 @@ export default function ScoreRow({
     return (
         <div className={containerClass}>
             <div
-                className={`score-row-container ${clickable ? 'clickable' : ''} ${showSuggested ? 'suggested' : ''
-                    }`}
+                className={containerClass}
+                // className={`score-row-container ${clickable ? 'clickable' : ''} ${showSuggested ? 'suggested' : ''
+                //     }`}
                 onClick={clickable ? () => onClick(category) : undefined}
                 aria-label={`${label} score${clickable ? ', clickable' : ''}`}
                 role={clickable ? 'button' : undefined}

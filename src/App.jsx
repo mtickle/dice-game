@@ -15,9 +15,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Row from 'react-bootstrap/Row';
 
 import DiceField from './components/DiceField';
-import GameLogPanel from './components/GameLogPanel';
 import HelperPanel from './components/HelperPanel';
-import StatsPanel from './components/StatsPanel';
 import StrategyPanel from './components/StrategyPanel';
 import UnifiedScoreSection from './components/UnifiedScoreSection';
 
@@ -76,8 +74,8 @@ function App() {
   const strategy = getStrategyAdvice(dice, scores);
 
   return (
-    <Container className="container-area">
-      < Navbar bg="dark" variant="dark" className="mb-4" >
+    <Container className="container container-area">
+      <Navbar bg="dark" variant="dark" className="mb-4" >
         <Container className="d-flex justify-content-between align-items-center">
           <Navbar.Brand className="d-flex align-items-center gap-2">
             <DiceBreakerLogo />
@@ -151,7 +149,7 @@ function App() {
 
         </Col>
       </Row>
-      <Row className="mt-4">
+      {/* <Row className="mt-4">
         <Col>
           <StatsPanel
             gameLog={gameLog}
@@ -163,7 +161,7 @@ function App() {
             prettyName={prettyName}
           />
         </Col>
-      </Row>
+      </Row> */}
     </Container >
   );
 }

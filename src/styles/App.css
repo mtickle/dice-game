@@ -4,13 +4,6 @@
   padding: 2rem;
 }
 
-header,
-footer {
-  background-color: #1f1f1f;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
 .dice-logo {
   animation: subtle-bounce 3s ease-in-out infinite;
   transform-origin: center;
@@ -34,5 +27,4 @@ footer {
 
 .container-area {
   border: 1px solid pink;
-  margin-top: 1rem;
 }
