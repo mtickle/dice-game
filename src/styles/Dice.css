@@ -192,28 +192,6 @@
   font-size: 20px;
 }
 
-.suggested-glow {
-  /* animation: pulseHighlight 1.5s infinite; */
-  /* border: 1px solid #ff0000; */
-  /* box-shadow: 0 0 2px #a7554aaa; */
-  border: 1px solid #0084ff;
-  background-color: #575858;
-}
-
-.suggested-left {
-  border-top: 1px solid #ce9bf8;
-  border-bottom: 1px solid #ce9bf8;
-  border-left: 1px solid #ce9bf8;
-  /* background-color: #5e5e5e; */
-}
-
-.suggested-right {
-  border-top: 1px solid #ce9bf8;
-  border-bottom: 1px solid #ce9bf8;
-  border-right: 1px solid #ce9bf8;
-  /* background-color: #5e5e5e; */
-}
-
 @keyframes flash {
   0% {
     opacity: 0;
