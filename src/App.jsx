@@ -1,12 +1,9 @@
+import '@styles/App.css';
+import '@styles/Dice.css';
+import '@styles/ScoreCardSection.css';
+import '@styles/ScoreRow.css';
+import '@styles/ScoreTotals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect } from 'react';
-import './styles/App.css';
-import './styles/ClassicScoreCard.css';
-import './styles/ClassicScoreRow.css';
-import './styles/Dice.css';
-//import './styles/ScoreRow.css';
-import './styles/ScoreTotals.css';
-
 import { useGameLogic } from './hooks/useGameLogic';
 import { getStrategyAdvice } from './utils/strategyUtils';
 import { DiceBreakerLogo, dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
@@ -16,24 +13,13 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Row from 'react-bootstrap/Row';
 
-import ClassicScoreCard from './components/ClassicScoreCard';
-import DiceField from './components/DiceField';
-import HelperPanel from './components/HelperPanel';
-import StrategyPanel from './components/StrategyPanel';
-import UnifiedScoreSection from './components/UnifiedScoreSection';
+import DiceField from '@components/DiceField';
+import HelperPanel from '@components/HelperPanel';
+import StrategyPanel from '@components/StrategyPanel';
+import UnifiedScoreSection from '@components/UnifiedScoreSection';
+
 
 function App() {
-
-  useEffect(() => {
-    // Clear the entire localStorage
-    localStorage.clear();
-
-    // Or if you only want to remove specific keys:
-    // localStorage.removeItem('yourGameStateKey');
-    // localStorage.removeItem('yourOtherKey');
-
-    console.log('localStorage cleared on game start');
-  }, []); // Empty dependency array means this runs once on mount
 
 
   const {
@@ -89,18 +75,38 @@ function App() {
           </span>
         </Container>
       </Navbar >
-      <Row>
+      {/* <FullPageLayout>
+        <ClassicScoreCard
+          scores={scores}
+          suggestedScores={suggestedScores}
+          applyScore={applyScore}
+          bonusCategory={bonusCategory}
+          bonusMessage={bonusMessage}
+          bonusFadingOut={bonusFadingOut}
+        />
+        <div style={{ flexBasis: '400px' }}>
+          <DiceField dice={dice} toggleHold={toggleHold} rollDice={rollDice} rollCount={rollCount} />
+          <StrategyPanel
+            strategy={strategy}
+            rollCount={rollCount}
+          />         
+        </div>
+      </FullPageLayout> */}
+      {/* <Row>
         <Col md={6}>
           <ClassicScoreCard
             scores={scores}
             suggestedScores={suggestedScores}
-            onScore={applyScore}
+            applyScore={applyScore}
+            bonusCategory={bonusCategory}
+            bonusMessage={bonusMessage}
+            bonusFadingOut={bonusFadingOut}
           />
         </Col>
         <Col md={6}>
 
         </Col>
-      </Row>
+      </Row> */}
       <Row>
         <Col md={3}>
           <UnifiedScoreSection

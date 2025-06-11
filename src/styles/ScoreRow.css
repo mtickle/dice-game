@@ -1,21 +1,17 @@
-/* Shared base style */
+/* This holds the scorable category name, the potential score and the actual score */
 .score-row-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 5px 5px 5px 5px;
-  border: 2px solid transparent; /* Reserve space to prevent jiggling */
+  border: 2px solid transparent;
   border-radius: 2px;
-  user-select: none;
-  color: #ccc;
   background-color: red;
 }
 
 /* Highlight suggested scores without causing layout shift */
 .score-row-container.suggested {
-  border-color: #a525fa;
-  background-color: #a525fa; /* Dark background for suggested scores */
-  /*border-left: solid 6px #a525fa; */ /* Purple border for suggested scores */
+  background-color: #797979;
+  /* border-color: #a525fa; */
 }
 
 /* Hover + click behavior */
@@ -36,12 +32,13 @@
   /* border: #28a745 solid 1px; */
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.95rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: inherit;
+  /* font-family: "Open Sans", monospace; */
+  color: #000000;
 }
 
 .bonus-badge {
@@ -63,7 +60,8 @@
   text-align: right;
   white-space: nowrap;
   font-size: 0.95rem;
-  color: #ccc;
+  font-style: italic;
+  color: #797979;
   transition: color 0.25s ease;
 }
 

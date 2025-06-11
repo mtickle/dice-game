@@ -1,3 +1,4 @@
+
 import UnifiedScoreRow from './UnifiedScoreRow';
 
 export default function ScoreCardSection({
@@ -22,7 +23,6 @@ export default function ScoreCardSection({
 
         <div className="scorecard-section">
             {categories.map((key) => {
-                console.log('Checking bonusBadge:', key, earnedBonuses?.[key]);
                 return (
                     <UnifiedScoreRow
                         key={key}

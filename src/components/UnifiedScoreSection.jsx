@@ -27,7 +27,7 @@ export default function UnifiedScoreSection({
     return (
         <Card>
             <Card.Header>{title}</Card.Header>
-            <Card.Body bg="Secondary">
+            <Card.Body className="scorecard-card-background">
                 <ScoreCardSection
                     categories={categories}
                     scores={scores}

@@ -1,62 +1,3 @@
-.scorecard {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  background: #f0f0f0;
-  padding: 2rem;
-  border-radius: 12px;
-}
-
-.score-section {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 300px;
-}
-
-.score-section h4 {
-  text-align: center;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.score-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.6rem;
-  border-bottom: 1px dashed #ddd;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.score-row:hover {
-  background-color: #f9f9f9;
-}
-
-.score-row.suggested {
-  background-color: #fff8d6;
-}
-
-.score-row.scored {
-  background-color: #eee;
-  color: #666;
-  cursor: default;
-}
-
-.score-totals {
-  margin-top: 1rem;
-  font-weight: bold;
-}
-
-.score-bonus {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .classic-scorecard {
   background: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
   background-size: cover;
@@ -65,4 +6,13 @@
   font-family: "Press Start 2P", monospace;
   color: #f0e7d5;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+  margin: 20px auto;
+  border: 4px solid #b48a56;
+}
+
+.classic-scorecard h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 2px #000;
 }

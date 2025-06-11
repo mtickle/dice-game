@@ -2,28 +2,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 12px 18px;
   margin-bottom: 8px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  border: 2px solid #f0e7d5;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  font-family: "Press Start 2P", monospace;
+  color: #f0e7d5;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.classic-score-row.clickable:hover {
+  background-color: rgba(240, 231, 213, 0.15);
   cursor: pointer;
 }
 
-.classic-score-row:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: scale(1.01);
-}
-
 .classic-score-row.scored {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: #666;
+  background-color: rgba(255, 255, 255, 0.2);
   color: #aaa;
 }
 
 .classic-score-row.suggested {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-color: #f0e7d5;
-  box-shadow: 0 0 6px 1px #f0e7d588;
+  box-shadow: 0 0 12px rgba(255, 255, 0, 0.6);
 }

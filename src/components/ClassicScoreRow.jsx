@@ -1,19 +1,19 @@
+import '@/styles/ClassicScoreRow.css';
 
-import { iconMap, prettyName } from '../utils/utils';
-
-export default function ClassicScoreRow({ category, score, suggested, onClick }) {
-    const isScored = score !== null;
-    const isSuggested = suggested !== undefined;
+export default function ClassicScoreRow({ label, score, onClick, clickable, suggested }) {
+    const handleClick = () => {
+        if (clickable && onClick) {
+            onClick();
+        }
+    };
 
     return (
         <div
-            className={`classic-score-row ${isScored ? 'scored' : ''} ${isSuggested ? 'suggested' : ''}`}
-            onClick={!isScored ? onClick : undefined}
+            className={`classic-score-row ${clickable ? 'clickable' : ''} ${score !== null ? 'scored' : ''} ${suggested ? 'suggested' : ''}`}
+            onClick={handleClick}
         >
-            <span className="label">
-                {iconMap[category]} {prettyName(category)}
-            </span>
-            <span className="value">{isScored ? score : isSuggested ? suggested : ''}</span>
+            <div className="label">{label}</div>
+            <div className="value">{score !== null ? score : (suggested ? suggested : '')}</div>
         </div>
     );
 }
