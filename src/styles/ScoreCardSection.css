@@ -2,6 +2,13 @@
   background-color: white;
 }
 
+.scorecard-card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: black;
+}
+
 .scorecard-card-background {
   background-color: white;
+  border: 1px solid red;
 }
