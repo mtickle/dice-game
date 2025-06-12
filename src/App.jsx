@@ -6,18 +6,17 @@ import '@styles/ScoreTotals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useGameLogic } from './hooks/useGameLogic';
 import { getStrategyAdvice } from './utils/strategyUtils';
-import { DiceBreakerLogo, dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
+import { dotPositions, lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
 import Row from 'react-bootstrap/Row';
 
 import DiceField from '@components/DiceField';
 import HelperPanel from '@components/HelperPanel';
 import StrategyPanel from '@components/StrategyPanel';
 import UnifiedScoreSection from '@components/UnifiedScoreSection';
-
+import Header from './components/Header';
 
 function App() {
 
@@ -64,17 +63,20 @@ function App() {
 
   return (
     <Container className="container container-area">
-      <Navbar bg="dark" variant="dark" className="mb-4" >
+
+      <Header />
+
+      {/* <Navbar bg="dark" variant="dark" className="mb-4" >
         <Container className="d-flex justify-content-between align-items-center">
           <Navbar.Brand className="d-flex align-items-center gap-2">
-            <DiceBreakerLogo />
+
             <span className="fw-bold text-gradient">Dice Breaker</span>
           </Navbar.Brand>
           <span className="text-light fst-italic d-none d-md-block">
             Crack the combos. Rule the roll.
           </span>
         </Container>
-      </Navbar >
+      </Navbar > */}
       {/* <FullPageLayout>
         <ClassicScoreCard
           scores={scores}
