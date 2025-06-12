@@ -1,5 +1,4 @@
-
-import UnifiedScoreRow from './UnifiedScoreRow';
+import ScoreRow from './ScoreRow';
 
 export default function ScoreCardSection({
     categories,
@@ -10,43 +9,30 @@ export default function ScoreCardSection({
     turnComplete,
     prettyName,
     isUpperSection,
-    // bonusCategory = null,
-    // upperSubtotal = 0,
-    // bonus = 0,
-    // upperTotal = 0,
     totalsNode = null,
     earnedBonuses,
 }) {
-
-
     return (
-
-        <div className="scorecard-section">
-            {categories.map((key) => {
-                return (
-                    <UnifiedScoreRow
-                        key={key}
-                        category={key}
-                        label={prettyName(key)}
-                        score={scores[key]}
-                        onClick={applyScore}
-                        clickable={scores[key] === null && rollCount > 0 && !turnComplete}
-                        bonusBadge={earnedBonuses?.[key]}
-                        suggested={suggestedScores?.[key]}
-                        isUpperSection={isUpperSection}
-                    />
-                );
-            })}
-
+        <div className="flex flex-col gap-2 bg-white p-3 rounded border border-gray-300">
+            {categories.map((key) => (
+                <ScoreRow
+                    key={key}
+                    category={key}
+                    label={prettyName(key)}
+                    score={scores[key]}
+                    onClick={applyScore}
+                    clickable={scores[key] === null && rollCount > 0 && !turnComplete}
+                    bonusBadge={earnedBonuses?.[key]}
+                    suggested={suggestedScores?.[key]}
+                    isUpperSection={isUpperSection}
+                />
+            ))}
 
             {totalsNode && (
-                <div className="mt-2">
+                <div className="mt-3">
                     {totalsNode}
                 </div>
             )}
-
         </div>
-
-
     );
 }

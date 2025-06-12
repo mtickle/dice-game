@@ -38,8 +38,7 @@ export default function UnifiedSectionTotals({
     }, [rows]);
 
     return (
-        <div>
-            <div className="mb-1 score-total-section">&nbsp;</div>
+        <div className="space-y-1">
             {rows.map(({ label, value }) => {
                 if (value == null) return null;
 
@@ -49,22 +48,19 @@ export default function UnifiedSectionTotals({
                 return (
                     <div
                         key={label}
-                        className={`total-row ${isAnimating ? 'score-animate' : ''}`}
-                        aria-label={`${label} total`}
-                        role="group"
+                        className={`flex justify-between items-center px-3 py-2 border border-gray-300 rounded bg-white transition-colors duration-300 ${isAnimating ? 'text-green-600' : 'text-gray-800'}`}
                     >
-                        <div className="total-label d-flex align-items-center gap-2">
+                        <div className="flex items-center gap-2 font-semibold text-sm">
                             <em>{label}</em>
                             {isBonusRow && <BonusProgressBar upperTotal={upperSubtotal} />}
                         </div>
 
                         {!isBonusRow && (
-                            <div className="total-value">{displayValues[label]}</div>
+                            <div className="text-right font-mono text-base">{displayValues[label]}</div>
                         )}
                     </div>
                 );
             })}
-
         </div>
     );
 }

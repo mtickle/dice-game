@@ -1,8 +1,8 @@
 import '@styles/App.css';
 import '@styles/Dice.css';
-import '@styles/ScoreCardSection.css';
-import '@styles/ScoreRow.css';
-import '@styles/ScoreTotals.css';
+// import '@styles/ScoreCardSection.css';
+// // import '@styles/ScoreRow.css';
+// import '@styles/ScoreTotals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useGameLogic } from './hooks/useGameLogic';
 import { getStrategyAdvice } from './utils/strategyUtils';
