@@ -1,6 +1,6 @@
 {
   "name": "dice-game",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.1.10",
+    "@tailwindcss/vite": "^4.1.10",
     "bootstrap": "^5.3.6",
     "clsx": "^2.1.1",
     "react": "^18.2.0",
@@ -20,7 +21,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.5.2",
-    "tailwindcss": "4.1.10",
+    "tailwindcss": "^4.1.10",
     "vite": "^6.2.0"
   }
 }

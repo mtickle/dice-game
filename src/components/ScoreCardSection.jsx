@@ -1,3 +1,4 @@
+import { getPrettyName } from '../utils/utils';
 import ScoreRow from './ScoreRow';
 
 export default function ScoreCardSection({
@@ -18,7 +19,7 @@ export default function ScoreCardSection({
                 <ScoreRow
                     key={key}
                     category={key}
-                    label={prettyName(key)}
+                    label={getPrettyName(key)}
                     score={scores[key]}
                     onClick={applyScore}
                     clickable={scores[key] === null && rollCount > 0 && !turnComplete}

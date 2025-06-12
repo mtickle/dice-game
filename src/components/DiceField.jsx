@@ -1,55 +1,21 @@
-// DiceField.jsx
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-
-
-export default function DiceField({ dice, toggleHold, rollDice, rollCount, dotPositions, isGameOver, resetGame }) {
-
+export default function DiceField({ dice, rollDice, toggleHold }) {
     return (
-
-        <div>
-            <Card className='mb-3'>
-                <Card.Header>Play Field</Card.Header>
-                <Card.Body bg="Secondary">
-                    <div className="dice-field">
-                        <div className="field">
-                            {dice.map((die, index) => (
-                                <div
-                                    className={`die ${die.held ? 'held' : ''} ${die.value === null ? 'blank' : ''} ${die.rolling ? 'rolling' : ''}`}
-                                    key={index}
-                                    onClick={() => toggleHold(index)}
-                                >
-                                    {[...Array(9)].map((_, i) => (
-                                        <span
-                                            key={i}
-                                            className="dot"
-                                            style={{
-                                                visibility:
-                                                    die.value !== null && dotPositions[die.value]?.includes(i)
-                                                        ? 'visible'
-                                                        : 'hidden',
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-
-                            ))}
-                        </div>
-                    </div>
-                    <Button variant="secondary" size="md" width="100%" onClick={rollDice} disabled={rollCount >= 3}>
-                        Roll Dice  ({rollCount}/3)
-                    </Button>
-
-                    {isGameOver && (
-                        <div className="game-over">
-                            <h2>Game Over! 🎉</h2>
-                            <button onClick={resetGame}>New Game</button>
-                        </div>
-                    )}
-
-                </Card.Body>
-            </Card>
-
+        <div className="flex flex-wrap justify-center gap-4 mb-4">
+            {dice.map((die, index) => (
+                <div
+                    key={index}
+                    className={`w-20 h-20 flex items-center justify-center rounded border-2 ${die.held ? 'border-green-500' : 'border-gray-400'} bg-white shadow-md text-2xl font-bold`}
+                    onClick={() => toggleHold(index)}
+                >
+                    {die.value || '-'}
+                </div>
+            ))}
+            <button
+                onClick={rollDice}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
+            >
+                Roll Dice
+            </button>
         </div>
     );
 }

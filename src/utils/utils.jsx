@@ -38,6 +38,9 @@ export const prettyName = (category) => {
     return names[category] || category;
 };
 
+export function getPrettyName(category) {
+}
+
 export const prettyNameWords = (category) => {
     const names = {
         ones: 'Aces',
