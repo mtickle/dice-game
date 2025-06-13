@@ -1,57 +1,89 @@
+// components/ScoreCardLayout.jsx
+
 import DiceField from './DiceField';
 import ScoreCardSection from './ScoreCardSection';
 import SectionTotals from './SectionTotals';
-import StrategyPanel from './StrategyPanel';
+import SuggestionsPanel from './SuggestionsPanel';
 
-export default function ScoreCardLayout(props) {
+export default function ScoreCardLayout({
+    upperCategories,
+    lowerCategories,
+    scores,
+    suggestedScores,
+    applyScore,
+    rollCount,
+    turnComplete,
+    prettyName,
+    earnedBonuses,
+    upperSubtotal,
+    bonus,
+    upperTotal,
+    lowerTotal,
+    grandTotal,
+    dice,
+    rollDice,
+    toggleHold,
+    suggestions,
+}) {
+
+
     return (
-        <div className="flex flex-col items-center gap-4 w-full max-w-6xl">
+        <div className="flex flex-col items-center p-4 bg-white min-h-screen">
+            <h1 className="text-3xl font-bold mb-6 text-black">YAHTZEE</h1>
 
-            <DiceField
-                dice={props.dice}
-                rollDice={props.rollDice}
-                toggleHold={props.toggleHold}
-            />
+            <div className="flex flex-row justify-center items-start gap-8">
 
-            <StrategyPanel advice={props.gameAdvice} />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                <div className="p-4 bg-white border border-gray-300 rounded shadow">
-                    <h2 className="text-xl font-semibold mb-2">Upper Section</h2>
+                {/* Upper Section */}
+                <div className="w-[300px]">
                     <ScoreCardSection
-                        categories={['ones', 'twos', 'threes', 'fours', 'fives', 'sixes']}
-                        scores={props.scores}
-                        suggestedScores={props.suggestedScores}
-                        applyScore={props.applyScore}
-                        rollCount={props.rollCount}
-                        turnComplete={props.turnComplete}
-                        prettyName={props.prettyName}
+                        categories={upperCategories}
+                        scores={scores}
+                        suggestedScores={suggestedScores}
+                        applyScore={applyScore}
+                        rollCount={rollCount}
+                        turnComplete={turnComplete}
+                        prettyName={prettyName}
                         isUpperSection={true}
-                        earnedBonuses={props.earnedBonuses}
-                    />
-                    <SectionTotals
-                        upperSubtotal={props.upperSubtotal}
-                        bonus={props.bonus}
-                        upperTotal={props.upperTotal}
+                        earnedBonuses={earnedBonuses}
+                        totalsNode={
+                            <SectionTotals
+                                upperSubtotal={upperSubtotal}
+                                bonus={bonus}
+                                upperTotal={upperTotal}
+                            />
+                        }
                     />
                 </div>
 
-                <div className="p-4 bg-white border border-gray-300 rounded shadow">
-                    <h2 className="text-xl font-semibold mb-2">Lower Section</h2>
-                    <ScoreCardSection
-                        categories={['threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance', 'onePair', 'twoPair']}
-                        scores={props.scores}
-                        suggestedScores={props.suggestedScores}
-                        applyScore={props.applyScore}
-                        rollCount={props.rollCount}
-                        turnComplete={props.turnComplete}
-                        prettyName={props.prettyName}
-                        isUpperSection={false}
-                        earnedBonuses={props.earnedBonuses}
+                {/* Dice & Suggestions */}
+                <div className="flex flex-col items-center gap-4">
+                    <DiceField
+                        dice={dice}
+                        rollDice={rollDice}
+                        toggleHold={toggleHold}
+                        rollCount={rollCount}
                     />
-                    <SectionTotals
-                        lowerTotal={props.lowerTotal}
-                        grandTotal={props.grandTotal}
+                    <SuggestionsPanel suggestions={suggestions} />
+                </div>
+
+                {/* Lower Section */}
+                <div className="w-[300px]">
+                    <ScoreCardSection
+                        categories={lowerCategories}
+                        scores={scores}
+                        suggestedScores={suggestedScores}
+                        applyScore={applyScore}
+                        rollCount={rollCount}
+                        turnComplete={turnComplete}
+                        prettyName={prettyName}
+                        isUpperSection={false}
+                        earnedBonuses={earnedBonuses}
+                        totalsNode={
+                            <SectionTotals
+                                lowerTotal={lowerTotal}
+                                grandTotal={grandTotal}
+                            />
+                        }
                     />
                 </div>
             </div>

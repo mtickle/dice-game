@@ -44,6 +44,7 @@ export function useGameLogic() {
     ];
 
     const rollDice = () => {
+        console.log('Rolling dice...');
         if (rollCount >= 3 || turnComplete || isGameOver) return;
 
         // Mark dice as "rolling"

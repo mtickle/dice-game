@@ -1,3 +1,5 @@
+// components/ScoreCardSection.jsx
+
 import { getPrettyName } from '../utils/utils';
 import ScoreRow from './ScoreRow';
 
@@ -10,11 +12,11 @@ export default function ScoreCardSection({
     turnComplete,
     prettyName,
     isUpperSection,
-    totalsNode = null,
     earnedBonuses,
+    totalsNode,
 }) {
     return (
-        <div className="flex flex-col gap-2 bg-white p-3 rounded border border-gray-300">
+        <div className="space-y-1">
             {categories.map((key) => (
                 <ScoreRow
                     key={key}
@@ -29,11 +31,7 @@ export default function ScoreCardSection({
                 />
             ))}
 
-            {totalsNode && (
-                <div className="mt-3">
-                    {totalsNode}
-                </div>
-            )}
+            {totalsNode && <div className="mt-2">{totalsNode}</div>}
         </div>
     );
 }

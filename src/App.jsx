@@ -1,5 +1,7 @@
+import Header from './components/Header';
 import ScoreCardLayout from './components/ScoreCardLayout';
 import { useGameLogic } from './hooks/useGameLogic';
+import { lowerCategories, upperCategories } from './utils/utils';
 
 export default function App() {
   const {
@@ -23,9 +25,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center p-4">
-      <h1 className="text-3xl font-bold mb-4">🎲 Dice Breaker</h1>
+
+      <Header />
 
       <ScoreCardLayout
+        upperCategories={upperCategories}
+        lowerCategories={lowerCategories}
         dice={dice}
         rollDice={rollDice}
         toggleHold={toggleHold}
