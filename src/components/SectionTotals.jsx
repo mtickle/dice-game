@@ -1,4 +1,4 @@
-export default function UnifiedSectionTotals({
+export default function SectionTotals({
     upperSubtotal,
     bonus,
     upperTotal,

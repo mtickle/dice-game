@@ -1,7 +1,7 @@
 import DiceField from './DiceField';
 import ScoreCardSection from './ScoreCardSection';
+import SectionTotals from './SectionTotals';
 import StrategyPanel from './StrategyPanel';
-import UnifiedSectionTotals from './UnifiedSectionTotals';
 
 export default function ScoreCardLayout(props) {
     return (
@@ -29,7 +29,7 @@ export default function ScoreCardLayout(props) {
                         isUpperSection={true}
                         earnedBonuses={props.earnedBonuses}
                     />
-                    <UnifiedSectionTotals
+                    <SectionTotals
                         upperSubtotal={props.upperSubtotal}
                         bonus={props.bonus}
                         upperTotal={props.upperTotal}
@@ -39,7 +39,7 @@ export default function ScoreCardLayout(props) {
                 <div className="p-4 bg-white border border-gray-300 rounded shadow">
                     <h2 className="text-xl font-semibold mb-2">Lower Section</h2>
                     <ScoreCardSection
-                        categories={['threeOfKind', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance', 'onePair', 'twoPair']}
+                        categories={['threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance', 'onePair', 'twoPair']}
                         scores={props.scores}
                         suggestedScores={props.suggestedScores}
                         applyScore={props.applyScore}
@@ -49,7 +49,7 @@ export default function ScoreCardLayout(props) {
                         isUpperSection={false}
                         earnedBonuses={props.earnedBonuses}
                     />
-                    <UnifiedSectionTotals
+                    <SectionTotals
                         lowerTotal={props.lowerTotal}
                         grandTotal={props.grandTotal}
                     />

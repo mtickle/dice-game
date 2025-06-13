@@ -1,6 +1,6 @@
 // components/ScoreRow.jsx
-import { useScoreAnimation } from '../hooks/useScoreAnimation';
-import { iconLibrary } from '../icons/icons';
+import { useScoreAnimation } from '../../hooks/useScoreAnimation';
+import { iconLibrary } from '../../icons/icons';
 
 export default function UnifiedScoreRow({
     category,

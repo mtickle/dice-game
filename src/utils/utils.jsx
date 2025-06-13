@@ -39,6 +39,7 @@ export const prettyName = (category) => {
 };
 
 export function getPrettyName(category) {
+    return prettyName(category);
 }
 
 export const prettyNameWords = (category) => {

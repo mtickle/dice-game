@@ -42,7 +42,7 @@ export default function ScoreRow({
                 {isUpperSection && Icon && (
                     <Icon size={20} className="mr-2 text-gray-600" />
                 )}
-                {label}
+                {label}:
                 {bonusBadge && (
                     <span className="ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
                         +10

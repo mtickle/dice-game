@@ -1,6 +1,6 @@
 
 import Card from 'react-bootstrap/Card';
-import ScoreCardSection from './ScoreCardSection';
+import ScoreCardSection from '../ScoreCardSection';
 import UnifiedSectionTotals from './UnifiedSectionTotals';
 
 export default function UnifiedScoreSection({
