@@ -1,3 +1,5 @@
+// components/ScoreRow.jsx
+
 export default function ScoreRow({
     label,
     score,
@@ -9,10 +11,10 @@ export default function ScoreRow({
     const isScored = score != null;
 
     const rowClasses = [
-        "flex justify-between items-center p-2 border rounded select-none transition",
-        clickable ? "cursor-pointer bg-yellow-100 hover:bg-yellow-200" : "cursor-default bg-white",
-        isScored ? "bg-gray-100" : "",
-        suggested != null && !isScored ? "border-green-400 bg-green-100" : "border-gray-300"
+        "flex justify-between items-center px-3 py-2 border-b border-dashed",
+        clickable ? "cursor-pointer hover:bg-yellow-100" : "cursor-default",
+        isScored ? "bg-gray-100" : "bg-white",
+        suggested != null && !isScored ? "bg-green-100 border-green-400" : ""
     ].join(" ");
 
     return (
@@ -20,7 +22,7 @@ export default function ScoreRow({
             onClick={clickable ? onClick : undefined}
             className={rowClasses}
         >
-            <div className="font-semibold">{label}</div>
+            <div className="font-semibold text-gray-800">{label}</div>
             <div className="flex items-center space-x-2">
                 {bonusBadge && <div className="text-green-500 font-bold">+10</div>}
                 <div>{isScored ? score : (suggested != null ? suggested : '')}</div>

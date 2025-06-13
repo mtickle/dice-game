@@ -1,3 +1,4 @@
+import Header from './components/Header';
 import ScoreCardLayout from './components/ScoreCardLayout';
 import useGameLogic from './hooks/useGameLogic';
 import { lowerCategories, prettyName, upperCategories } from './utils/utils';
@@ -22,8 +23,9 @@ export default function App() {
   } = useGameLogic();
 
   return (
+
     <div className="min-h-screen bg-yellow-50 flex flex-col items-center p-4">
-      <h1 className="text-4xl font-bold mb-6">Retro Yahtzee</h1>
+      <Header />
 
       <ScoreCardLayout
         upperCategories={upperCategories}

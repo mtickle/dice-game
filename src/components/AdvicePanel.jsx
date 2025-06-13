@@ -5,7 +5,7 @@ export default function AdvicePanel({ strategy, rollCount, suggestedScores, pret
         <div className="flex flex-col gap-4 w-[300px]">
 
             {/* Strategy Advice */}
-            <div className="bg-gray-900 text-white shadow-md rounded-lg p-4">
+            <div className="bg-yellow-100 border border-yellow-400 p-4 rounded-xl shadow-md w-[300px]">
                 <h2 className="text-lg font-bold mb-2">Turn Analysis</h2>
                 {rollCount === 0 ? (
                     <p className="text-gray-400">Roll the dice to get strategic advice.</p>

@@ -5,8 +5,6 @@
 
 body {
   font-family: "Special Elite", monospace;
-  background-color: #f9f6ee;
-  color: #111;
 }
 
 @import "tailwindcss";

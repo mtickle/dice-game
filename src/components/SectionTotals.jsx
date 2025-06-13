@@ -6,7 +6,7 @@ export function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
     ];
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-2 bg-[#fffaf0] p-3 rounded-lg border border-[#e0d7c3] shadow-inner">
             {rows.map(({ label, value }) => (
                 <div
                     key={label}
@@ -27,7 +27,7 @@ export function LowerSectionTotals({ lowerTotal, grandTotal }) {
     ];
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-2 bg-[#fffaf0] p-3 rounded-lg border border-[#e0d7c3] shadow-inner">
             {rows.map(({ label, value }) => (
                 <div
                     key={label}

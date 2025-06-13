@@ -13,7 +13,7 @@ export default function ScoreCardSection({
     totalsNode = null,
 }) {
     return (
-        <div className="space-y-2">
+        <div className="scorecard-section bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
             {categories.map((key) => (
                 <ScoreRow
                     key={key}
