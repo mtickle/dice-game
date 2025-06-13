@@ -29,7 +29,6 @@ export default function ScoreCardLayout({
 
     return (
         <div className="flex flex-col items-center p-4 bg-white min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-black">YAHTZEE</h1>
 
             <div className="flex flex-row justify-center items-start gap-8">
 
