@@ -1,52 +1,49 @@
-import Header from './components/Header';
 import ScoreCardLayout from './components/ScoreCardLayout';
-import { useGameLogic } from './hooks/useGameLogic';
-import { lowerCategories, upperCategories } from './utils/utils';
+import useGameLogic from './hooks/useGameLogic';
+import { lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 export default function App() {
   const {
-    dice,
-    rollDice,
-    toggleHold,
     scores,
-    suggestedScores,
-    applyScore,
+    dice,
     rollCount,
     turnComplete,
-    prettyName,
+    rollDice,
+    toggleHold,
+    applyScore,
+    suggestedScores,
+    earnedBonuses,
     upperSubtotal,
     bonus,
     upperTotal,
     lowerTotal,
     grandTotal,
-    earnedBonuses,
-    gameAdvice
+    adviceText,
   } = useGameLogic();
 
   return (
-    <div className="min-h-screen bg-white text-black flex flex-col items-center p-4">
-
-      <Header />
+    <div className="min-h-screen bg-yellow-50 flex flex-col items-center p-4">
+      <h1 className="text-4xl font-bold mb-6">Retro Yahtzee</h1>
 
       <ScoreCardLayout
         upperCategories={upperCategories}
         lowerCategories={lowerCategories}
-        dice={dice}
-        rollDice={rollDice}
-        toggleHold={toggleHold}
         scores={scores}
         suggestedScores={suggestedScores}
         applyScore={applyScore}
         rollCount={rollCount}
         turnComplete={turnComplete}
         prettyName={prettyName}
+        earnedBonuses={earnedBonuses}
         upperSubtotal={upperSubtotal}
         bonus={bonus}
         upperTotal={upperTotal}
         lowerTotal={lowerTotal}
         grandTotal={grandTotal}
-        earnedBonuses={earnedBonuses}
-        gameAdvice={gameAdvice}
+        dice={dice}
+        rollDice={rollDice}
+        toggleHold={toggleHold}
+        suggestions={adviceText}
       />
     </div>
   );

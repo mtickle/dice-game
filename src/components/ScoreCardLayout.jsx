@@ -1,9 +1,9 @@
 // components/ScoreCardLayout.jsx
 
+import AdvicePanel from './AdvicePanel';
 import DiceField from './DiceField';
 import ScoreCardSection from './ScoreCardSection';
-import SectionTotals from './SectionTotals';
-import SuggestionsPanel from './SuggestionsPanel';
+import { LowerSectionTotals, UpperSectionTotals } from './SectionTotals';
 
 export default function ScoreCardLayout({
     upperCategories,
@@ -45,7 +45,7 @@ export default function ScoreCardLayout({
                         isUpperSection={true}
                         earnedBonuses={earnedBonuses}
                         totalsNode={
-                            <SectionTotals
+                            <UpperSectionTotals
                                 upperSubtotal={upperSubtotal}
                                 bonus={bonus}
                                 upperTotal={upperTotal}
@@ -62,7 +62,12 @@ export default function ScoreCardLayout({
                         toggleHold={toggleHold}
                         rollCount={rollCount}
                     />
-                    <SuggestionsPanel suggestions={suggestions} />
+                    <AdvicePanel
+                        strategy={suggestions}
+                        rollCount={rollCount}
+                        suggestedScores={suggestedScores}
+                        prettyName={prettyName}
+                    />
                 </div>
 
                 {/* Lower Section */}
@@ -78,7 +83,7 @@ export default function ScoreCardLayout({
                         isUpperSection={false}
                         earnedBonuses={earnedBonuses}
                         totalsNode={
-                            <SectionTotals
+                            <LowerSectionTotals
                                 lowerTotal={lowerTotal}
                                 grandTotal={grandTotal}
                             />

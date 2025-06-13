@@ -2,7 +2,19 @@ import { useState } from 'react';
 import { createGameLogEntry } from '../utils/gameLogUtils';
 import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
 import { getStrategyAdvice } from '../utils/strategyUtils';
-import { initialScores } from '../utils/utils';
+import { initialScores, lowerCategories, upperCategories } from '../utils/utils';
+
+// Totals calculator helper function
+function calculateTotals(scores) {
+    const upperSubtotal = upperCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
+    const bonus = upperSubtotal >= 63 ? 35 : 0;
+    const upperTotal = upperSubtotal + bonus;
+
+    const lowerTotal = lowerCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
+    const grandTotal = upperTotal + lowerTotal;
+
+    return { upperSubtotal, bonus, upperTotal, lowerTotal, grandTotal };
+}
 
 // Helpers for localStorage
 const loadGameLog = () => {
@@ -25,16 +37,14 @@ export function useGameLogic() {
     const [dice, setDice] = useState(Array(5).fill().map(() => ({ value: null, held: false })));
     const [rollCount, setRollCount] = useState(0);
     const [turnComplete, setTurnComplete] = useState(false);
-    const [bonusCategory, setBonusCategory] = useState(null);
-    const [bonusMessage, setBonusMessage] = useState('');
     const [earnedBonuses, setEarnedBonuses] = useState({});
-    const [bonusFadingOut, setBonusFadingOut] = useState(false);
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
     const [gameLog, setGameLog] = useState(loadGameLog());
 
     const isGameOver = Object.values(scores).every(score => score !== null);
     const suggestedScores = calculateSuggestedScores(dice, scores);
+    const totals = calculateTotals(scores);
 
     const qualifyingFirstRollBonusCategories = [
         'fullHouse',
@@ -44,14 +54,12 @@ export function useGameLogic() {
     ];
 
     const rollDice = () => {
-        console.log('Rolling dice...');
         if (rollCount >= 3 || turnComplete || isGameOver) return;
 
         // Mark dice as "rolling"
         const diceWithAnimation = dice.map(d => d.held ? d : { ...d, rolling: true });
         setDice(diceWithAnimation);
 
-        // Wait briefly to let animation play
         setTimeout(() => {
             const newDice = diceWithAnimation.map(d =>
                 d.held
@@ -63,9 +71,8 @@ export function useGameLogic() {
 
             const advice = getStrategyAdvice(newDice, scores);
             setAdviceText(advice);
-        }, 300); // 300ms matches animation duration
+        }, 300);
     };
-
 
     const toggleHold = (index) => {
         if (rollCount === 0 || turnComplete) return;
@@ -79,20 +86,14 @@ export function useGameLogic() {
         const isFirstRollBonus = rollCount === 1 && qualifyingFirstRollBonusCategories.includes(category);
 
         if (isFirstRollBonus) {
-            score += 10; // Apply first roll bonus
-            console.log(`First roll bonus applied for category: ${category}`);
-            setEarnedBonuses(prev => {
-                const updated = { ...prev, [category]: true };
-                console.log('earnedBonuses updated:', updated);
-                return updated;
-            });
+            score += 10;
+            setEarnedBonuses(prev => ({ ...prev, [category]: true }));
         }
 
         const updatedScores = { ...scores, [category]: score };
         setScores(updatedScores);
         setTurnComplete(true);
 
-        //--- Create game log entry
         const logEntry = createGameLogEntry({
             type: 'score',
             player: 'player',
@@ -112,7 +113,6 @@ export function useGameLogic() {
             setDice(Array(5).fill().map(() => ({ value: null, held: false })));
             setRollCount(0);
             setTurnComplete(false);
-            setBonusCategory(null);
             setAdviceText('');
             setTurn(prev => prev + 1);
         }, 100);
@@ -125,6 +125,8 @@ export function useGameLogic() {
         setTurnComplete(false);
         setGameLog([]);
         setTurn(1);
+        setAdviceText('');
+        setEarnedBonuses({});
     };
 
     const resetGameLog = () => {
@@ -133,15 +135,12 @@ export function useGameLogic() {
     };
 
     return {
-        players: [], // future expansion
+        players: [],
         initialScores,
         scores,
         dice,
         rollCount,
         turnComplete,
-        bonusCategory,
-        bonusMessage,
-        bonusFadingOut,
         rollDice,
         toggleHold,
         applyScore,
@@ -153,10 +152,8 @@ export function useGameLogic() {
         turn,
         gameLog,
         earnedBonuses,
+        ...totals,  // ✅ Totals now exposed cleanly
     };
-
-
-
 }
 
 export default useGameLogic;

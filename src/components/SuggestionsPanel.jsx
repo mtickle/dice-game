@@ -1,16 +1,21 @@
-export default function SuggestionsPanel({ advice }) {
-    if (!advice) return null;
+export default function SuggestionsPanel({ suggestions }) {
+    if (!suggestions || Object.keys(suggestions).length === 0) return null;
 
     return (
-        <div className="w-full max-w-3xl bg-yellow-100 border border-yellow-400 text-yellow-900 p-4 rounded shadow-md mb-4">
-            <h2 className="font-bold mb-2 text-lg">AI Suggestion:</h2>
-            <p className="text-sm">{advice.recommendation}</p>
+        <div className="w-[300px] bg-white rounded-lg shadow-md p-4 border border-gray-200">
+            <h2 className="text-lg font-bold mb-2 border-b border-gray-300 pb-1 text-gray-800">Suggested Scores</h2>
 
-            {advice.explanation && (
-                <div className="mt-2 text-xs text-yellow-800">
-                    <strong>Why:</strong> {advice.explanation}
-                </div>
-            )}
+            <div className="space-y-2">
+                {Object.entries(suggestions).map(([category, value]) => (
+                    <div
+                        key={category}
+                        className="flex justify-between items-center text-sm px-2 py-1 rounded bg-gray-50 hover:bg-yellow-100 transition"
+                    >
+                        <span className="font-medium text-gray-700">{category}</span>
+                        <span className="font-mono text-gray-900">{value}</span>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
