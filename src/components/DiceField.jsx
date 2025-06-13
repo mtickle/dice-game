@@ -9,7 +9,10 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount }) {
                 {dice.map((die, index) => (
                     <div
                         key={index}
-                        className={`cursor-pointer ${die.held ? 'opacity-50 border-yellow-300' : 'opacity-100'}`}
+                        className={`cursor-pointer transform transition-transform duration-150 ${die.held
+                            ? 'scale-105 border-1 border-green-500 rounded-lg shadow-lg'
+                            : 'hover:scale-105'
+                            }`}
                         onClick={() => toggleHold(index)}
                     >
                         <Dice value={die.value} />
