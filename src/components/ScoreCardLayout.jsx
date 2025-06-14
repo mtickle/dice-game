@@ -26,9 +26,10 @@ export default function ScoreCardLayout({
     suggestions,
 }) {
 
+    // color for later bg-[#f5f0e6]
 
     return (
-        <div className="flex flex-col items-center p-4 bg-[#f5f0e6] min-h-screen">
+        <div className="flex flex-col items-center p-4  min-h-screen">
 
             <div className="flex flex-row justify-center items-start gap-8">
 

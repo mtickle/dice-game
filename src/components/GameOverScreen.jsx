@@ -1,5 +1,3 @@
-// components/GameOverScreen.jsx
-
 export default function GameOverScreen({ grandTotal, upperTotal, lowerTotal, bonus, onReset }) {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-paper p-8 text-center">
@@ -20,8 +18,6 @@ export default function GameOverScreen({ grandTotal, upperTotal, lowerTotal, bon
                     <span>Grand Total:</span> <span>{grandTotal}</span>
                 </div>
             </div>
-
-            <div className="mt-8 text-3xl font-mono text-green-700">🎲 High Roller! 🎲</div>
 
             <button
                 onClick={onReset}

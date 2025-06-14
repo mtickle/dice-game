@@ -1,3 +1,4 @@
+import GameOverScreen from './components/GameOverScreen';
 import Header from './components/Header';
 import ScoreCardLayout from './components/ScoreCardLayout';
 import useGameLogic from './hooks/useGameLogic';
@@ -20,33 +21,47 @@ export default function App() {
     lowerTotal,
     grandTotal,
     adviceText,
+    resetGame,
+    isGameOver
   } = useGameLogic();
 
   return (
 
-    <div className="min-h-screen bg-yellow-50 flex flex-col items-center p-4">
+    <div className="min-h-screen bg-white flex flex-col items-center p-4">
+
       <Header />
 
-      <ScoreCardLayout
-        upperCategories={upperCategories}
-        lowerCategories={lowerCategories}
-        scores={scores}
-        suggestedScores={suggestedScores}
-        applyScore={applyScore}
-        rollCount={rollCount}
-        turnComplete={turnComplete}
-        prettyName={prettyName}
-        earnedBonuses={earnedBonuses}
-        upperSubtotal={upperSubtotal}
-        bonus={bonus}
-        upperTotal={upperTotal}
-        lowerTotal={lowerTotal}
-        grandTotal={grandTotal}
-        dice={dice}
-        rollDice={rollDice}
-        toggleHold={toggleHold}
-        suggestions={adviceText}
-      />
+      {isGameOver ? (
+        <GameOverScreen
+          grandTotal={grandTotal}
+          upperTotal={upperTotal}
+          lowerTotal={lowerTotal}
+          bonus={bonus}
+          onReset={resetGame}
+        />
+      ) : (
+        <ScoreCardLayout
+          upperCategories={upperCategories}
+          lowerCategories={lowerCategories}
+          scores={scores}
+          suggestedScores={suggestedScores}
+          applyScore={applyScore}
+          rollCount={rollCount}
+          turnComplete={turnComplete}
+          prettyName={prettyName}
+          earnedBonuses={earnedBonuses}
+          upperSubtotal={upperSubtotal}
+          bonus={bonus}
+          upperTotal={upperTotal}
+          lowerTotal={lowerTotal}
+          grandTotal={grandTotal}
+          dice={dice}
+          rollDice={rollDice}
+          toggleHold={toggleHold}
+          suggestions={adviceText}
+        />
+      )
+      }
     </div>
   );
 }

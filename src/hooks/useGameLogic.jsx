@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createGameLogEntry } from '../utils/gameLogUtils';
-import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
+import { calculateScore, calculateSuggestedScores, matchesCategory } from '../utils/scoreUtils';
 import { getStrategyAdvice } from '../utils/strategyUtils';
 import { initialScores, lowerCategories, upperCategories } from '../utils/utils';
 
@@ -79,13 +79,14 @@ export function useGameLogic() {
         setDice(dice.map((d, i) => i === index ? { ...d, held: !d.held } : d));
     };
 
-    const applyScore = (category) => {
+    const applyScoreold = (category) => {
         if (turnComplete || scores[category] !== null || rollCount === 0) return;
 
         let score = calculateScore(category, dice);
         const isFirstRollBonus = rollCount === 1 && qualifyingFirstRollBonusCategories.includes(category);
+        const qualifiesForBonus = isFirstRollBonus && matchesCategory(category, dice);
 
-        if (isFirstRollBonus) {
+        if (qualifiesForBonus) {
             score += 10;
             setEarnedBonuses(prev => ({ ...prev, [category]: true }));
         }
@@ -117,6 +118,49 @@ export function useGameLogic() {
             setTurn(prev => prev + 1);
         }, 100);
     };
+
+    const applyScore = (category) => {
+        if (turnComplete || scores[category] != null || rollCount === 0) return;
+
+        let score = calculateScore(category, dice);
+
+        const isFirstRoll = rollCount === 1;
+        const isEligibleForBonus = qualifyingFirstRollBonusCategories.includes(category);
+        const qualifiesForBonus = isFirstRoll && isEligibleForBonus && matchesCategory(category, dice);
+
+        if (qualifiesForBonus) {
+            score += 10;
+            setEarnedBonuses(prev => ({ ...prev, [category]: true }));
+        }
+
+        const updatedScores = { ...scores, [category]: score };
+        setScores(updatedScores);
+        setTurnComplete(true);
+
+        const logEntry = createGameLogEntry({
+            type: 'score',
+            player: 'player',
+            dice,
+            category,
+            score,
+            advice: adviceText,
+            bonus: qualifiesForBonus ? 10 : null,
+            turn
+        });
+
+        const newLog = [...gameLog, logEntry];
+        setGameLog(newLog);
+        saveGameLog(newLog);
+
+        setTimeout(() => {
+            setDice(Array(5).fill().map(() => ({ value: null, held: false })));
+            setRollCount(0);
+            setTurnComplete(false);
+            setAdviceText('');
+            setTurn(prev => prev + 1);
+        }, 100);
+    };
+
 
     const resetGame = () => {
         setScores({ ...initialScores });
