@@ -1,22 +1,12 @@
+// src/hooks/useGameLogic.jsx
 import { useState } from 'react';
 import { createGameLogEntry } from '../utils/gameLogUtils';
 import { calculateScore, calculateSuggestedScores, matchesCategory } from '../utils/scoreUtils';
 import { getStrategyAdvice } from '../utils/strategyUtils';
-import { initialScores, lowerCategories, upperCategories } from '../utils/utils';
+import { allCategories, initialScores, lowerCategories, upperCategories } from '../utils/utils';
 
-// Totals calculator helper function
-function calculateTotals(scores) {
-    const upperSubtotal = upperCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
-    const bonus = upperSubtotal >= 63 ? 35 : 0;
-    const upperTotal = upperSubtotal + bonus;
 
-    const lowerTotal = lowerCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
-    const grandTotal = upperTotal + lowerTotal;
-
-    return { upperSubtotal, bonus, upperTotal, lowerTotal, grandTotal };
-}
-
-// Helpers for localStorage
+// Helpers for localStorage (safe, isolated)
 const loadGameLog = () => {
     try {
         const saved = localStorage.getItem('yahtzeeGameLog');
@@ -31,6 +21,18 @@ const saveGameLog = (log) => {
         localStorage.setItem('yahtzeeGameLog', JSON.stringify(log));
     } catch { }
 };
+
+// Totals calculator helper function
+function calculateTotals(scores) {
+    const upperSubtotal = upperCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
+    const bonus = upperSubtotal >= 63 ? 35 : 0;
+    const upperTotal = upperSubtotal + bonus;
+
+    const lowerTotal = lowerCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
+    const grandTotal = upperTotal + lowerTotal;
+
+    return { upperSubtotal, bonus, upperTotal, lowerTotal, grandTotal };
+}
 
 export function useGameLogic() {
     const [scores, setScores] = useState({ ...initialScores });
@@ -56,7 +58,6 @@ export function useGameLogic() {
     const rollDice = () => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
 
-        // Mark dice as "rolling"
         const diceWithAnimation = dice.map(d => d.held ? d : { ...d, rolling: true });
         setDice(diceWithAnimation);
 
@@ -77,46 +78,6 @@ export function useGameLogic() {
     const toggleHold = (index) => {
         if (rollCount === 0 || turnComplete) return;
         setDice(dice.map((d, i) => i === index ? { ...d, held: !d.held } : d));
-    };
-
-    const applyScoreold = (category) => {
-        if (turnComplete || scores[category] !== null || rollCount === 0) return;
-
-        let score = calculateScore(category, dice);
-        const isFirstRollBonus = rollCount === 1 && qualifyingFirstRollBonusCategories.includes(category);
-        const qualifiesForBonus = isFirstRollBonus && matchesCategory(category, dice);
-
-        if (qualifiesForBonus) {
-            score += 10;
-            setEarnedBonuses(prev => ({ ...prev, [category]: true }));
-        }
-
-        const updatedScores = { ...scores, [category]: score };
-        setScores(updatedScores);
-        setTurnComplete(true);
-
-        const logEntry = createGameLogEntry({
-            type: 'score',
-            player: 'player',
-            dice,
-            category,
-            score,
-            advice: adviceText,
-            bonus: isFirstRollBonus ? 10 : null,
-            turn
-        });
-
-        const newLog = [...gameLog, logEntry];
-        setGameLog(newLog);
-        saveGameLog(newLog);
-
-        setTimeout(() => {
-            setDice(Array(5).fill().map(() => ({ value: null, held: false })));
-            setRollCount(0);
-            setTurnComplete(false);
-            setAdviceText('');
-            setTurn(prev => prev + 1);
-        }, 100);
     };
 
     const applyScore = (category) => {
@@ -161,7 +122,6 @@ export function useGameLogic() {
         }, 100);
     };
 
-
     const resetGame = () => {
         setScores({ ...initialScores });
         setDice(Array(5).fill().map(() => ({ value: null, held: false })));
@@ -176,6 +136,32 @@ export function useGameLogic() {
     const resetGameLog = () => {
         setGameLog([]);
         localStorage.removeItem('yahtzeeGameLog');
+    };
+
+    // 🔥 AutoPlay logic for test mode
+    const autoplayTurn = () => {
+        if (isGameOver) return;
+        if (turnComplete) return;
+
+        if (rollCount < 3) {
+            rollDice();
+        } else {
+            // Aggressive scoring logic:
+            let bestCategory = null;
+            let bestScore = -1;
+            for (const cat of allCategories) {
+                if (scores[cat] == null) {
+                    const possible = calculateScore(cat, dice);
+                    if (possible > bestScore) {
+                        bestScore = possible;
+                        bestCategory = cat;
+                    }
+                }
+            }
+            if (bestCategory) {
+                applyScore(bestCategory);
+            }
+        }
     };
 
     return {
@@ -196,7 +182,8 @@ export function useGameLogic() {
         turn,
         gameLog,
         earnedBonuses,
-        ...totals,  // ✅ Totals now exposed cleanly
+        autoplayTurn,
+        ...totals,
     };
 }
 

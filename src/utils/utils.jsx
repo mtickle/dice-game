@@ -90,8 +90,8 @@ export const dotPositions = {
 };
 
 export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
-
 export const lowerCategories = ['onePair', 'twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
+export const allCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes', 'onePair', 'twoPair', 'threeKind', 'fourKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yahtzee', 'chance'];
 
 export const initialScores = {
     ones: null,

@@ -1,7 +1,9 @@
-import GameOverScreen from './components/GameOverScreen';
+import GameOverOverlay from './components/GameOverOverlay';
+
 import Header from './components/Header';
 import ScoreCardLayout from './components/ScoreCardLayout';
-import useGameLogic from './hooks/useGameLogic';
+//import useGameLogic from './hooks/useGameLogic';
+import { useGameLogic } from './hooks/useGameLogic';
 import { lowerCategories, prettyName, upperCategories } from './utils/utils';
 
 export default function App() {
@@ -22,7 +24,8 @@ export default function App() {
     grandTotal,
     adviceText,
     resetGame,
-    isGameOver
+    isGameOver,
+    lifetimeStats
   } = useGameLogic();
 
   return (
@@ -32,12 +35,9 @@ export default function App() {
       <Header />
 
       {isGameOver ? (
-        <GameOverScreen
+        <GameOverOverlay
           grandTotal={grandTotal}
-          upperTotal={upperTotal}
-          lowerTotal={lowerTotal}
-          bonus={bonus}
-          onReset={resetGame}
+          onRestart={resetGame}
         />
       ) : (
         <ScoreCardLayout
@@ -59,6 +59,7 @@ export default function App() {
           rollDice={rollDice}
           toggleHold={toggleHold}
           suggestions={adviceText}
+          lifetimeStats={lifetimeStats}
         />
       )
       }
