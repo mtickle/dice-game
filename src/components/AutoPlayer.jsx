@@ -13,57 +13,68 @@ export default function AutoPlayer({
 }) {
     const [autoPlaying, setAutoPlaying] = useState(false);
 
+    // Simple sanity check to verify scores object is valid
+    const isScoreObjectReady = (scores) => {
+        if (!scores || typeof scores !== 'object') return false;
+        const keys = Object.keys(scores);
+        return keys.length >= 13; // You may adjust if you're using variants
+    };
+
     useEffect(() => {
         if (!autoPlaying) return;
 
-        // Defensive: wait until valid state is fully loaded
-        if (!scores || Object.keys(scores).length === 0 || !suggestedScores || Object.keys(suggestedScores).length === 0) {
-            console.log("[AutoPlay] Waiting for full state...");
+        if (!isScoreObjectReady(scores)) {
+            console.log("[AutoPlay] Scores not ready yet.");
             return;
         }
 
         if (isGameOver) {
+            console.log("[AutoPlay] Game Over. Logging and restarting...");
             if (logGameStats) logGameStats();
-            setTimeout(() => {
-                resetGame();
-            }, 300);
+            resetGame();
             return;
         }
 
         if (!turnComplete) {
-            const timer = setTimeout(() => {
+            if (rollCount < 3) {
+                rollDice();
+            } else {
                 makeAIMove();
-            }, 400);
-            return () => clearTimeout(timer);
+            }
         }
     }, [autoPlaying, rollCount, turnComplete, isGameOver, suggestedScores, scores]);
 
     const makeAIMove = () => {
-        if (isGameOver || turnComplete) return;
+        const availableSuggested = Object.keys(suggestedScores ?? {}).filter(cat => suggestedScores[cat] != null);
+        console.log("[AutoPlay] Suggested categories available:", availableSuggested);
 
-        if (rollCount < 3) {
-            rollDice();
+        let categoryToScore = null;
+
+        if (availableSuggested.length > 0) {
+            categoryToScore = availableSuggested.reduce((best, cat) => {
+                return suggestedScores[cat] > (suggestedScores[best] ?? 0) ? cat : best;
+            }, availableSuggested[0]);
         } else {
-            let categoryToScore;
+            // No suggested scores - sacrifice fallback
+            const scoreKeys = Object.keys(scores ?? {});
+            const remaining = scoreKeys.filter((cat) => scores[cat] == null);
+            console.log("[AutoPlay] Sacrifice candidates:", remaining);
 
-            // Prefer suggested scores if any
-            const availableSuggested = Object.keys(suggestedScores).filter(cat => suggestedScores[cat] != null);
-            if (availableSuggested.length > 0) {
-                categoryToScore = availableSuggested.reduce((best, cat) => {
-                    return suggestedScores[cat] > (suggestedScores[best] ?? 0) ? cat : best;
-                }, availableSuggested[0]);
+            if (remaining.length > 0) {
+                // Optional: more intelligent sacrifice ordering
+                const sacrificeOrder = [
+                    'chance', 'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
+                    'threeOfKind', 'fourOfKind', 'smallStraight', 'largeStraight', 'fullHouse', 'yahtzee'
+                ];
+                categoryToScore = sacrificeOrder.find(cat => remaining.includes(cat)) ?? remaining[0];
             } else {
-                // Defensive: sacrifice mode
-                const remaining = Object.keys(scores).filter(cat => scores[cat] == null);
-                if (remaining.length > 0) {
-                    categoryToScore = remaining[0];  // Just grab first remaining unscored category
-                } else {
-                    console.warn("[AutoPlay] No valid category to score — fallback safety");
-                    return;
-                }
+                console.warn("[AutoPlay] No remaining categories to score.");
+                return;
             }
+        }
 
-            console.log(`[AutoPlay] Scoring category: ${categoryToScore}`);
+        console.log(`[AutoPlay] Applying score to: ${categoryToScore}`);
+        if (categoryToScore) {
             applyScore(categoryToScore);
         }
     };
