@@ -13,69 +13,70 @@ export default function AutoPlayer({
 }) {
     const [autoPlaying, setAutoPlaying] = useState(false);
 
-    // Simple sanity check to verify scores object is valid
-    const isScoreObjectReady = (scores) => {
-        if (!scores || typeof scores !== 'object') return false;
-        const keys = Object.keys(scores);
-        return keys.length >= 13; // You may adjust if you're using variants
-    };
-
     useEffect(() => {
         if (!autoPlaying) return;
 
-        if (!isScoreObjectReady(scores)) {
-            console.log("[AutoPlay] Scores not ready yet.");
-            return;
-        }
-
         if (isGameOver) {
-            console.log("[AutoPlay] Game Over. Logging and restarting...");
+            console.log("[AutoPlay] Game over — logging stats and resetting.");
             if (logGameStats) logGameStats();
-            resetGame();
+
+            // Prevent infinite re-renders by pausing autoplay for one render cycle
+            setTimeout(() => {
+                resetGame();
+                setAutoPlaying(false);
+            }, 300);
             return;
         }
 
         if (!turnComplete) {
-            if (rollCount < 3) {
-                rollDice();
-            } else {
+            const timer = setTimeout(() => {
                 makeAIMove();
-            }
+            }, 100);
+            return () => clearTimeout(timer);
         }
     }, [autoPlaying, rollCount, turnComplete, isGameOver, suggestedScores, scores]);
 
     const makeAIMove = () => {
-        const availableSuggested = Object.keys(suggestedScores ?? {}).filter(cat => suggestedScores[cat] != null);
-        console.log("[AutoPlay] Suggested categories available:", availableSuggested);
+        if (isGameOver || turnComplete) return;
 
-        let categoryToScore = null;
+        // Defensive check: scores must exist and be an object
+        // if (!scores || typeof scores !== 'object') {
+        //     console.warn("[AutoPlay] Scores object invalid. Skipping turn.");
+        //     return;
+        // }
 
-        if (availableSuggested.length > 0) {
-            categoryToScore = availableSuggested.reduce((best, cat) => {
-                return suggestedScores[cat] > (suggestedScores[best] ?? 0) ? cat : best;
-            }, availableSuggested[0]);
+        if (rollCount < 3) {
+            rollDice();
         } else {
-            // No suggested scores - sacrifice fallback
-            const scoreKeys = Object.keys(scores ?? {});
-            const remaining = scoreKeys.filter((cat) => scores[cat] == null);
-            console.log("[AutoPlay] Sacrifice candidates:", remaining);
+            const availableSuggested = Object.keys(suggestedScores || {}).filter(
+                (cat) => suggestedScores[cat] != null
+            );
 
-            if (remaining.length > 0) {
-                // Optional: more intelligent sacrifice ordering
-                const sacrificeOrder = [
-                    'chance', 'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
-                    'threeOfKind', 'fourOfKind', 'smallStraight', 'largeStraight', 'fullHouse', 'yahtzee'
-                ];
-                categoryToScore = sacrificeOrder.find(cat => remaining.includes(cat)) ?? remaining[0];
+            let categoryToScore;
+
+            if (availableSuggested.length > 0) {
+                // Pick highest scoring suggestion
+                categoryToScore = availableSuggested.reduce((best, cat) => {
+                    return suggestedScores[cat] > (suggestedScores[best] ?? 0) ? cat : best;
+                }, availableSuggested[0]);
             } else {
-                console.warn("[AutoPlay] No remaining categories to score.");
-                return;
-            }
-        }
+                // No good suggestions — fallback to sacrifice mode
+                const remaining = Object.keys(scores).filter(
+                    (cat) => scores[cat] == null
+                );
 
-        console.log(`[AutoPlay] Applying score to: ${categoryToScore}`);
-        if (categoryToScore) {
-            applyScore(categoryToScore);
+                if (remaining.length > 0) {
+                    categoryToScore = remaining[0];
+                    console.log(`[AutoPlay] Sacrificing category: ${categoryToScore}`);
+                } else {
+                    console.warn("[AutoPlay] No categories left to score.");
+                    return;
+                }
+            }
+
+            if (categoryToScore) {
+                applyScore(categoryToScore);
+            }
         }
     };
 
