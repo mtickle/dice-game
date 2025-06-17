@@ -1,40 +1,42 @@
-import { useEffect, useState } from 'react';
 import AdvicePanel from './AdvicePanel';
 import AutoPlayer from './AutoPlayer';
 import DiceField from './DiceField';
 import GameHistory from './GameHistory';
-import GameOverModal from './GameOverModal';
-import LifetimeStatsPanel from './LifetimeStatsPanel';
 import ScoreCardSection from './ScoreCardSection';
 import { LowerSectionTotals, UpperSectionTotals } from './SectionTotals';
 
 export default function ScoreCardLayout(props) {
     const {
-        upperCategories, lowerCategories, scores, suggestedScores, applyScore,
-        rollCount, turnComplete, prettyName, earnedBonuses, upperSubtotal,
-        bonus, upperTotal, lowerTotal, grandTotal, dice, rollDice, toggleHold,
-        suggestions, lifetimeStats, isGameOver, resetGame
+        upperCategories,
+        lowerCategories,
+        scores,
+        suggestedScores,
+        applyScore,
+        rollCount,
+        turnComplete,
+        prettyName,
+        earnedBonuses,
+        upperSubtotal,
+        bonus,
+        upperTotal,
+        lowerTotal,
+        grandTotal,
+        dice,
+        rollDice,
+        toggleHold,
+        suggestions,
+        lifetimeStats,
+        isGameOver,
+        resetGame,
+        autoPlaying,
+        setAutoPlaying,
+        logGameStats,
+        gameCount,
+        setGameCount
     } = props;
-
-    const [showGameOver, setShowGameOver] = useState(false);
-
-    useEffect(() => {
-        if (isGameOver) {
-            const timer = setTimeout(() => setShowGameOver(true), 1500);  // Delay before showing modal
-            return () => clearTimeout(timer);
-        }
-    }, [isGameOver]);
 
     return (
         <div className="flex flex-col items-center p-4 min-h-screen">
-
-            {showGameOver && (
-                <GameOverModal grandTotal={grandTotal} onRestart={() => {
-                    setShowGameOver(false);
-                    resetGame();
-                }} />
-            )}
-
             <div className="flex flex-row justify-center items-start gap-8">
                 <div className="w-[300px]">
                     <ScoreCardSection
@@ -62,27 +64,19 @@ export default function ScoreCardLayout(props) {
                     <AutoPlayer
                         rollDice={rollDice}
                         applyScore={applyScore}
-                        turnComplete={turnComplete}
                         rollCount={rollCount}
-                        suggestedScores={suggestedScores}
+                        turnComplete={turnComplete}
                         isGameOver={isGameOver}
+                        suggestedScores={suggestedScores}
+                        scores={scores}
+                        gameCount={gameCount}
+                        autoPlaying={autoPlaying}
+                        setAutoPlaying={setAutoPlaying}
+                        autoplayTurn={autoplayTurn}
                     />
-
-
-                    <div className="flex flex-col items-center gap-4">
-
-                    </div>
-
-
                     <AdvicePanel strategy={suggestions} rollCount={rollCount} suggestedScores={suggestedScores} prettyName={prettyName} />
-                    {/* <button
-                        className="bg-green-600 text-white py-2 px-4 rounded shadow hover:bg-green-700 transition"
-                        onClick={autoPlay}
-                    >
-                        AutoPlay Bot
-                    </button> */}
                     <GameHistory />
-                    <LifetimeStatsPanel stats={lifetimeStats} />
+                    {/* <LifetimeStatsPanel stats={lifetimeStats} /> */}
                 </div>
 
                 <div className="w-[300px]">
@@ -96,7 +90,12 @@ export default function ScoreCardLayout(props) {
                         prettyName={prettyName}
                         isUpperSection={false}
                         earnedBonuses={earnedBonuses}
-                        totalsNode={<LowerSectionTotals lowerTotal={lowerTotal} grandTotal={grandTotal} />}
+                        totalsNode={
+                            <LowerSectionTotals
+                                lowerTotal={lowerTotal}
+                                grandTotal={grandTotal}
+                            />
+                        }
                     />
                 </div>
             </div>

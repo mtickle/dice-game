@@ -23,7 +23,7 @@ export default function ScoreCardSection({
                     onClick={() => applyScore(key)}
                     clickable={scores[key] === null && rollCount > 0 && !turnComplete}
                     bonusBadge={earnedBonuses?.[key]}
-                    suggested={suggestedScores?.[key]} // THIS IS THE FIX
+                    suggested={suggestedScores?.[key]} 
                     isUpperSection={isUpperSection}
                 />
             ))}

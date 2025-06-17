@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function AutoPlayer({
     rollDice,
@@ -8,87 +8,91 @@ export default function AutoPlayer({
     isGameOver,
     suggestedScores,
     scores,
-    resetGame,
-    logGameStats
+    gameCount,
+    autoPlaying,
+    setAutoPlaying,
+    playTurn,
 }) {
-    const [autoPlaying, setAutoPlaying] = useState(false);
+    const hasLoggedGameOver = useRef(false);
 
+    // Log game-over once
     useEffect(() => {
-        if (!autoPlaying) return;
-
-        if (isGameOver) {
-            console.log("[AutoPlay] Game over — logging stats and resetting.");
-            if (logGameStats) logGameStats();
-
-            // Prevent infinite re-renders by pausing autoplay for one render cycle
-            setTimeout(() => {
-                resetGame();
-                setAutoPlaying(false);
-            }, 300);
-            return;
+        if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
+            console.log(`[AutoPlayer] Game ${gameCount} over — logging stats and restarting.`);
+            hasLoggedGameOver.current = true;
+        } else if (!isGameOver) {
+            hasLoggedGameOver.current = false;
         }
+    }, [isGameOver, autoPlaying, gameCount]);
 
-        if (!turnComplete) {
-            const timer = setTimeout(() => {
-                makeAIMove();
-            }, 100);
-            return () => clearTimeout(timer);
-        }
+    // Debug state changes
+    useEffect(() => {
+        console.log(`[AutoPlayer] isGameOver = ${isGameOver}, autoPlaying = ${autoPlaying}, gameCount = ${gameCount}`);
+    }, [isGameOver, autoPlaying, gameCount]);
+
+    // Handle game moves
+    useEffect(() => {
+        if (!autoPlaying || isGameOver || turnComplete) return;
+
+        const timer = setTimeout(() => {
+            makeAIMove();
+        }, 100);
+
+        return () => clearTimeout(timer);
     }, [autoPlaying, rollCount, turnComplete, isGameOver, suggestedScores, scores]);
 
     const makeAIMove = () => {
-        if (isGameOver || turnComplete) return;
-
-        // Defensive check: scores must exist and be an object
-        // if (!scores || typeof scores !== 'object') {
-        //     console.warn("[AutoPlay] Scores object invalid. Skipping turn.");
-        //     return;
-        // }
+        if (!scores || typeof scores !== 'object') {
+            console.error("[AutoPlayer] Invalid scores object. Stopping autoplay.");
+            setAutoPlaying(false);
+            return;
+        }
 
         if (rollCount < 3) {
             rollDice();
+            return;
+        }
+
+        const availableSuggested = suggestedScores && typeof suggestedScores === 'object'
+            ? Object.keys(suggestedScores).filter((cat) => suggestedScores[cat] != null && scores[cat] == null)
+            : [];
+
+        let categoryToScore;
+
+        if (availableSuggested.length > 0) {
+            categoryToScore = availableSuggested.reduce((best, cat) => {
+                return (suggestedScores[cat] || 0) > (suggestedScores[best] || 0) ? cat : best;
+            }, availableSuggested[0]);
         } else {
-            const availableSuggested = Object.keys(suggestedScores || {}).filter(
-                (cat) => suggestedScores[cat] != null
-            );
-
-            let categoryToScore;
-
-            if (availableSuggested.length > 0) {
-                // Pick highest scoring suggestion
-                categoryToScore = availableSuggested.reduce((best, cat) => {
-                    return suggestedScores[cat] > (suggestedScores[best] ?? 0) ? cat : best;
-                }, availableSuggested[0]);
+            const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
+            if (remaining.length > 0) {
+                categoryToScore = remaining[0];
+                console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
             } else {
-                // No good suggestions — fallback to sacrifice mode
-                const remaining = Object.keys(scores).filter(
-                    (cat) => scores[cat] == null
-                );
-
-                if (remaining.length > 0) {
-                    categoryToScore = remaining[0];
-                    console.log(`[AutoPlay] Sacrificing category: ${categoryToScore}`);
-                } else {
-                    console.warn("[AutoPlay] No categories left to score.");
-                    return;
-                }
+                console.error(`[AutoPlayer] Game ${gameCount + 1}: No categories left to score. Forcing game end.`);
+                setAutoPlaying(false);
+                return;
             }
+        }
 
-            if (categoryToScore) {
-                applyScore(categoryToScore);
-            }
+        try {
+            applyScore(categoryToScore);
+        } catch (error) {
+            console.error(`[AutoPlayer] Game ${gameCount + 1}: Error applying score:`, error);
+            setAutoPlaying(false);
         }
     };
 
     return (
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-4 items-center">
             <button
                 className={`px-4 py-2 rounded-xl text-white font-bold transition 
-                    ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+          ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
                 onClick={() => setAutoPlaying(!autoPlaying)}
             >
                 {autoPlaying ? 'Stop AutoPlay' : 'Start AutoPlay'}
             </button>
+            <p className="ml-4 text-gray-600">Games Played: {gameCount}</p>
         </div>
     );
 }

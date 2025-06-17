@@ -10,11 +10,17 @@ export default function ScoreRow({
 }) {
     const isScored = score != null;
 
+    const backgroundClass = isScored
+        ? "bg-gray-100"
+        : suggested != null
+            ? "bg-green-100"
+            : "bg-white";
+
     const rowClasses = [
         "flex justify-between items-center px-3 py-2 border-b border-dashed",
         clickable ? "cursor-pointer hover:bg-yellow-100" : "cursor-default",
-        isScored ? "bg-gray-100" : "bg-white",
-        suggested != null && !isScored ? "bg-green-100 border-green-400" : ""
+        backgroundClass,
+        suggested != null && !isScored ? "border-red-500" : ""
     ].join(" ");
 
     return (

@@ -1,40 +1,20 @@
-// src/hooks/useGameLogic.jsx
-import { useState } from 'react';
-import { createGameLogEntry } from '../utils/gameLogUtils';
+import { useCallback, useEffect, useState } from 'react';
 import { calculateScore, calculateSuggestedScores, matchesCategory } from '../utils/scoreUtils';
 import { getStrategyAdvice } from '../utils/strategyUtils';
 import { allCategories, initialScores, lowerCategories, upperCategories } from '../utils/utils';
 
-
-// Helpers for localStorage (safe, isolated)
-const loadGameLog = () => {
-    try {
-        const saved = localStorage.getItem('yahtzeeGameLog');
-        return saved ? JSON.parse(saved) : [];
-    } catch {
-        return [];
-    }
-};
-
-const saveGameLog = (log) => {
-    try {
-        localStorage.setItem('yahtzeeGameLog', JSON.stringify(log));
-    } catch { }
-};
-
-// Totals calculator helper function
+// Totals calculator
 function calculateTotals(scores) {
     const upperSubtotal = upperCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
     const bonus = upperSubtotal >= 63 ? 35 : 0;
     const upperTotal = upperSubtotal + bonus;
-
     const lowerTotal = lowerCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
     const grandTotal = upperTotal + lowerTotal;
-
     return { upperSubtotal, bonus, upperTotal, lowerTotal, grandTotal };
 }
 
-export function useGameLogic() {
+export function useGameLogic(logTurnResult) {
+    const [gameCount, setGameCount] = useState(0);
     const [scores, setScores] = useState({ ...initialScores });
     const [dice, setDice] = useState(Array(5).fill().map(() => ({ value: null, held: false })));
     const [rollCount, setRollCount] = useState(0);
@@ -42,7 +22,6 @@ export function useGameLogic() {
     const [earnedBonuses, setEarnedBonuses] = useState({});
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
-    const [gameLog, setGameLog] = useState(loadGameLog());
 
     const isGameOver = Object.values(scores).every(score => score !== null);
     const suggestedScores = calculateSuggestedScores(dice, scores);
@@ -55,7 +34,7 @@ export function useGameLogic() {
         'fourKind',
     ];
 
-    const rollDice = () => {
+    const rollDice = useCallback(() => {
         if (rollCount >= 3 || turnComplete || isGameOver) return;
 
         const diceWithAnimation = dice.map(d => d.held ? d : { ...d, rolling: true });
@@ -69,22 +48,20 @@ export function useGameLogic() {
             );
             setDice(newDice);
             setRollCount(prev => prev + 1);
-
             const advice = getStrategyAdvice(newDice, scores);
             setAdviceText(advice);
         }, 300);
-    };
+    }, [dice, rollCount, turnComplete, isGameOver, scores]);
 
-    const toggleHold = (index) => {
+    const toggleHold = useCallback((index) => {
         if (rollCount === 0 || turnComplete) return;
         setDice(dice.map((d, i) => i === index ? { ...d, held: !d.held } : d));
-    };
+    }, [dice, rollCount, turnComplete]);
 
-    const applyScore = (category) => {
+    const applyScore = useCallback((category) => {
         if (turnComplete || scores[category] != null || rollCount === 0) return;
 
         let score = calculateScore(category, dice);
-
         const isFirstRoll = rollCount === 1;
         const isEligibleForBonus = qualifyingFirstRollBonusCategories.includes(category);
         const qualifiesForBonus = isFirstRoll && isEligibleForBonus && matchesCategory(category, dice);
@@ -98,20 +75,21 @@ export function useGameLogic() {
         setScores(updatedScores);
         setTurnComplete(true);
 
-        const logEntry = createGameLogEntry({
-            type: 'score',
-            player: 'player',
-            dice,
-            category,
-            score,
-            advice: adviceText,
-            bonus: qualifiesForBonus ? 10 : null,
-            turn
-        });
-
-        const newLog = [...gameLog, logEntry];
-        setGameLog(newLog);
-        saveGameLog(newLog);
+        // Log turn result
+        if (logTurnResult) {
+            const turnResult = {
+                gameNumber: gameCount + 1,
+                turnNumber: turn,
+                dice: dice.map(d => d.value),
+                rollCount,
+                category,
+                score,
+                bonus: qualifiesForBonus ? 10 : 0,
+                suggestedScores: { ...suggestedScores },
+                timestamp: new Date().toISOString(),
+            };
+            logTurnResult(turnResult);
+        }
 
         setTimeout(() => {
             setDice(Array(5).fill().map(() => ({ value: null, held: false })));
@@ -120,33 +98,49 @@ export function useGameLogic() {
             setAdviceText('');
             setTurn(prev => prev + 1);
         }, 100);
-    };
+    }, [scores, dice, rollCount, turnComplete, turn, suggestedScores, logTurnResult, gameCount]);
 
-    const resetGame = () => {
+    const resetGame = useCallback(() => {
+        console.log(`[resetGame] Resetting game state, isGameOver = ${isGameOver}, newGameNumber = ${gameCount + 1}`);
+
+        // Save game stats
+        const gameStats = {
+            gameNumber: gameCount + 1,
+            scores: { ...scores },
+            totalScore: totals.grandTotal,
+            timestamp: new Date().toISOString(),
+        };
+        console.log('[resetGame] Saving to local storage:', gameStats);
+        localStorage.setItem('gameStats', JSON.stringify(gameStats));
+
+        // Reset state
+        setGameCount(prev => prev + 1);
         setScores({ ...initialScores });
         setDice(Array(5).fill().map(() => ({ value: null, held: false })));
         setRollCount(0);
         setTurnComplete(false);
-        setGameLog([]);
         setTurn(1);
         setAdviceText('');
         setEarnedBonuses({});
-    };
+    }, [isGameOver, gameCount, scores, totals.grandTotal]);
 
-    const resetGameLog = () => {
-        setGameLog([]);
-        localStorage.removeItem('yahtzeeGameLog');
-    };
+    // Trigger resetGame when game is over
+    useEffect(() => {
+        if (isGameOver) {
+            resetGame();
+        }
+    }, [isGameOver, resetGame]);
 
-    // 🔥 AutoPlay logic for test mode
-    const autoplayTurn = () => {
-        if (isGameOver) return;
-        if (turnComplete) return;
+    const resetGameLog = useCallback(() => {
+        // No-op, as gameLog is removed
+    }, []);
+
+    const autoplayTurn = useCallback(() => {
+        if (isGameOver || turnComplete) return;
 
         if (rollCount < 3) {
             rollDice();
         } else {
-            // Aggressive scoring logic:
             let bestCategory = null;
             let bestScore = -1;
             for (const cat of allCategories) {
@@ -162,11 +156,10 @@ export function useGameLogic() {
                 applyScore(bestCategory);
             }
         }
-    };
+    }, [isGameOver, turnComplete, rollCount, rollDice, scores, dice, applyScore]);
 
     return {
-        players: [],
-        initialScores,
+        gameCount,
         scores,
         dice,
         rollCount,
@@ -180,11 +173,8 @@ export function useGameLogic() {
         suggestedScores,
         adviceText,
         turn,
-        gameLog,
         earnedBonuses,
         autoplayTurn,
         ...totals,
     };
 }
-
-export default useGameLogic;

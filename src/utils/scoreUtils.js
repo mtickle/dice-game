@@ -45,6 +45,7 @@ export function calculateScore(category, diceObjs) {
 }
 
 export function calculateSuggestedScores(diceObjs, currentScores = {}) {
+
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
     const counts = Array(6).fill(0);
     dice.forEach(d => counts[d - 1]++);
