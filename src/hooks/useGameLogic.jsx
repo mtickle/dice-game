@@ -3,7 +3,6 @@ import { calculateScore, calculateSuggestedScores, matchesCategory } from '../ut
 import { getStrategyAdvice } from '../utils/strategyUtils';
 import { allCategories, initialScores, lowerCategories, upperCategories } from '../utils/utils';
 
-// Totals calculator
 function calculateTotals(scores) {
     const upperSubtotal = upperCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
     const bonus = upperSubtotal >= 63 ? 35 : 0;
@@ -32,6 +31,8 @@ export function useGameLogic(logTurnResult, logGameStats) {
         'smallStraight',
         'largeStraight',
         'fourKind',
+        'onePair',
+        'twoPair',
     ];
 
     const rollDice = useCallback(() => {
@@ -102,7 +103,6 @@ export function useGameLogic(logTurnResult, logGameStats) {
     const resetGame = useCallback(() => {
         console.log(`[resetGame] Resetting game state, isGameOver = ${isGameOver}, newGameNumber = ${gameCount + 1}`);
 
-        // Prepare game stats
         const gameStats = {
             gameNumber: gameCount + 1,
             scores: { ...scores },
@@ -110,7 +110,6 @@ export function useGameLogic(logTurnResult, logGameStats) {
             timestamp: new Date().toISOString(),
         };
 
-        // Save to local storage
         try {
             const existingStats = localStorage.getItem('gameStats');
             const statsArray = existingStats ? JSON.parse(existingStats) : [];
@@ -128,7 +127,6 @@ export function useGameLogic(logTurnResult, logGameStats) {
             }
         }
 
-        // Reset state
         setGameCount(prev => prev + 1);
         setScores({ ...initialScores });
         setDice(Array(5).fill().map(() => ({ value: null, held: false })));
@@ -145,9 +143,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
         }
     }, [isGameOver, resetGame]);
 
-    const resetGameLog = useCallback(() => {
-        // No-op, as gameLog is managed in App.jsx
-    }, []);
+    const resetGameLog = useCallback(() => { }, []);
 
     const autoplayTurn = useCallback(() => {
         if (isGameOver || turnComplete) return;

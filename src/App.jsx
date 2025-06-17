@@ -1,17 +1,13 @@
-import AutoPlayer from '@components/AutoPlayer';
 import GameHistoryPanel from '@components/GameHistoryPanel';
 import GameLogPanel from '@components/GameLogPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
-//import useGameLogic from '@hooks/useGameLogic';
 import { useGameLogic } from '@hooks/useGameLogic';
-
 import { useCallback, useEffect, useState } from 'react';
 
 function App() {
   const [gameLog, setGameLog] = useState([]);
   const [gameStats, setGameStats] = useState([]);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const logTurnResult = useCallback((result) => {
     console.log('[App] Turn result saved:', result);
@@ -23,39 +19,57 @@ function App() {
     setGameStats((prev) => [...prev, stats]);
   }, []);
 
-  const { gameCount, isGameOver, scores, dice, rollCount, turnComplete, suggestedScores, rollDice, applyScore, resetGame, autoplayTurn, ...totals } = useGameLogic(logTurnResult, logGameStats);
+  const {
+    gameCount,
+    isGameOver,
+    scores,
+    dice,
+    rollCount,
+    turnComplete,
+    suggestedScores,
+    rollDice,
+    applyScore,
+    resetGame,
+    autoplayTurn,
+    toggleHold,
+    adviceText,
+    earnedBonuses,
+    ...totals
+  } = useGameLogic(logTurnResult, logGameStats);
 
   const [autoPlaying, setAutoPlaying] = useState(false);
 
-  // Clear gameLog and trigger GameStatsPanel refresh when game ends
   useEffect(() => {
     if (isGameOver) {
       setGameLog([]);
-      setRefreshKey((prev) => prev + 1);
-      // Reset refreshKey after a delay to allow future refreshes
-      setTimeout(() => setRefreshKey((prev) => prev + 1), 500);
     }
   }, [isGameOver]);
 
+  console.log('[App] dice:', dice);
+
   return (
     <div className="container mx-auto p-4">
-      <ScoreCardLayout scores={scores} totals={totals} />
-      <AutoPlayer
-        rollDice={rollDice}
+      <ScoreCardLayout
+        scores={scores}
+        totals={totals}
+        suggestedScores={suggestedScores}
         applyScore={applyScore}
         rollCount={rollCount}
         turnComplete={turnComplete}
-        isGameOver={isGameOver}
-        suggestedScores={suggestedScores}
-        scores={scores}
-        gameCount={gameCount}
+        earnedBonuses={earnedBonuses}
+        dice={dice}
+        rollDice={rollDice}
+        toggleHold={toggleHold}
         autoPlaying={autoPlaying}
         setAutoPlaying={setAutoPlaying}
         autoplayTurn={autoplayTurn}
+        suggestions={adviceText}
+        gameStats={gameStats}
       />
+      <GameStatsPanel gameStats={gameStats} />
       <GameLogPanel gameLog={gameLog} />
       <GameHistoryPanel gameStats={gameStats} />
-      <GameStatsPanel gameStats={gameStats} refreshKey={refreshKey} />
+
     </div>
   );
 }
