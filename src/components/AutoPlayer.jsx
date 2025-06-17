@@ -67,9 +67,9 @@ export default function AutoPlayer({
             const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
             if (remaining.length > 0) {
                 categoryToScore = remaining[0];
-                console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
+                //console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
             } else {
-                console.error(`[AutoPlayer] Game ${gameCount + 1}: No categories left to score. Forcing game end.`);
+                //console.error(`[AutoPlayer] Game ${gameCount + 1}: No categories left to score. Forcing game end.`);
                 setAutoPlaying(false);
                 return;
             }
@@ -92,7 +92,7 @@ export default function AutoPlayer({
             >
                 {autoPlaying ? 'Stop AutoPlay' : 'Start AutoPlay'}
             </button>
-            <p className="ml-4 text-gray-600">Games Played: {gameCount}</p>
+
         </div>
     );
 }

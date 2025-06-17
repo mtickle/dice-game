@@ -1,8 +1,27 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { prettyName } from '../utils/utils';
 
-export default function GameLogPanel({ gameLog }) {
+export default function GameHistoryPanel() {
+    const [gameStats, setGameStats] = useState([]);
     const [openIndices, setOpenIndices] = useState([]);
+
+    useEffect(() => {
+        try {
+            const storedStats = localStorage.getItem('gameStats');
+            if (storedStats) {
+                const parsedStats = JSON.parse(storedStats);
+                if (Array.isArray(parsedStats)) {
+                    setGameStats(parsedStats);
+                } else {
+                    console.warn('[GameHistoryPanel] Invalid gameStats format; expected array.');
+                    setGameStats([]);
+                }
+            }
+        } catch (error) {
+            console.error('[GameHistoryPanel] Error parsing gameStats:', error);
+            setGameStats([]);
+        }
+    }, []);
 
     const toggleAccordion = (index) => {
         setOpenIndices((prev) =>
@@ -10,14 +29,14 @@ export default function GameLogPanel({ gameLog }) {
         );
     };
 
-    if (!gameLog || gameLog.length === 0) {
+    if (gameStats.length === 0) {
         return (
             <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
                 <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
-                    Turn History
+                    Game History
                 </div>
                 <div className="bg-gray-50 px-4 py-3 text-gray-500">
-                    No game events logged yet.
+                    No games recorded yet.
                 </div>
             </div>
         );
@@ -26,11 +45,11 @@ export default function GameLogPanel({ gameLog }) {
     return (
         <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
-                Turn History
+                Game History
             </div>
             <div className="bg-gray-50 px-4 py-3">
                 <div className="mt-3">
-                    {gameLog.slice().reverse().map((entry, index) => {
+                    {gameStats.slice().reverse().map((game, index) => {
                         const isOpen = openIndices.includes(index);
                         return (
                             <div
@@ -42,7 +61,7 @@ export default function GameLogPanel({ gameLog }) {
                                     onClick={() => toggleAccordion(index)}
                                 >
                                     <span>
-                                        Turn {entry.turn} – {prettyName(entry.category)} for {entry.score} points
+                                        Game {game.gameNumber} – {game.totalScore} points ({new Date(game.timestamp).toLocaleString()})
                                     </span>
                                     <svg
                                         className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -58,19 +77,19 @@ export default function GameLogPanel({ gameLog }) {
                                     className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96' : 'max-h-0'}`}
                                 >
                                     <div className="px-4 py-3 text-sm text-gray-700">
-                                        {entry.advice && typeof entry.advice === 'object' ? (
-                                            <div className="text-left">
-                                                <div>
-                                                    Suggested: <em>{entry.advice.summary}</em>
+                                        <div className="text-left grid grid-cols-2 gap-2">
+                                            {Object.entries(game.scores).map(([category, score]) => (
+                                                <div key={category}>
+                                                    {prettyName(category)}: {score ?? 0}
                                                 </div>
-                                                <div>
-                                                    Actual: {prettyName(entry.category)} for {entry.score}
-                                                </div>
-                                                <div>Dice: {entry.dice.map(d => d.value).join(', ')}</div>
-                                                {entry.bonus ? <div>Bonus: +{entry.bonus} points</div> : null}
-                                            </div>
-                                        ) : null}
-                                        {/* <div className="text-muted small">Player: {entry.player}</div> */}
+                                            ))}
+                                        </div>
+                                        <div className="mt-2">
+                                            Total Score: {game.totalScore}
+                                        </div>
+                                        <div className="text-gray-500 text-xs mt-1">
+                                            Played: {new Date(game.timestamp).toLocaleString()}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

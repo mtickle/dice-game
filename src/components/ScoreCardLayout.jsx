@@ -1,7 +1,7 @@
+import GameHistoryPanel from '@components/GameHistoryPanel';
 import AdvicePanel from './AdvicePanel';
 import AutoPlayer from './AutoPlayer';
 import DiceField from './DiceField';
-import GameHistory from './GameHistory';
 import ScoreCardSection from './ScoreCardSection';
 import { LowerSectionTotals, UpperSectionTotals } from './SectionTotals';
 
@@ -72,11 +72,10 @@ export default function ScoreCardLayout(props) {
                         gameCount={gameCount}
                         autoPlaying={autoPlaying}
                         setAutoPlaying={setAutoPlaying}
-                        autoplayTurn={autoplayTurn}
+                    //autoplayTurn={autoplayTurn}
                     />
                     <AdvicePanel strategy={suggestions} rollCount={rollCount} suggestedScores={suggestedScores} prettyName={prettyName} />
-                    <GameHistory />
-                    {/* <LifetimeStatsPanel stats={lifetimeStats} /> */}
+                    <GameHistoryPanel />
                 </div>
 
                 <div className="w-[300px]">

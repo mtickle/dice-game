@@ -13,7 +13,7 @@ function calculateTotals(scores) {
     return { upperSubtotal, bonus, upperTotal, lowerTotal, grandTotal };
 }
 
-export function useGameLogic(logTurnResult) {
+export function useGameLogic(logTurnResult, logGameStats) {
     const [gameCount, setGameCount] = useState(0);
     const [scores, setScores] = useState({ ...initialScores });
     const [dice, setDice] = useState(Array(5).fill().map(() => ({ value: null, held: false })));
@@ -75,7 +75,6 @@ export function useGameLogic(logTurnResult) {
         setScores(updatedScores);
         setTurnComplete(true);
 
-        // Log turn result
         if (logTurnResult) {
             const turnResult = {
                 gameNumber: gameCount + 1,
@@ -103,15 +102,31 @@ export function useGameLogic(logTurnResult) {
     const resetGame = useCallback(() => {
         console.log(`[resetGame] Resetting game state, isGameOver = ${isGameOver}, newGameNumber = ${gameCount + 1}`);
 
-        // Save game stats
+        // Prepare game stats
         const gameStats = {
             gameNumber: gameCount + 1,
             scores: { ...scores },
             totalScore: totals.grandTotal,
             timestamp: new Date().toISOString(),
         };
-        console.log('[resetGame] Saving to local storage:', gameStats);
-        localStorage.setItem('gameStats', JSON.stringify(gameStats));
+
+        // Save to local storage
+        try {
+            const existingStats = localStorage.getItem('gameStats');
+            const statsArray = existingStats ? JSON.parse(existingStats) : [];
+            const updatedStats = Array.isArray(statsArray) ? [...statsArray, gameStats] : [gameStats];
+            console.log('[resetGame] Saving to local storage:', updatedStats);
+            localStorage.setItem('gameStats', JSON.stringify(updatedStats));
+            if (logGameStats) {
+                logGameStats(gameStats);
+            }
+        } catch (error) {
+            console.error('[resetGame] Error saving to local storage:', error);
+            localStorage.setItem('gameStats', JSON.stringify([gameStats]));
+            if (logGameStats) {
+                logGameStats(gameStats);
+            }
+        }
 
         // Reset state
         setGameCount(prev => prev + 1);
@@ -122,9 +137,8 @@ export function useGameLogic(logTurnResult) {
         setTurn(1);
         setAdviceText('');
         setEarnedBonuses({});
-    }, [isGameOver, gameCount, scores, totals.grandTotal]);
+    }, [isGameOver, gameCount, scores, totals.grandTotal, logGameStats]);
 
-    // Trigger resetGame when game is over
     useEffect(() => {
         if (isGameOver) {
             resetGame();
@@ -132,7 +146,7 @@ export function useGameLogic(logTurnResult) {
     }, [isGameOver, resetGame]);
 
     const resetGameLog = useCallback(() => {
-        // No-op, as gameLog is removed
+        // No-op, as gameLog is managed in App.jsx
     }, []);
 
     const autoplayTurn = useCallback(() => {
