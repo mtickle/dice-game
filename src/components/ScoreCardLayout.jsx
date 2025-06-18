@@ -40,8 +40,8 @@ export default function ScoreCardLayout({
     suggestions,
     gameStats,
 }) {
-    console.log('[ScoreCardLayout] dice:', dice);
-    console.log('[ScoreCardLayout] upperCategories:', upperCategories);
+    //console.log('[ScoreCardLayout] dice:', dice);
+    //console.log('[ScoreCardLayout] upperCategories:', upperCategories);
 
     return (
         <div className="flex justify-between p-4 bg-white rounded-lg shadow-sm gap-4">

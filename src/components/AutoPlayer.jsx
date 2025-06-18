@@ -28,7 +28,7 @@ export default function AutoPlayer({
 
     // Debug state changes
     useEffect(() => {
-        console.log(`[AutoPlayer] isGameOver = ${isGameOver}, autoPlaying = ${autoPlaying}, gameCount = ${gameCount}`);
+        //console.log(`[AutoPlayer] isGameOver = ${isGameOver}, autoPlaying = ${autoPlaying}, gameCount = ${gameCount}`);
     }, [isGameOver, autoPlaying, gameCount]);
 
     // Handle game moves
@@ -62,7 +62,7 @@ export default function AutoPlayer({
             const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
             if (remaining.length > 0) {
                 const categoryToScore = remaining[0];
-                console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
+                //console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
                 try {
                     applyScore(categoryToScore);
                 } catch (error) {
@@ -120,9 +120,9 @@ export default function AutoPlayer({
             }, availableSuggested[0]);
         }
 
-        console.log(
-            `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
-        );
+        // console.log(
+        //     `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
+        // );
 
         try {
             applyScore(categoryToScore);

@@ -1,27 +1,27 @@
 import { useEffect, useState } from 'react';
 import { prettyName } from '../utils/utils';
 
-export default function GameHistoryPanel() {
-    const [gameStats, setGameStats] = useState([]);
+export default function GameHistoryPanel({ gameStats, refreshKey }) {
     const [openIndices, setOpenIndices] = useState([]);
 
     useEffect(() => {
-        try {
-            const storedStats = localStorage.getItem('gameStats');
-            if (storedStats) {
-                const parsedStats = JSON.parse(storedStats);
-                if (Array.isArray(parsedStats)) {
-                    setGameStats(parsedStats);
-                } else {
-                    console.warn('[GameHistoryPanel] Invalid gameStats format; expected array.');
-                    setGameStats([]);
+        // Temporary debug log to confirm refresh
+        console.log('[GameHistoryPanel] Refresh triggered, gameStats length:', gameStats?.length || 0);
+        // Fallback: Log errors if gameStats is empty
+        if (!gameStats || gameStats.length === 0) {
+            try {
+                const storedStats = localStorage.getItem('gameStats');
+                if (storedStats) {
+                    const parsedStats = JSON.parse(storedStats);
+                    if (!Array.isArray(parsedStats)) {
+                        console.warn('[GameHistoryPanel] Invalid gameStats format; expected array.');
+                    }
                 }
+            } catch (error) {
+                console.error('[GameHistoryPanel] Error parsing gameStats:', error);
             }
-        } catch (error) {
-            console.error('[GameHistoryPanel] Error parsing gameStats:', error);
-            setGameStats([]);
         }
-    }, []);
+    }, [gameStats, refreshKey]);
 
     const toggleAccordion = (index) => {
         setOpenIndices((prev) =>
@@ -29,7 +29,7 @@ export default function GameHistoryPanel() {
         );
     };
 
-    if (gameStats.length === 0) {
+    if (!gameStats || !Array.isArray(gameStats) || gameStats.length === 0) {
         return (
             <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
                 <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
@@ -53,7 +53,7 @@ export default function GameHistoryPanel() {
                         const isOpen = openIndices.includes(index);
                         return (
                             <div
-                                key={index}
+                                key={game.gameNumber || index}
                                 className="mb-2 rounded-md border border-gray-300 bg-white"
                             >
                                 <button
@@ -61,32 +61,38 @@ export default function GameHistoryPanel() {
                                     onClick={() => toggleAccordion(index)}
                                 >
                                     <span>
-                                        Game {game.gameNumber} – {game.totalScore} points ({new Date(game.timestamp).toLocaleString()})
+                                        Game {game.gameNumber} – {game.totalScore} points (
+                                        {new Date(game.timestamp).toLocaleString()})
                                     </span>
                                     <svg
-                                        className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                                        className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
+                                            }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
                                         xmlns="http://www.w3.org/2000/svg"
                                     >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
+                                        />
                                     </svg>
                                 </button>
                                 <div
-                                    className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96' : 'max-h-0'}`}
+                                    className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96' : 'max-h-0'
+                                        }`}
                                 >
                                     <div className="px-4 py-3 text-sm text-gray-700">
                                         <div className="text-left grid grid-cols-2 gap-2">
-                                            {Object.entries(game.scores).map(([category, score]) => (
+                                            {Object.entries(game.scores || {}).map(([category, score]) => (
                                                 <div key={category}>
                                                     {prettyName(category)}: {score ?? 0}
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="mt-2">
-                                            Total Score: {game.totalScore}
-                                        </div>
+                                        <div className="mt-2">Total Score: {game.totalScore}</div>
                                         <div className="text-gray-500 text-xs mt-1">
                                             Played: {new Date(game.timestamp).toLocaleString()}
                                         </div>

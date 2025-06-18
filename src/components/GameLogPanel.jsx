@@ -1,82 +1,30 @@
-import { useState } from 'react';
 import { prettyName } from '../utils/utils';
 
-export default function GameLogPanel({ gameLog }) {
-    const [openIndices, setOpenIndices] = useState([]);
+export default function GameLogPanel({ gameLog, gameNumber }) {
+    const filteredLog = gameLog.filter(
+        (entry) => entry.gameNumber === gameNumber || gameLog === gameLog // Show all if turnLog
+    );
 
-    const toggleAccordion = (index) => {
-        setOpenIndices((prev) =>
-            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-        );
-    };
-
-    if (!gameLog || gameLog.length === 0) {
-        return (
-            <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
-                    Turn History
-                </div>
-                <div className="bg-gray-50 px-4 py-3 text-gray-500">
-                    No game events logged yet.
-                </div>
-            </div>
-        );
-    }
+    //console.log('[GameLogPanel] gameLog:', gameLog.length, 'filtered:', filteredLog.length);
 
     return (
-        <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
-                Turn History
-            </div>
-            <div className="bg-gray-50 px-4 py-3">
-                <div className="mt-3">
-                    {gameLog.slice().reverse().map((entry, index) => {
-                        const isOpen = openIndices.includes(index);
-                        return (
-                            <div
-                                key={index}
-                                className="mb-2 rounded-md border border-gray-300 bg-white"
-                            >
-                                <button
-                                    className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none"
-                                    onClick={() => toggleAccordion(index)}
-                                >
-                                    <span>
-                                        Turn {entry.turn} – {prettyName(entry.category)} for {entry.score} points
-                                    </span>
-                                    <svg
-                                        className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                                <div
-                                    className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96' : 'max-h-0'}`}
-                                >
-                                    <div className="px-4 py-3 text-sm text-gray-700">
-                                        {entry.advice && typeof entry.advice === 'object' ? (
-                                            <div className="text-left">
-                                                <div>
-                                                    Suggested: <em>{entry.advice.summary}</em>
-                                                </div>
-                                                <div>
-                                                    Actual: {prettyName(entry.category)} for {entry.score}
-                                                </div>
-                                                <div>Dice: {entry.dice.map(d => d.value).join(', ')}</div>
-                                                {entry.bonus ? <div>Bonus: +{entry.bonus} points</div> : null}
-                                            </div>
-                                        ) : null}
-                                        {/* <div className="text-muted small">Player: {entry.player}</div> */}
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+        <div className="mt-4 p-4 bg-white rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold mb-2">Turn Log (Game {gameNumber})</h2>
+            <div className="max-h-[400px] overflow-y-auto">
+                {filteredLog.slice().reverse().map((entry, index) => (
+                    <div key={`${entry.gameNumber}-${entry.turnNumber}-${index}`} className="mb-2 p-2 border-b">
+                        <p>
+                            <strong>Game {entry.gameNumber}, Turn {entry.turnNumber}:</strong>{' '}
+                            {prettyName(entry.category)} = {entry.score} {entry.bonus ? '(+10 bonus)' : ''}
+                        </p>
+                        <p>
+                            <strong>Dice:</strong> {entry.dice.join(', ')}
+                        </p>
+                        <p>
+                            <strong>Timestamp:</strong> {entry.timestamp}
+                        </p>
+                    </div>
+                ))}
             </div>
         </div>
     );
