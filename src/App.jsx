@@ -67,8 +67,9 @@ function App() {
         gameStats={gameStats}
       />
       <GameStatsPanel gameStats={gameStats} />
-      <GameLogPanel gameLog={gameLog} />
       <GameHistoryPanel gameStats={gameStats} />
+      <GameLogPanel gameLog={gameLog} />
+
 
     </div>
   );

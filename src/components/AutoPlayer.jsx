@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { upperCategories } from '../utils/utils';
 
 export default function AutoPlayer({
     rollDice,
@@ -11,7 +12,7 @@ export default function AutoPlayer({
     gameCount,
     autoPlaying,
     setAutoPlaying,
-    playTurn,
+    totals, // Added to access upperSubtotal
 }) {
     const hasLoggedGameOver = useRef(false);
 
@@ -43,7 +44,7 @@ export default function AutoPlayer({
 
     const makeAIMove = () => {
         if (!scores || typeof scores !== 'object') {
-            console.error("[AutoPlayer] Invalid scores object. Stopping autoplay.");
+            console.error('[AutoPlayer] Invalid scores object. Stopping autoplay.');
             setAutoPlaying(false);
             return;
         }
@@ -57,23 +58,71 @@ export default function AutoPlayer({
             ? Object.keys(suggestedScores).filter((cat) => suggestedScores[cat] != null && scores[cat] == null)
             : [];
 
-        let categoryToScore;
-
-        if (availableSuggested.length > 0) {
-            categoryToScore = availableSuggested.reduce((best, cat) => {
-                return (suggestedScores[cat] || 0) > (suggestedScores[best] || 0) ? cat : best;
-            }, availableSuggested[0]);
-        } else {
+        if (availableSuggested.length === 0) {
             const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
             if (remaining.length > 0) {
-                categoryToScore = remaining[0];
-                //console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
+                const categoryToScore = remaining[0];
+                console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
+                try {
+                    applyScore(categoryToScore);
+                } catch (error) {
+                    console.error(`[AutoPlayer] Game ${gameCount + 1}: Error applying score:`, error);
+                    setAutoPlaying(false);
+                }
             } else {
-                //console.error(`[AutoPlayer] Game ${gameCount + 1}: No categories left to score. Forcing game end.`);
+                console.error(`[AutoPlayer] Game ${gameCount + 1}: No categories left to score. Forcing game end.`);
                 setAutoPlaying(false);
-                return;
+            }
+            return;
+        }
+
+        // Aggressive upper section strategy
+        const upperSubtotal = totals?.upperSubtotal || 0;
+        const bonusThreshold = 63;
+        const bonusGap = bonusThreshold - upperSubtotal;
+        const upperTargets = {
+            ones: 3, // 3 × 1
+            twos: 6, // 3 × 2
+            threes: 9, // 3 × 3
+            fours: 12, // 3 × 4
+            fives: 15, // 3 × 5
+            sixes: 18, // 3 × 6
+        };
+
+        let categoryToScore = null;
+        let bestScore = -1;
+
+        // Prioritize upper categories if close to bonus or high score
+        if (bonusGap > 0 && bonusGap <= 18) { // Within ~2 upper categories of bonus
+            const upperAvailable = availableSuggested.filter((cat) => upperCategories.includes(cat));
+            if (upperAvailable.length > 0) {
+                categoryToScore = upperAvailable.reduce((best, cat) => {
+                    const score = suggestedScores[cat] || 0;
+                    const target = upperTargets[cat] || 0;
+                    if (score >= target && score > (suggestedScores[best] || 0)) {
+                        return cat;
+                    }
+                    return best;
+                }, upperAvailable[0]);
+                bestScore = suggestedScores[categoryToScore] || 0;
             }
         }
+
+        // Fall back to highest score if no good upper option
+        if (!categoryToScore) {
+            categoryToScore = availableSuggested.reduce((best, cat) => {
+                const score = suggestedScores[cat] || 0;
+                if (score > bestScore) {
+                    bestScore = score;
+                    return cat;
+                }
+                return best;
+            }, availableSuggested[0]);
+        }
+
+        console.log(
+            `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
+        );
 
         try {
             applyScore(categoryToScore);
@@ -92,7 +141,6 @@ export default function AutoPlayer({
             >
                 {autoPlaying ? 'Stop AutoPlay' : 'Start AutoPlay'}
             </button>
-
         </div>
     );
 }

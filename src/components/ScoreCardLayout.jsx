@@ -79,6 +79,7 @@ export default function ScoreCardLayout({
                     autoPlaying={autoPlaying}
                     setAutoPlaying={setAutoPlaying}
                     autoplayTurn={autoplayTurn}
+                    totals={totals}
                 />
                 <AdvicePanel
                     strategy={suggestions}
