@@ -19,6 +19,7 @@ export default function AutoPlayer({
     setGameStats,
     showAllTurns,
     setShowAllTurns,
+    resetGame
 }) {
     const hasLoggedGameOver = useRef(false);
 
@@ -27,7 +28,7 @@ export default function AutoPlayer({
     // Log game-over once
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
-            console.log(`[AutoPlayer] Game ${gameCount} over — logging stats and restarting.`);
+           // console.log(`[AutoPlayer] Game ${gameCount} over — logging stats and restarting.`);
             hasLoggedGameOver.current = true;
         } else if (!isGameOver) {
             hasLoggedGameOver.current = false;
@@ -155,8 +156,14 @@ export default function AutoPlayer({
         exportData(gameStats, `yahtzee_gameStats_${new Date().toISOString()}.json`);
     };
 
+    useEffect(() => {
+       // console.log('setGameStats:', setGameStats, typeof setGameStats);
+        //console.log('resetGame:', resetGame, typeof resetGame);
+    }, [setGameStats, resetGame]);
+
     const handleReset = () => {
         if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
+            // Clear state and local storage first
             setTurnLog([]);
             setGameStats([]);
             try {
@@ -165,6 +172,8 @@ export default function AutoPlayer({
             } catch (error) {
                 console.error('[AutoPlayer] Error resetting data:', error);
             }
+            // Call resetGame with a flag to skip save
+            resetGame(true); // Pass a skipSave flag
         }
     };
 

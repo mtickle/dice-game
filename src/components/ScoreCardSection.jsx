@@ -12,8 +12,10 @@ export default function ScoreCardSection({
     earnedBonuses,
     totalsNode = null,
 }) {
+
+    //console.log('Suggested Scores:', suggestedScores);
     if (!categories || !Array.isArray(categories)) {
-        console.error('[ScoreCardSection] Invalid categories:', categories);
+        //console.error('[ScoreCardSection] Invalid categories:', categories);
         return (
             <div className="bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] text-red-500">
                 Error: Categories not loaded for {isUpperSection ? 'Upper' : 'Lower'} section.

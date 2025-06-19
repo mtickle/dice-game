@@ -97,8 +97,10 @@ function App() {
         autoplayTurn={autoplayTurn}
         suggestions={adviceText}
         gameStats={setGameStats}
+        setGameStats={setGameStats}
         setTurnLog={setTurnLog}
         setGameLog={setGameLog}
+        resetGame={resetGame}
       />
 
       <GameStatsPanel gameStats={gameStats} />

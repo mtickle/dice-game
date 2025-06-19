@@ -6,21 +6,21 @@ import ScoreCardSection from './ScoreCardSection';
 
 function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
     return (
-        <div className="mt-4 bg-gray-50 p-2 rounded ">
-            <div className="flex justify-between items-center mb-1 border-b px-1 py-1 border-dashed">
+        <div className="mt-4 rounded ">
+            <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
                 <div className="font-semibold text-gray-800">Subtotal:</div>
                 <div className="flex items-center space-x-2">
                     <div>{upperSubtotal || 0}</div>
                 </div>
             </div>
-            <div className="flex justify-between items-center mb-1 border-b px-1 py-1 border-dashed">
+            <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
                 <div className="font-semibold text-gray-800">Bonus:</div>
                 <div className="flex items-center space-x-2">
                     {bonus > 0 && <div className="text-green-500 font-bold">+{bonus}</div>}
                     <div>{bonus || 0}</div>
                 </div>
             </div>
-            <div className="flex justify-between items-center  border-b px-1 py-1 border-dashed">
+            <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
                 <div className="font-semibold text-gray-800">Total:</div>
                 <div className="flex items-center space-x-2">
                     <div>{upperTotal || 0}</div>
@@ -32,9 +32,20 @@ function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
 
 function LowerSectionTotals({ lowerTotal, grandTotal }) {
     return (
-        <div className="text-gray-800 font-semibold">
-            <div>Lower Total: {lowerTotal || 0}</div>
-            <div>Grand Total: {grandTotal || 0}</div>
+
+        <div className="mt-4 rounded ">
+            <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
+                <div className="font-semibold text-gray-800">Lower Total:</div>
+                <div className="flex items-center space-x-2">
+                    <div>{lowerTotal || 0}</div>
+                </div>
+            </div>
+            <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
+                <div className="font-semibold text-gray-800">Grand Total:</div>
+                <div className="flex items-center space-x-2">
+                    <div>{grandTotal || 0}</div>
+                </div>
+            </div>
         </div>
     );
 }
@@ -62,6 +73,7 @@ export default function ScoreCardLayout({
     setShowAllTurns,
     isGameOver,
     gameCount,
+    resetGame   
 }) {
     return (
         <div className="flex justify-between p-6 bg-white rounded-lg shadow-sm gap-4 mb-4">
@@ -106,6 +118,7 @@ export default function ScoreCardLayout({
                     gameStats={gameStats}
                     showAllTurns={showAllTurns}
                     setShowAllTurns={setShowAllTurns}
+                    resetGame={resetGame}
                 />
                 {!autoPlaying && (
                     <AdvicePanel

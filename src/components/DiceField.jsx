@@ -32,7 +32,7 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount }) {
             <button
                 onClick={rollDice}
                 disabled={rollCount >= 3}
-                className={`px-5 py-2 rounded-xl text-lg font-semibold transition-all duration-150
+                className={`px-5 py-2 rounded-xl text-md font-semibold transition-all duration-150
           ${rollCount >= 3 ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700'}
         `}
             >

@@ -6,7 +6,7 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
 
     useEffect(() => {
         // Temporary debug log to confirm refresh
-        console.log('[GameHistoryPanel] Refresh triggered, gameStats length:', gameStats?.length || 0);
+       // console.log('[GameHistoryPanel] Refresh triggered, gameStats length:', gameStats?.length || 0);
         // Fallback: Log errors if gameStats is empty
         if (!gameStats || gameStats.length === 0) {
             try {
