@@ -107,12 +107,14 @@ export default function ScoreCardLayout({
                     showAllTurns={showAllTurns}
                     setShowAllTurns={setShowAllTurns}
                 />
-                <AdvicePanel
-                    strategy={suggestions}
-                    rollCount={rollCount}
-                    suggestedScores={suggestedScores}
-                    prettyName={prettyName}
-                />
+                {!autoPlaying && (
+                    <AdvicePanel
+                        strategy={suggestions}
+                        rollCount={rollCount}
+                        suggestedScores={suggestedScores}
+                        prettyName={prettyName}
+                    />
+                )}
             </div>
             <div className="w-[400px]">
                 <ScoreCardSection
