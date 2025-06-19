@@ -38,7 +38,9 @@ export default function ScoreCardLayout({
     setAutoPlaying,
     autoplayTurn,
     suggestions,
+    setGameStats,
     gameStats,
+    setTurnLog,
     turnLog,
     showAllTurns,
     setShowAllTurns,
@@ -82,7 +84,9 @@ export default function ScoreCardLayout({
                     setAutoPlaying={setAutoPlaying}
                     autoplayTurn={autoplayTurn}
                     totals={totals}
+                    setTurnLog={setTurnLog}
                     turnLog={turnLog}
+                    setGameStats={setGameStats}
                     gameStats={gameStats}
                     showAllTurns={showAllTurns}
                     setShowAllTurns={setShowAllTurns}

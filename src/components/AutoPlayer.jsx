@@ -14,11 +14,15 @@ export default function AutoPlayer({
     setAutoPlaying,
     totals,
     turnLog,
+    setTurnLog,
     gameStats,
+    setGameStats,
     showAllTurns,
     setShowAllTurns,
 }) {
     const hasLoggedGameOver = useRef(false);
+
+
 
     // Log game-over once
     useEffect(() => {
@@ -169,31 +173,30 @@ export default function AutoPlayer({
     };
 
     return (
-        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800">Auto Player & Controlz</h2>
-            <div className="grid grid-cols-1 gap-3 mb-4">
+        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm w-full">
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 ">Auto Player & Controls</h2>
+            <div className="flex gap-3 mb-4">
                 <button
-                    className="w-full bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
+                    className="px-4 bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleExport}
                 >
-                    Export Game Data
+                    Export Data
                 </button>
                 <button
-                    className="w-full bg-red-600 text-white rounded-xl py-2 hover:bg-red-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
+                    className="px-4 bg-red-600 text-white rounded-xl py-2 hover:bg-red-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleReset}
                 >
                     Reset All Data
                 </button>
-                <button
-                    className="w-full bg-gray-600 text-white rounded-xl py-2 hover:bg-gray-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
+                {/* <button
+                    className="px-4 bg-gray-600 text-white rounded-xl py-2 hover:bg-gray-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleToggleTurns}
                 >
                     Show All Turns
-                </button>
-            </div>
-            <div className="flex justify-center mt-4">
+                </button> */}
+
                 <button
-                    className={`px-4 py-2 rounded-xl text-white font-bold transition 
+                    className={`px-4 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md 
             ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
                     onClick={() => setAutoPlaying(!autoPlaying)}
                 >

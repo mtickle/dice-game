@@ -20,7 +20,7 @@ export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurn
     if (!filteredLog || filteredLog.length === 0) {
         return (
             <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div className="bg-gray-200 border-b border-gray-300 px-4 py-3 font-semibold text-gray-800">
+                <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
                     {showAllTurns ? 'All Turns' : `Turn Log (Game ${gameNumber || 1})`}
                 </div>
                 <div className="bg-gray-50 px-4 py-3 text-gray-500">
