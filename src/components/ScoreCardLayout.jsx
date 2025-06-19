@@ -6,10 +6,26 @@ import ScoreCardSection from './ScoreCardSection';
 
 function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
     return (
-        <div className="text-gray-800 font-semibold">
-            <div>Subtotal: {upperSubtotal || 0}</div>
-            <div>Bonus: {bonus || 0}</div>
-            <div>Total: {upperTotal || 0}</div>
+        <div className="mt-4 bg-gray-50 p-2 rounded ">
+            <div className="flex justify-between items-center mb-1 border-b px-1 py-1 border-dashed">
+                <div className="font-semibold text-gray-800">Subtotal:</div>
+                <div className="flex items-center space-x-2">
+                    <div>{upperSubtotal || 0}</div>
+                </div>
+            </div>
+            <div className="flex justify-between items-center mb-1 border-b px-1 py-1 border-dashed">
+                <div className="font-semibold text-gray-800">Bonus:</div>
+                <div className="flex items-center space-x-2">
+                    {bonus > 0 && <div className="text-green-500 font-bold">+{bonus}</div>}
+                    <div>{bonus || 0}</div>
+                </div>
+            </div>
+            <div className="flex justify-between items-center  border-b px-1 py-1 border-dashed">
+                <div className="font-semibold text-gray-800">Total:</div>
+                <div className="flex items-center space-x-2">
+                    <div>{upperTotal || 0}</div>
+                </div>
+            </div>
         </div>
     );
 }
@@ -49,7 +65,7 @@ export default function ScoreCardLayout({
 }) {
     return (
         <div className="flex justify-between p-6 bg-white rounded-lg shadow-sm gap-4 mb-4">
-            <div className="w-[300px]">
+            <div className="w-[400px]">
                 <ScoreCardSection
                     categories={upperCategories}
                     scores={scores}
@@ -98,7 +114,7 @@ export default function ScoreCardLayout({
                     prettyName={prettyName}
                 />
             </div>
-            <div className="w-[300px]">
+            <div className="w-[400px]">
                 <ScoreCardSection
                     categories={lowerCategories}
                     scores={scores}
