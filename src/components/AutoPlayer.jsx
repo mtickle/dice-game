@@ -12,7 +12,11 @@ export default function AutoPlayer({
     gameCount,
     autoPlaying,
     setAutoPlaying,
-    totals, // Added to access upperSubtotal
+    totals,
+    turnLog,
+    gameStats,
+    showAllTurns,
+    setShowAllTurns,
 }) {
     const hasLoggedGameOver = useRef(false);
 
@@ -121,7 +125,7 @@ export default function AutoPlayer({
         }
 
         // console.log(
-        //     `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
+        //   `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
         // );
 
         try {
@@ -132,15 +136,70 @@ export default function AutoPlayer({
         }
     };
 
+    const exportData = (data, filename) => {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleExport = () => {
+        exportData(turnLog, `yahtzee_turnLog_${new Date().toISOString()}.json`);
+        exportData(gameStats, `yahtzee_gameStats_${new Date().toISOString()}.json`);
+    };
+
+    const handleReset = () => {
+        if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
+            setTurnLog([]);
+            setGameStats([]);
+            try {
+                localStorage.setItem('turnLog', JSON.stringify([]));
+                localStorage.setItem('gameStats', JSON.stringify([]));
+            } catch (error) {
+                console.error('[AutoPlayer] Error resetting data:', error);
+            }
+        }
+    };
+
+    const handleToggleTurns = () => {
+        setShowAllTurns((prev) => !prev);
+    };
+
     return (
-        <div className="flex justify-center mt-4 items-center">
-            <button
-                className={`px-4 py-2 rounded-xl text-white font-bold transition 
-          ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
-                onClick={() => setAutoPlaying(!autoPlaying)}
-            >
-                {autoPlaying ? 'Stop AutoPlay' : 'Start AutoPlay'}
-            </button>
+        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <h2 className="text-lg font-semibold mb-2 text-gray-800">Auto Player & Controlz</h2>
+            <div className="grid grid-cols-1 gap-3 mb-4">
+                <button
+                    className="w-full bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
+                    onClick={handleExport}
+                >
+                    Export Game Data
+                </button>
+                <button
+                    className="w-full bg-red-600 text-white rounded-xl py-2 hover:bg-red-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
+                    onClick={handleReset}
+                >
+                    Reset All Data
+                </button>
+                <button
+                    className="w-full bg-gray-600 text-white rounded-xl py-2 hover:bg-gray-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
+                    onClick={handleToggleTurns}
+                >
+                    Show All Turns
+                </button>
+            </div>
+            <div className="flex justify-center mt-4">
+                <button
+                    className={`px-4 py-2 rounded-xl text-white font-bold transition 
+            ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                    onClick={() => setAutoPlaying(!autoPlaying)}
+                >
+                    {autoPlaying ? 'Stop AutoPlay' : 'Start AutoPlay'}
+                </button>
+            </div>
         </div>
     );
 }

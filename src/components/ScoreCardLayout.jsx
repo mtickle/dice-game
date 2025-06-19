@@ -7,9 +7,9 @@ import ScoreCardSection from './ScoreCardSection';
 function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
     return (
         <div className="text-gray-800 font-semibold">
-            <div>Subtotal: {upperSubtotal}</div>
-            <div>Bonus: {bonus}</div>
-            <div>Total: {upperTotal}</div>
+            <div>Subtotal: {upperSubtotal || 0}</div>
+            <div>Bonus: {bonus || 0}</div>
+            <div>Total: {upperTotal || 0}</div>
         </div>
     );
 }
@@ -17,15 +17,15 @@ function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
 function LowerSectionTotals({ lowerTotal, grandTotal }) {
     return (
         <div className="text-gray-800 font-semibold">
-            <div>Lower Total: {lowerTotal}</div>
-            <div>Grand Total: {grandTotal}</div>
+            <div>Lower Total: {lowerTotal || 0}</div>
+            <div>Grand Total: {grandTotal || 0}</div>
         </div>
     );
 }
 
 export default function ScoreCardLayout({
     scores,
-    totals,
+    totals = { upperSubtotal: 0, bonus: 0, upperTotal: 0, lowerTotal: 0, grandTotal: 0, isGameOver: false, gameCount: 1 },
     suggestedScores,
     applyScore,
     rollCount,
@@ -39,12 +39,14 @@ export default function ScoreCardLayout({
     autoplayTurn,
     suggestions,
     gameStats,
+    turnLog,
+    showAllTurns,
+    setShowAllTurns,
+    isGameOver,
+    gameCount,
 }) {
-    //console.log('[ScoreCardLayout] dice:', dice);
-    //console.log('[ScoreCardLayout] upperCategories:', upperCategories);
-
     return (
-        <div className="flex justify-between p-4 bg-white rounded-lg shadow-sm gap-4">
+        <div className="flex justify-between p-6 bg-white rounded-lg shadow-sm gap-4 mb-4">
             <div className="w-[300px]">
                 <ScoreCardSection
                     categories={upperCategories}
@@ -72,14 +74,18 @@ export default function ScoreCardLayout({
                     applyScore={applyScore}
                     rollCount={rollCount}
                     turnComplete={turnComplete}
-                    isGameOver={totals.isGameOver}
+                    isGameOver={isGameOver || totals.isGameOver} // Fallback to totals if top-level missing
                     suggestedScores={suggestedScores}
                     scores={scores}
-                    gameCount={totals.gameCount}
+                    gameCount={gameCount || totals.gameCount} // Fallback to totals if top-level missing
                     autoPlaying={autoPlaying}
                     setAutoPlaying={setAutoPlaying}
                     autoplayTurn={autoplayTurn}
                     totals={totals}
+                    turnLog={turnLog}
+                    gameStats={gameStats}
+                    showAllTurns={showAllTurns}
+                    setShowAllTurns={setShowAllTurns}
                 />
                 <AdvicePanel
                     strategy={suggestions}
@@ -87,7 +93,6 @@ export default function ScoreCardLayout({
                     suggestedScores={suggestedScores}
                     prettyName={prettyName}
                 />
-
             </div>
             <div className="w-[300px]">
                 <ScoreCardSection

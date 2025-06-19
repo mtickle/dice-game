@@ -1,9 +1,9 @@
 import GameHistoryPanel from '@components/GameHistoryPanel';
-import GameLogPanel from '@components/GameLogPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
 import { useGameLogic } from '@hooks/useGameLogic';
 import { useCallback, useEffect, useState } from 'react';
+import TurnLogPanel from './components/TurnLogPanel';
 
 function App() {
   const [gameLog, setGameLog] = useState([]);
@@ -109,7 +109,7 @@ function App() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-end mb-4 gap-2">
+      {/* <div className="flex justify-end mb-4 gap-2">
         <button
           className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
           onClick={handleExport}
@@ -128,7 +128,8 @@ function App() {
         >
           {showAllTurns ? 'Show Current Game' : 'Show All Turns'}
         </button>
-      </div>
+      </div> */}
+
       <ScoreCardLayout
         scores={scores}
         totals={totals}
@@ -149,7 +150,12 @@ function App() {
 
       <GameHistoryPanel gameStats={gameStats} refreshKey={gameCount} />
       <GameStatsPanel gameStats={gameStats} />
-      <GameLogPanel gameLog={showAllTurns ? turnLog : gameLog} gameNumber={gameCount} />
+      <TurnLogPanel
+        gameLog={showAllTurns ? turnLog : gameLog}
+        turnLog={turnLog}
+        gameNumber={gameCount}
+        showAllTurns={showAllTurns}
+      />
     </div>
   );
 }
