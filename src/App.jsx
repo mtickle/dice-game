@@ -103,7 +103,10 @@ function App() {
         resetGame={resetGame}
       />
 
-      <GameStatsPanel gameStats={gameStats} />
+      <GameStatsPanel
+        gameStats={gameStats}
+        turnLog={turnLog} // Pass turnLog
+      />
       <GameHistoryPanel gameStats={gameStats} refreshKey={gameCount} />
 
       <TurnLogPanel

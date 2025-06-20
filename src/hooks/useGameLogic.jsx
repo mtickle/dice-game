@@ -21,7 +21,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
     const [earnedBonuses, setEarnedBonuses] = useState({});
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
-    const [turnInProgress, setTurnInProgress] = useState(false); // New flag
+    const [turnInProgress, setTurnInProgress] = useState(false);
 
     const isGameOver = Object.values(scores).every(score => score !== null);
     const rawSuggestedScores = calculateSuggestedScores(dice, scores);
@@ -42,8 +42,8 @@ export function useGameLogic(logTurnResult, logGameStats) {
     const rollDice = useCallback(() => {
         if (rollCount >= 3 || turnComplete || isGameOver || turnInProgress) return;
 
-        console.log('Rolling at rollCount:', rollCount); // Debug log
-        setTurnInProgress(true); // Mark turn as in progress
+        console.log('Rolling at rollCount:', rollCount);
+        setTurnInProgress(true);
         const diceWithAnimation = dice.map(d => d.held ? d : { ...d, rolling: true });
         setDice(diceWithAnimation);
 
@@ -55,7 +55,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
             );
             setDice(newDice);
             setRollCount(prev => prev + 1);
-            setTurnInProgress(false); // Turn complete after roll
+            setTurnInProgress(false);
             const advice = getStrategyAdvice(newDice, scores);
             setAdviceText(advice);
         }, 300);
@@ -88,6 +88,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
                 gameNumber: gameCount + 1,
                 turnNumber: turn,
                 dice: dice.map(d => d.value),
+                heldDice: dice.map(d => d.held),
                 rollCount,
                 category,
                 score,
@@ -96,7 +97,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
                 timestamp: new Date().toISOString(),
             };
             console.log('[Turn Result]', turnResult);
-            if (rollCount > 3) console.log('FOUR ROLLS DETECTED!!'); // Debug
+            if (rollCount > 3) console.log('FOUR ROLLS DETECTED!!');
             logTurnResult(turnResult);
         }
 
@@ -138,6 +139,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
             }
         }
 
+        localStorage.removeItem('turnLog'); // Clear turnLog
         setGameCount(prev => prev + 1);
         setScores({ ...initialScores });
         setDice(Array(5).fill().map(() => ({ value: null, held: false })));
@@ -157,7 +159,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
     const resetGameLog = useCallback(() => { }, []);
 
     const autoplayTurn = useCallback(() => {
-        if (isGameOver || turnComplete || turnInProgress) return; // Wait for turn to complete
+        if (isGameOver || turnComplete || turnInProgress) return;
 
         if (rollCount < 3) {
             const totals = calculateTotals(scores);
