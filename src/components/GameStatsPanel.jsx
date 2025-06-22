@@ -26,7 +26,7 @@ ChartJS.register(
     Legend,
 );
 
-export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
+export default function GameStatsPanel({ gameStats: initialGameStats, turnLog, refreshKey }) {
     const [summaryStats, setSummaryStats] = useState({
         gamesPlayed: 0,
         lowestScore: Infinity,
@@ -35,7 +35,30 @@ export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
     });
 
     useEffect(() => {
-        const storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
+        // Calculate or update gameStats with unique gameNumber
+        let storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
+        if (storedStats.length === 0 && initialGameStats) {
+            storedStats = initialGameStats;
+        }
+
+        // Generate a unique gameNumber if a new game is needed
+        const generateGameNumber = () => {
+            const now = new Date();
+            return `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${now.getFullYear()}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+        };
+
+        if (turnLog.length > 0 && (!storedStats[storedStats.length - 1] || storedStats[storedStats.length - 1].turnLog !== turnLog)) {
+            const newGame = {
+                gameNumber: generateGameNumber(),
+                totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
+                scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
+                timestamp: new Date().toISOString(),
+            };
+            storedStats = [...storedStats, newGame];
+            localStorage.setItem('gameStats', JSON.stringify(storedStats));
+        }
+
+        // Calculate summary stats
         if (storedStats.length > 0) {
             const gamesPlayed = storedStats.length;
             const scores = storedStats.map((game) => game.totalScore);
@@ -50,22 +73,22 @@ export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
                 averageScore: Number(averageScore.toFixed(2)),
             });
         }
-    }, [refreshKey]);
+    }, [refreshKey, initialGameStats, turnLog]);
 
     const chartData = useMemo(() => {
-        if (!gameStats || gameStats.length === 0 || !turnLog || turnLog.length === 0) {
+        const storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
+        if (!storedStats || storedStats.length === 0 || !turnLog || turnLog.length === 0) {
             return null;
         }
 
-        console.log('[GameStatsPanel] turnLog:', turnLog);
+        //console.log('[GameStatsPanel] turnLog:', turnLog);
 
-        // Total Scores Line Chart
         const totalScoresData = {
-            labels: gameStats.map((game) => `Game ${game.gameNumber}`),
+            labels: storedStats.map((game) => `Game ${game.gameNumber}`),
             datasets: [
                 {
                     label: 'Total Score',
-                    data: gameStats.map((game) => game.totalScore),
+                    data: storedStats.map((game) => game.totalScore),
                     borderColor: '#2563eb',
                     backgroundColor: '#2563eb',
                     fill: false,
@@ -74,11 +97,10 @@ export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
             ],
         };
 
-        // Average Scores Bar Chart
-        const categories = Object.keys(gameStats[0].scores);
+        const categories = Object.keys(storedStats[0].scores);
         const avgScores = categories.map((cat) => {
-            const total = gameStats.reduce((sum, game) => sum + (game.scores[cat] || 0), 0);
-            return total / gameStats.length;
+            const total = storedStats.reduce((sum, game) => sum + (game.scores[cat] || 0), 0);
+            return total / storedStats.length;
         });
         const avgScoresData = {
             labels: categories.map(prettyName),
@@ -93,7 +115,6 @@ export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
             ],
         };
 
-        // Die Frequency Bar Chart (Rolled Only)
         const dieFrequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
         turnLog.forEach((turn) => {
             turn.dice.forEach((die) => {
@@ -117,7 +138,7 @@ export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
         };
 
         return { totalScoresData, avgScoresData, dieFrequencyData };
-    }, [gameStats, turnLog]);
+    }, [turnLog]);
 
     if (!chartData) {
         return (
@@ -131,11 +152,11 @@ export default function GameStatsPanel({ gameStats, turnLog, refreshKey }) {
     return (
         <div key={refreshKey} className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm animate-[flash_0.5s_ease-out]">
             <style>{`
-        @keyframes flash {
-          0% { background-color: #f0fdf4; }
-          100% { background-color: #ffffff; }
-        }
-      `}</style>
+            @keyframes flash {
+              0% { background-color: #f0fdf4; }
+              100% { background-color: #ffffff; }
+            }
+        `}</style>
             <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">Game Statistics</div>
             <div className="bg-gray-50 px-4 py-3 space-y-6">
                 <div>

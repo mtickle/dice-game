@@ -5,8 +5,14 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
     const [openIndices, setOpenIndices] = useState([]);
 
     useEffect(() => {
-        // Temporary debug log to confirm refresh
-       // console.log('[GameHistoryPanel] Refresh triggered, gameStats length:', gameStats?.length || 0);
+        // Debug log to check for duplicate gameNumbers
+        console.log('[GameHistoryPanel] gameStats:', gameStats);
+        const gameNumbers = gameStats.map(game => game.gameNumber);
+        const duplicates = gameNumbers.filter((num, index) => gameNumbers.indexOf(num) !== index);
+        if (duplicates.length > 0) {
+            console.warn('[GameHistoryPanel] Duplicate gameNumbers found:', duplicates);
+        }
+
         // Fallback: Log errors if gameStats is empty
         if (!gameStats || gameStats.length === 0) {
             try {
@@ -53,7 +59,7 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
                         const isOpen = openIndices.includes(index);
                         return (
                             <div
-                                key={game.gameNumber || index}
+                                key={`${game.gameNumber || index}-${index}`} // Ensure uniqueness with index
                                 className="mb-2 rounded-md border border-gray-300 bg-white"
                             >
                                 <button
@@ -65,8 +71,7 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
                                         {new Date(game.timestamp).toLocaleString()})
                                     </span>
                                     <svg
-                                        className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
-                                            }`}
+                                        className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -81,13 +86,12 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
                                     </svg>
                                 </button>
                                 <div
-                                    className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96' : 'max-h-0'
-                                        }`}
+                                    className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96' : 'max-h-0'}`}
                                 >
                                     <div className="px-4 py-3 text-sm text-gray-700">
                                         <div className="text-left grid grid-cols-2 gap-2">
                                             {Object.entries(game.scores || {}).map(([category, score]) => (
-                                                <div key={category}>
+                                                <div key={`${game.gameNumber}-${category}-${index}`}> {/* Unique per game and category */}
                                                     {prettyName(category)}: {score ?? 0}
                                                 </div>
                                             ))}

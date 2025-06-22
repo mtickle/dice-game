@@ -107,14 +107,15 @@ function App() {
         gameStats={gameStats}
         turnLog={turnLog} // Pass turnLog
       />
-      <GameHistoryPanel gameStats={gameStats} refreshKey={gameCount} />
-
       <TurnLogPanel
         gameLog={showAllTurns ? turnLog : gameLog}
         turnLog={turnLog}
         gameNumber={gameCount}
         showAllTurns={showAllTurns}
       />
+      <GameHistoryPanel gameStats={gameStats} refreshKey={gameCount} />
+
+
     </div>
   );
 }

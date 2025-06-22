@@ -42,7 +42,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
     const rollDice = useCallback(() => {
         if (rollCount >= 3 || turnComplete || isGameOver || turnInProgress) return;
 
-        console.log('Rolling at rollCount:', rollCount);
+        //console.log('Rolling at rollCount:', rollCount);
         setTurnInProgress(true);
         const diceWithAnimation = dice.map(d => d.held ? d : { ...d, rolling: true });
         setDice(diceWithAnimation);
