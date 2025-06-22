@@ -1,3 +1,4 @@
+import { prettyName } from '@utils/utils';
 import { useEffect } from 'react';
 
 export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurns }) {
@@ -11,58 +12,63 @@ export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurn
     const diceSvgs = {
         1: (
             <svg width="24" height="24" viewBox="0 0 100 100" className="inline-block mr-1">
-                <rect x="10" y="10" width="80" height="80" fill="#fff" stroke="#000" strokeWidth="5" />
-                <circle cx="50" cy="50" r="15" fill="#000" />
+                <rect x="5" y="5" width="90" height="90" fill="#fff" stroke="#000" strokeWidth="5" />
+                <circle cx="50" cy="50" r="10" fill="#000" />
             </svg>
         ),
         2: (
             <svg width="24" height="24" viewBox="0 0 100 100" className="inline-block mr-1">
-                <rect x="10" y="10" width="80" height="80" fill="#fff" stroke="#000" strokeWidth="5" />
-                <circle cx="30" cy="30" r="15" fill="#000" />
-                <circle cx="70" cy="70" r="15" fill="#000" />
+                <rect x="5" y="5" width="90" height="90" fill="#fff" stroke="#000" strokeWidth="5" />
+                <circle cx="30" cy="30" r="10" fill="#000" />
+                <circle cx="70" cy="70" r="10" fill="#000" />
             </svg>
         ),
         3: (
             <svg width="24" height="24" viewBox="0 0 100 100" className="inline-block mr-1">
-                <rect x="10" y="10" width="80" height="80" fill="#fff" stroke="#000" strokeWidth="5" />
-                <circle cx="30" cy="30" r="15" fill="#000" />
-                <circle cx="50" cy="50" r="15" fill="#000" />
-                <circle cx="70" cy="70" r="15" fill="#000" />
+                <rect x="5" y="5" width="90" height="90" fill="#fff" stroke="#000" strokeWidth="5" />
+                <circle cx="30" cy="30" r="10" fill="#000" />
+                <circle cx="50" cy="50" r="10" fill="#000" />
+                <circle cx="70" cy="70" r="10" fill="#000" />
             </svg>
         ),
         4: (
             <svg width="24" height="24" viewBox="0 0 100 100" className="inline-block mr-1">
-                <rect x="10" y="10" width="80" height="80" fill="#fff" stroke="#000" strokeWidth="5" />
-                <circle cx="30" cy="30" r="15" fill="#000" />
-                <circle cx="70" cy="30" r="15" fill="#000" />
-                <circle cx="30" cy="70" r="15" fill="#000" />
-                <circle cx="70" cy="70" r="15" fill="#000" />
+                <rect x="5" y="5" width="90" height="90" fill="#fff" stroke="#000" strokeWidth="5" />
+                <circle cx="30" cy="30" r="10" fill="#000" />
+                <circle cx="70" cy="30" r="10" fill="#000" />
+                <circle cx="30" cy="70" r="10" fill="#000" />
+                <circle cx="70" cy="70" r="10" fill="#000" />
             </svg>
         ),
         5: (
             <svg width="24" height="24" viewBox="0 0 100 100" className="inline-block mr-1">
-                <rect x="10" y="10" width="80" height="80" fill="#fff" stroke="#000" strokeWidth="5" />
-                <circle cx="30" cy="30" r="15" fill="#000" />
-                <circle cx="70" cy="30" r="15" fill="#000" />
-                <circle cx="50" cy="50" r="15" fill="#000" />
-                <circle cx="30" cy="70" r="15" fill="#000" />
-                <circle cx="70" cy="70" r="15" fill="#000" />
+                <rect x="5" y="5" width="90" height="90" fill="#fff" stroke="#000" strokeWidth="5" />
+                <circle cx="30" cy="30" r="10" fill="#000" />
+                <circle cx="70" cy="30" r="10" fill="#000" />
+                <circle cx="50" cy="50" r="10" fill="#000" />
+                <circle cx="30" cy="70" r="10" fill="#000" />
+                <circle cx="70" cy="70" r="10" fill="#000" />
             </svg>
         ),
         6: (
             <svg width="24" height="24" viewBox="0 0 100 100" className="inline-block mr-1">
-                <rect x="10" y="10" width="80" height="80" fill="#fff" stroke="#000" strokeWidth="5" />
-                <circle cx="30" cy="25" r="15" fill="#000" />
-                <circle cx="70" cy="25" r="15" fill="#000" />
-                <circle cx="30" cy="50" r="15" fill="#000" />
-                <circle cx="70" cy="50" r="15" fill="#000" />
-                <circle cx="30" cy="75" r="15" fill="#000" />
-                <circle cx="70" cy="75" r="15" fill="#000" />
+                <rect x="5" y="5" width="90" height="90" fill="#fff" stroke="#000" strokeWidth="5" />
+                <circle cx="30" cy="25" r="10" fill="#000" />
+                <circle cx="70" cy="25" r="10" fill="#000" />
+                <circle cx="30" cy="50" r="10" fill="#000" />
+                <circle cx="70" cy="50" r="10" fill="#000" />
+                <circle cx="30" cy="75" r="10" fill="#000" />
+                <circle cx="70" cy="75" r="10" fill="#000" />
             </svg>
         ),
     };
 
     return (
+
+
+
+
+
         <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
                 Turn History
@@ -105,7 +111,7 @@ export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurn
                                             )}
                                         </td>
                                         <td className="p-2">{rollCount}</td>
-                                        <td className="p-2">{category}</td>
+                                        <td className="p-2">{prettyName(category)}</td>
                                         <td className="p-2">{score}</td>
                                         <td className="p-2">{bonus}</td>
                                         <td className="p-2">{timestamp}</td>

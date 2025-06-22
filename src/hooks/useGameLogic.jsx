@@ -96,7 +96,7 @@ export function useGameLogic(logTurnResult, logGameStats) {
                 suggestedScores: { ...suggestedScores },
                 timestamp: new Date().toISOString(),
             };
-            console.log('[Turn Result]', turnResult);
+            //console.log('[Turn Result]', turnResult);
             if (rollCount > 3) console.log('FOUR ROLLS DETECTED!!');
             logTurnResult(turnResult);
         }

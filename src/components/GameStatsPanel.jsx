@@ -26,36 +26,60 @@ ChartJS.register(
     Legend,
 );
 
-export default function GameStatsPanel({ gameStats: initialGameStats, turnLog, refreshKey }) {
+export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: initialTurnLog, refreshKey }) {
     const [summaryStats, setSummaryStats] = useState({
         gamesPlayed: 0,
         lowestScore: Infinity,
         highestScore: -Infinity,
         averageScore: 0,
     });
+    const [turnLog, setTurnLog] = useState([]);
 
     useEffect(() => {
-        // Calculate or update gameStats with unique gameNumber
+        // Load and convert turnLog from localStorage
+        let storedTurnLog = JSON.parse(localStorage.getItem('turnLog') || '[]');
+        if (storedTurnLog.length === 0 && initialTurnLog) {
+            storedTurnLog = initialTurnLog;
+        }
+        const convertedTurnLog = storedTurnLog.map(turn => ({
+            ...turn,
+            category: prettyName(turn.category),
+        }));
+        setTurnLog(convertedTurnLog);
+
+        // Load and initialize gameStats from localStorage
         let storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
         if (storedStats.length === 0 && initialGameStats) {
             storedStats = initialGameStats;
         }
 
-        // Generate a unique gameNumber if a new game is needed
+        // Generate a unique gameNumber
         const generateGameNumber = () => {
             const now = new Date();
             return `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${now.getFullYear()}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
         };
 
+        // Ensure all existing games have a valid gameNumber
+        storedStats = storedStats.map(game => ({
+            ...game,
+            gameNumber: game.gameNumber || generateGameNumber(),
+        }));
+        localStorage.setItem('gameStats', JSON.stringify(storedStats));
+
+        // Only update gameStats when a game is complete
         if (turnLog.length > 0 && (!storedStats[storedStats.length - 1] || storedStats[storedStats.length - 1].turnLog !== turnLog)) {
-            const newGame = {
-                gameNumber: generateGameNumber(),
-                totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
-                scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
-                timestamp: new Date().toISOString(),
-            };
-            storedStats = [...storedStats, newGame];
-            localStorage.setItem('gameStats', JSON.stringify(storedStats));
+            const lastTurn = turnLog[turnLog.length - 1];
+            if (lastTurn && lastTurn.isGameEnd) {
+                const newGame = {
+                    gameNumber: lastTurn.gameNumber, // Use the gameNumber from the last turn
+                    totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
+                    scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
+                    timestamp: new Date().toISOString(),
+                };
+                storedStats = [...storedStats, newGame];
+                localStorage.setItem('gameStats', JSON.stringify(storedStats));
+                console.log('[GameStatsPanel] New game added:', newGame);
+            }
         }
 
         // Calculate summary stats
@@ -73,15 +97,13 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog, r
                 averageScore: Number(averageScore.toFixed(2)),
             });
         }
-    }, [refreshKey, initialGameStats, turnLog]);
+    }, [refreshKey, initialGameStats, initialTurnLog]);
 
     const chartData = useMemo(() => {
         const storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
         if (!storedStats || storedStats.length === 0 || !turnLog || turnLog.length === 0) {
             return null;
         }
-
-        //console.log('[GameStatsPanel] turnLog:', turnLog);
 
         const totalScoresData = {
             labels: storedStats.map((game) => `Game ${game.gameNumber}`),
@@ -97,10 +119,10 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog, r
             ],
         };
 
-        const categories = Object.keys(storedStats[0].scores);
+        const categories = Object.keys(storedStats[0]?.scores || {});
         const avgScores = categories.map((cat) => {
             const total = storedStats.reduce((sum, game) => sum + (game.scores[cat] || 0), 0);
-            return total / storedStats.length;
+            return total / storedStats.length || 0;
         });
         const avgScoresData = {
             labels: categories.map(prettyName),
@@ -152,11 +174,11 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog, r
     return (
         <div key={refreshKey} className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm animate-[flash_0.5s_ease-out]">
             <style>{`
-            @keyframes flash {
-              0% { background-color: #f0fdf4; }
-              100% { background-color: #ffffff; }
-            }
-        `}</style>
+                @keyframes flash {
+                  0% { background-color: #f0fdf4; }
+                  100% { background-color: #ffffff; }
+                }
+            `}</style>
             <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">Game Statistics</div>
             <div className="bg-gray-50 px-4 py-3 space-y-6">
                 <div>

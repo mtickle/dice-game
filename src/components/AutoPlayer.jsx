@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { upperCategories } from '../utils/utils';
+import { generateGameNumber, upperCategories } from '../utils/utils'; // Assuming generateGameNumber is moved to utils
 
 export default function AutoPlayer({
     rollDice,
@@ -23,17 +23,24 @@ export default function AutoPlayer({
 }) {
     const hasLoggedGameOver = useRef(false);
 
-
-
     // Log game-over once
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
-           // console.log(`[AutoPlayer] Game ${gameCount} over — logging stats and restarting.`);
+            //console.log(`[AutoPlayer] Game ${gameCount} over — logging stats and restarting.`);
             hasLoggedGameOver.current = true;
+            // Update gameStats with the completed game
+            const newGame = {
+                gameNumber: generateGameNumber(), // New gameNumber for the next game
+                totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
+                scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
+                timestamp: new Date().toISOString(),
+            };
+            setGameStats(prev => [...prev, newGame]);
+            localStorage.setItem('gameStats', JSON.stringify([...gameStats, newGame]));
         } else if (!isGameOver) {
             hasLoggedGameOver.current = false;
         }
-    }, [isGameOver, autoPlaying, gameCount]);
+    }, [isGameOver, autoPlaying, gameCount, turnLog, gameStats, setGameStats]);
 
     // Debug state changes
     useEffect(() => {
@@ -72,6 +79,7 @@ export default function AutoPlayer({
             if (remaining.length > 0) {
                 const categoryToScore = remaining[0];
                 //console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
+                addTurnToLog(categoryToScore, 0); // Add turn with score 0
                 try {
                     applyScore(categoryToScore);
                 } catch (error) {
@@ -90,19 +98,19 @@ export default function AutoPlayer({
         const bonusThreshold = 63;
         const bonusGap = bonusThreshold - upperSubtotal;
         const upperTargets = {
-            ones: 3, // 3 × 1
-            twos: 6, // 3 × 2
-            threes: 9, // 3 × 3
-            fours: 12, // 3 × 4
-            fives: 15, // 3 × 5
-            sixes: 18, // 3 × 6
+            ones: 3,
+            twos: 6,
+            threes: 9,
+            fours: 12,
+            fives: 15,
+            sixes: 18,
         };
 
         let categoryToScore = null;
         let bestScore = -1;
 
         // Prioritize upper categories if close to bonus or high score
-        if (bonusGap > 0 && bonusGap <= 18) { // Within ~2 upper categories of bonus
+        if (bonusGap > 0 && bonusGap <= 18) {
             const upperAvailable = availableSuggested.filter((cat) => upperCategories.includes(cat));
             if (upperAvailable.length > 0) {
                 categoryToScore = upperAvailable.reduce((best, cat) => {
@@ -129,10 +137,11 @@ export default function AutoPlayer({
             }, availableSuggested[0]);
         }
 
-        // console.log(
-        //   `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
-        // );
+        //console.log(
+        //    `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
+        //);
 
+        addTurnToLog(categoryToScore, suggestedScores[categoryToScore]);
         try {
             applyScore(categoryToScore);
         } catch (error) {
@@ -140,6 +149,24 @@ export default function AutoPlayer({
             setAutoPlaying(false);
         }
     };
+
+    const addTurnToLog = (category, score) => {
+        const newTurn = {
+            gameNumber: generateGameNumber(),
+            turnNumber: (turnLog?.length || 0) + 1,
+            dice: [], // Populate from rollDice result if available
+            heldDice: [false, false, false, false, false],
+            rollCount: rollCount || 0,
+            category,
+            score,
+            bonus: 0,
+            suggestedScores: { ...suggestedScores },
+            timestamp: new Date().toISOString(),
+        };
+        setTurnLog(prev => [...(prev || []), newTurn]);
+        localStorage.setItem('turnLog', JSON.stringify([...(turnLog || []), newTurn]));
+    };
+
 
     const exportData = (data, filename) => {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -155,11 +182,6 @@ export default function AutoPlayer({
         exportData(turnLog, `yahtzee_turnLog_${new Date().toISOString()}.json`);
         exportData(gameStats, `yahtzee_gameStats_${new Date().toISOString()}.json`);
     };
-
-    useEffect(() => {
-       // console.log('setGameStats:', setGameStats, typeof setGameStats);
-        //console.log('resetGame:', resetGame, typeof resetGame);
-    }, [setGameStats, resetGame]);
 
     const handleReset = () => {
         if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
@@ -197,13 +219,6 @@ export default function AutoPlayer({
                 >
                     Reset All Data
                 </button>
-                {/* <button
-                    className="px-4 bg-gray-600 text-white rounded-xl py-2 hover:bg-gray-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
-                    onClick={handleToggleTurns}
-                >
-                    Show All Turns
-                </button> */}
-
                 <button
                     className={`px-4 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md 
             ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}

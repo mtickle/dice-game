@@ -60,3 +60,8 @@ export const dotPositions = {
     5: [0, 2, 4, 6, 8],
     6: [0, 2, 3, 5, 6, 8],
 };
+
+export const generateGameNumber = () => {
+    const now = new Date();
+    return `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${now.getFullYear()}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+};
