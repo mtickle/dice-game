@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { generateGameNumber, upperCategories } from '../utils/utils'; // Assuming generateGameNumber is moved to utils
+import { useEffect, useRef, useState } from 'react';
+import { generateGameNumber, upperCategories } from '../utils/utils';
 
 export default function AutoPlayer({
     rollDice,
@@ -22,30 +22,32 @@ export default function AutoPlayer({
     resetGame
 }) {
     const hasLoggedGameOver = useRef(false);
+    const [gameNumber, setGameNumber] = useState(generateGameNumber()); // Initialize gameNumber for the current game
 
     // Log game-over once
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
-            //console.log(`[AutoPlayer] Game ${gameCount} over — logging stats and restarting.`);
             hasLoggedGameOver.current = true;
             // Update gameStats with the completed game
             const newGame = {
-                gameNumber: generateGameNumber(), // New gameNumber for the next game
+                gameNumber, // Use current gameNumber
                 totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
                 scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
                 timestamp: new Date().toISOString(),
             };
             setGameStats(prev => [...prev, newGame]);
             localStorage.setItem('gameStats', JSON.stringify([...gameStats, newGame]));
+            // Generate new gameNumber for the next game
+            setGameNumber(generateGameNumber());
         } else if (!isGameOver) {
             hasLoggedGameOver.current = false;
         }
-    }, [isGameOver, autoPlaying, gameCount, turnLog, gameStats, setGameStats]);
+    }, [isGameOver, autoPlaying, gameCount, turnLog, gameStats, setGameStats, gameNumber]);
 
     // Debug state changes
     useEffect(() => {
-        //console.log(`[AutoPlayer] isGameOver = ${isGameOver}, autoPlaying = ${autoPlaying}, gameCount = ${gameCount}`);
-    }, [isGameOver, autoPlaying, gameCount]);
+        //console.log(`[AutoPlayer] isGameOver = ${isGameOver}, autoPlaying = ${autoPlaying}, gameCount = ${gameCount}, gameNumber = ${gameNumber}`);
+    }, [isGameOver, autoPlaying, gameCount, gameNumber]);
 
     // Handle game moves
     useEffect(() => {
@@ -78,7 +80,6 @@ export default function AutoPlayer({
             const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
             if (remaining.length > 0) {
                 const categoryToScore = remaining[0];
-                //console.log(`[AutoPlayer] Game ${gameCount + 1}: Sacrificing category: ${categoryToScore} (score = 0)`);
                 addTurnToLog(categoryToScore, 0); // Add turn with score 0
                 try {
                     applyScore(categoryToScore);
@@ -137,10 +138,6 @@ export default function AutoPlayer({
             }, availableSuggested[0]);
         }
 
-        //console.log(
-        //    `[AutoPlayer] Game ${gameCount + 1}: Scoring ${categoryToScore} (score = ${suggestedScores[categoryToScore]}, upperSubtotal = ${upperSubtotal}, bonusGap = ${bonusGap})`
-        //);
-
         addTurnToLog(categoryToScore, suggestedScores[categoryToScore]);
         try {
             applyScore(categoryToScore);
@@ -152,7 +149,7 @@ export default function AutoPlayer({
 
     const addTurnToLog = (category, score) => {
         const newTurn = {
-            gameNumber: generateGameNumber(),
+            gameNumber, // Use current gameNumber
             turnNumber: (turnLog?.length || 0) + 1,
             dice: [], // Populate from rollDice result if available
             heldDice: [false, false, false, false, false],
@@ -166,7 +163,6 @@ export default function AutoPlayer({
         setTurnLog(prev => [...(prev || []), newTurn]);
         localStorage.setItem('turnLog', JSON.stringify([...(turnLog || []), newTurn]));
     };
-
 
     const exportData = (data, filename) => {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -185,7 +181,6 @@ export default function AutoPlayer({
 
     const handleReset = () => {
         if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
-            // Clear state and local storage first
             setTurnLog([]);
             setGameStats([]);
             try {
@@ -194,8 +189,8 @@ export default function AutoPlayer({
             } catch (error) {
                 console.error('[AutoPlayer] Error resetting data:', error);
             }
-            // Call resetGame with a flag to skip save
             resetGame(true); // Pass a skipSave flag
+            setGameNumber(generateGameNumber()); // Reset gameNumber for new game
         }
     };
 
