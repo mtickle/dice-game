@@ -6,7 +6,7 @@ import ScoreCardSection from './ScoreCardSection';
 
 function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
     return (
-        <div className="mt-4 rounded ">
+        <div className="mt-4 rounded">
             <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
                 <div className="font-semibold text-gray-800">Subtotal:</div>
                 <div className="flex items-center space-x-2">
@@ -32,8 +32,7 @@ function UpperSectionTotals({ upperSubtotal, bonus, upperTotal }) {
 
 function LowerSectionTotals({ lowerTotal, grandTotal }) {
     return (
-
-        <div className="mt-4 rounded ">
+        <div className="mt-4 rounded">
             <div className="flex justify-between items-center px-3 py-2 border-b border-dashed">
                 <div className="font-semibold text-gray-800">Lower Total:</div>
                 <div className="flex items-center space-x-2">
@@ -73,7 +72,9 @@ export default function ScoreCardLayout({
     setShowAllTurns,
     isGameOver,
     gameCount,
-    resetGame   
+    resetGame,
+    gameNumber,
+    setGameNumber
 }) {
     return (
         <div className="flex justify-between p-6 bg-white rounded-lg shadow-sm gap-4 mb-4">
@@ -104,13 +105,12 @@ export default function ScoreCardLayout({
                     applyScore={applyScore}
                     rollCount={rollCount}
                     turnComplete={turnComplete}
-                    isGameOver={isGameOver || totals.isGameOver} // Fallback to totals if top-level missing
+                    isGameOver={isGameOver || totals.isGameOver}
                     suggestedScores={suggestedScores}
                     scores={scores}
-                    gameCount={gameCount || totals.gameCount} // Fallback to totals if top-level missing
+                    gameCount={gameCount || totals.gameCount}
                     autoPlaying={autoPlaying}
                     setAutoPlaying={setAutoPlaying}
-                    autoplayTurn={autoplayTurn}
                     totals={totals}
                     setTurnLog={setTurnLog}
                     turnLog={turnLog}
@@ -119,6 +119,8 @@ export default function ScoreCardLayout({
                     showAllTurns={showAllTurns}
                     setShowAllTurns={setShowAllTurns}
                     resetGame={resetGame}
+                    gameNumber={gameNumber}
+                    setGameNumber={setGameNumber}
                 />
                 {!autoPlaying && (
                     <AdvicePanel

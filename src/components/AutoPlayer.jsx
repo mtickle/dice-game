@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { generateGameNumber, upperCategories } from '../utils/utils';
 
 export default function AutoPlayer({
@@ -19,30 +19,31 @@ export default function AutoPlayer({
     setGameStats,
     showAllTurns,
     setShowAllTurns,
-    resetGame
+    resetGame,
+    gameNumber,
+    setGameNumber
 }) {
     const hasLoggedGameOver = useRef(false);
-    const [gameNumber, setGameNumber] = useState(generateGameNumber()); // Initialize gameNumber for the current game
 
     // Log game-over once
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
             hasLoggedGameOver.current = true;
-            // Update gameStats with the completed game
             const newGame = {
-                gameNumber, // Use current gameNumber
+                gameNumber,
                 totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
                 scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
                 timestamp: new Date().toISOString(),
             };
-            setGameStats(prev => [...prev, newGame]);
-            localStorage.setItem('gameStats', JSON.stringify([...gameStats, newGame]));
-            // Generate new gameNumber for the next game
-            setGameNumber(generateGameNumber());
+            setGameStats(prev => {
+                const updatedStats = [...prev, newGame];
+                localStorage.setItem('gameStats', JSON.stringify(updatedStats));
+                return updatedStats;
+            });
         } else if (!isGameOver) {
             hasLoggedGameOver.current = false;
         }
-    }, [isGameOver, autoPlaying, gameCount, turnLog, gameStats, setGameStats, gameNumber]);
+    }, [isGameOver, autoPlaying, turnLog, gameStats, setGameStats, gameNumber]);
 
     // Debug state changes
     useEffect(() => {
@@ -80,7 +81,6 @@ export default function AutoPlayer({
             const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
             if (remaining.length > 0) {
                 const categoryToScore = remaining[0];
-                addTurnToLog(categoryToScore, 0); // Add turn with score 0
                 try {
                     applyScore(categoryToScore);
                 } catch (error) {
@@ -94,7 +94,6 @@ export default function AutoPlayer({
             return;
         }
 
-        // Aggressive upper section strategy
         const upperSubtotal = totals?.upperSubtotal || 0;
         const bonusThreshold = 63;
         const bonusGap = bonusThreshold - upperSubtotal;
@@ -110,7 +109,6 @@ export default function AutoPlayer({
         let categoryToScore = null;
         let bestScore = -1;
 
-        // Prioritize upper categories if close to bonus or high score
         if (bonusGap > 0 && bonusGap <= 18) {
             const upperAvailable = availableSuggested.filter((cat) => upperCategories.includes(cat));
             if (upperAvailable.length > 0) {
@@ -126,7 +124,6 @@ export default function AutoPlayer({
             }
         }
 
-        // Fall back to highest score if no good upper option
         if (!categoryToScore) {
             categoryToScore = availableSuggested.reduce((best, cat) => {
                 const score = suggestedScores[cat] || 0;
@@ -138,30 +135,12 @@ export default function AutoPlayer({
             }, availableSuggested[0]);
         }
 
-        addTurnToLog(categoryToScore, suggestedScores[categoryToScore]);
         try {
             applyScore(categoryToScore);
         } catch (error) {
             console.error(`[AutoPlayer] Game ${gameCount + 1}: Error applying score:`, error);
             setAutoPlaying(false);
         }
-    };
-
-    const addTurnToLog = (category, score) => {
-        const newTurn = {
-            gameNumber, // Use current gameNumber
-            turnNumber: (turnLog?.length || 0) + 1,
-            dice: [], // Populate from rollDice result if available
-            heldDice: [false, false, false, false, false],
-            rollCount: rollCount || 0,
-            category,
-            score,
-            bonus: 0,
-            suggestedScores: { ...suggestedScores },
-            timestamp: new Date().toISOString(),
-        };
-        setTurnLog(prev => [...(prev || []), newTurn]);
-        localStorage.setItem('turnLog', JSON.stringify([...(turnLog || []), newTurn]));
     };
 
     const exportData = (data, filename) => {
@@ -189,8 +168,8 @@ export default function AutoPlayer({
             } catch (error) {
                 console.error('[AutoPlayer] Error resetting data:', error);
             }
-            resetGame(true); // Pass a skipSave flag
-            setGameNumber(generateGameNumber()); // Reset gameNumber for new game
+            resetGame(true);
+            setGameNumber(generateGameNumber());
         }
     };
 
@@ -200,7 +179,7 @@ export default function AutoPlayer({
 
     return (
         <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm w-full">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 ">Auto Player & Controls</h2>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800">Auto Player & Controls</h2>
             <div className="flex gap-3 mb-4">
                 <button
                     className="px-4 bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
