@@ -4,33 +4,46 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { prettyName } from '../utils/utils';
 
-export default function GameHistoryGridPanel({ gameStats, refreshKey }) {
+export default function GameHistoryGridPanel({ gameStats: initialGameStats, refreshKey }) {
     const [sorting, setSorting] = useState([]);
+    const [gameStats, setGameStats] = useState(initialGameStats || []);
 
     useEffect(() => {
-        const gameNumbers = gameStats.map(game => game.gameNumber);
-        const duplicates = gameNumbers.filter((num, i) => gameNumbers.indexOf(num) !== i);
-        if (duplicates.length > 0) {
-            console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
-        }
-
-        if (!gameStats || gameStats.length === 0) {
+        const timeout = setTimeout(() => {
+            console.log('[GameHistoryGridPanel] Loading gameStats from localStorage');
+            let storedStats = [];
             try {
-                const storedStats = localStorage.getItem('gameStats');
-                if (storedStats) {
-                    const parsedStats = JSON.parse(storedStats);
-                    if (!Array.isArray(parsedStats)) {
-                        console.warn('[GameHistoryGridPanel] Invalid gameStats format; expected array.');
+                const storedData = localStorage.getItem('gameStats');
+                if (storedData) {
+                    storedStats = JSON.parse(storedData);
+                    if (!Array.isArray(storedStats)) {
+                        console.warn('[GameHistoryGridPanel] Invalid gameStats format in localStorage; expected array.');
+                        storedStats = [];
                     }
                 }
             } catch (err) {
-                console.error('[GameHistoryGridPanel] Error parsing gameStats:', err);
+                console.error('[GameHistoryGridPanel] Error parsing gameStats from localStorage:', err);
+                storedStats = [];
             }
-        }
-    }, [gameStats, refreshKey]);
+
+            if (storedStats.length === 0 && initialGameStats && Array.isArray(initialGameStats)) {
+                storedStats = initialGameStats;
+            }
+
+            setGameStats(storedStats);
+
+            const gameNumbers = storedStats.map(game => game.gameNumber);
+            const duplicates = gameNumbers.filter((num, i) => gameNumbers.indexOf(num) !== i);
+            if (duplicates.length > 0) {
+                console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
+            }
+        }, 100);
+
+        return () => clearTimeout(timeout);
+    }, [initialGameStats, refreshKey]);
 
     const categoryOrder = [
         'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
@@ -49,20 +62,26 @@ export default function GameHistoryGridPanel({ gameStats, refreshKey }) {
         return indexA - indexB;
     });
 
-    const columns = [
+    const columns = useMemo(() => [
         {
             accessorKey: 'gameNumber',
             header: () => 'Game #',
+            enableSorting: true,
+            cell: ({ row }) => row.original.gameNumber || '-',
         },
         ...allCategories.map(category => ({
             accessorKey: category,
             header: () => prettyName(category),
+            enableSorting: true,
             cell: ({ row }) =>
-                row.original.scores?.[category] ?? '-',
+                row.original.scores?.[category] !== undefined
+                    ? row.original.scores[category]
+                    : '-',
         })),
         {
             accessorKey: 'totalScore',
             header: () => 'Total Score',
+            enableSorting: true,
             cell: ({ row }) => {
                 const score = row.original.totalScore || 0;
                 let colorClass = 'text-gray-700';
@@ -71,9 +90,9 @@ export default function GameHistoryGridPanel({ gameStats, refreshKey }) {
                 return <span className={colorClass}>{score}</span>;
             },
         },
-    ];
+    ], [allCategories]);
 
-    const data = gameStats.slice().reverse();
+    const data = useMemo(() => gameStats.slice(), [gameStats]);
 
     const table = useReactTable({
         data,
@@ -102,7 +121,7 @@ export default function GameHistoryGridPanel({ gameStats, refreshKey }) {
             <div className="border-b border-gray-200 px-4 py-3 text-lg font-semibold text-gray-800">
                 Game History
             </div>
-            <div className="bg-gray-50 relative overflow-auto max-h-[500px]">
+            <div className="bg-gray-50 relative overflow-y-auto h-[500px]">
                 <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-0">
                     <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm text-xs text-gray-600 uppercase">
                         {table.getHeaderGroups().map(headerGroup => (
