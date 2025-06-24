@@ -1,10 +1,10 @@
-import GameHistoryPanel from '@components/GameHistoryPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
 import TurnLogPanel from '@components/TurnLogPanel';
 import { useGameLogic } from '@hooks/useGameLogic';
 import { generateGameNumber } from '@utils/utils';
 import { useCallback, useEffect, useState } from 'react';
+import GameHistoryGridPanel from './components/GameHistoryGridPanel';
 
 function App() {
   const [gameLog, setGameLog] = useState([]);
@@ -89,7 +89,7 @@ function App() {
   }, [isGameOver]);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="w-full max-w-screen-2xl mx-auto p-4">
       <ScoreCardLayout
         scores={scores}
         totals={totals}
@@ -117,14 +117,16 @@ function App() {
         gameNumber={gameNumber}
         setGameNumber={setGameNumber}
       />
+      <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />
       <GameStatsPanel gameStats={gameStats} turnLog={turnLog} />
+
       <TurnLogPanel
         gameLog={showAllTurns ? turnLog : gameLog}
         turnLog={turnLog}
         gameNumber={gameNumber}
         showAllTurns={showAllTurns}
       />
-      <GameHistoryPanel gameStats={gameStats} refreshKey={gameCount} />
+
     </div>
   );
 }
