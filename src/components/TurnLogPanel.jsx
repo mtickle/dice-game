@@ -100,7 +100,7 @@ export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurn
 
                                 return (
                                     <tr key={index} className="border-b hover:bg-gray-50">
-                                        <td className="p-2">{turn.turnNumber || index + 1}</td>
+                                        <td className="p-2">{turn.turnNumber || index}</td>
                                         <td className="p-2">
                                             {diceToShow.map((die, i) =>
                                                 die !== null && die >= 1 && die <= 6 ? (

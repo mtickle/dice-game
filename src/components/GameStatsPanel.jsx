@@ -138,13 +138,26 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
         };
 
         const dieFrequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+
         turnLog.forEach((turn) => {
-            turn.dice.forEach((die) => {
-                if (die !== null && die >= 1 && die <= 6) {
-                    dieFrequency[die] += 1;
-                }
-            });
+            if (Array.isArray(turn.dice)) {
+                turn.dice.forEach((die) => {
+                    if (die !== null && die >= 1 && die <= 6) {
+                        dieFrequency[die] += 1;
+                    }
+                });
+            }
         });
+
+
+        // turnLog.forEach((turn) => {
+        //     turn.dice.forEach((die) => {
+        //         if (die !== null && die >= 1 && die <= 6) {
+        //             dieFrequency[die] += 1;
+        //         }
+        //     });
+        // });
 
         const dieFrequencyData = {
             labels: ['1s', '2s', '3s', '4s', '5s', '6s'],
