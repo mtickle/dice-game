@@ -1,4 +1,4 @@
-import GameHistoryPanel from '@components/GameHistoryPanel';
+import GameHistoryGridPanel from '@components/GameHistoryGridPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
 import TurnLogPanel from '@components/TurnLogPanel';
@@ -7,7 +7,7 @@ import { generateGameNumber } from '@utils/utils';
 import { useCallback, useEffect, useState } from 'react';
 
 function App() {
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+  //const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
 
   const [gameLog, setGameLog] = useState([]);
   const [turnLog, setTurnLog] = useState(() => {

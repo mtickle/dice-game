@@ -1,7 +1,7 @@
 import { saveGameToFirebase, saveTurnsToFirebase } from '@utils/firebaseUtils';
 import { generateGameNumber, upperCategories } from '@utils/utils'; // Assuming generateGameNumber is moved to utils
 import { useEffect, useRef } from 'react';
-import { generateGameNumber, upperCategories } from '../utils/utils'; // Assuming generateGameNumber is moved to utils
+//import { generateGameNumber, upperCategories } from '../utils/utils'; // Assuming generateGameNumber is moved to utils
 
 export default function AutoPlayer({
     rollDice,
