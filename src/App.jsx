@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import GameHistoryGridPanel from '@components/GameHistoryGridPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
@@ -7,7 +8,8 @@ import { generateGameNumber } from '@utils/utils';
 import { useCallback, useEffect, useState } from 'react';
 
 function App() {
-  //const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+
 
   const [gameLog, setGameLog] = useState([]);
   const [turnLog, setTurnLog] = useState(() => {
@@ -40,6 +42,7 @@ function App() {
       const newLog = [...prev, turnWithGameNumber];
       try {
         localStorage.setItem('turnLog', JSON.stringify(newLog));
+        //saveTurnsToFirebase(newLog);
       } catch (error) {
         console.error('[App] Error saving turnLog:', error);
       }
@@ -92,6 +95,17 @@ function App() {
 
   return (
     <div className="container mx-auto p-4">
+
+      {isAuthenticated ? (
+        <>
+          <p>Welcome, {user.name}</p>
+          <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+            Log Out
+          </button>
+        </>
+      ) : (
+        <button onClick={loginWithRedirect}>Log In</button>
+      )}
 
       <ScoreCardLayout
         scores={scores}
