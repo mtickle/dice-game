@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import GameHistoryPanel from '@components/GameHistoryPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
@@ -5,7 +6,10 @@ import TurnLogPanel from '@components/TurnLogPanel';
 import { useGameLogic } from '@hooks/useGameLogic';
 import { useCallback, useEffect, useState } from 'react';
 
+
 function App() {
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+
   const [gameLog, setGameLog] = useState([]);
   const [turnLog, setTurnLog] = useState(() => {
     try {
@@ -79,7 +83,39 @@ function App() {
   }, [isGameOver]);
 
   return (
+
     <div className="container mx-auto p-4">
+      {isLoading ? (
+        <div className="text-center text-gray-500 mb-4">Loading...</div>
+      ) : (
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-gray-800 text-sm">
+            {isAuthenticated ? (
+              <span>Welcome, <strong>{user.name || user.nickname || 'Player'}</strong></span>
+            ) : (
+              <span>Please log in to save your progress</span>
+            )}
+          </div>
+          <div>
+            {isAuthenticated ? (
+              <button
+                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+              >
+                Log Out
+              </button>
+            ) : (
+              <button
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={loginWithRedirect}
+              >
+                Log In
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
 
       <ScoreCardLayout
         scores={scores}

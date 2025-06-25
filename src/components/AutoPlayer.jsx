@@ -1,5 +1,6 @@
+import { saveGameToFirebase, saveTurnsToFirebase } from '@utils/firebaseUtils';
+import { generateGameNumber, upperCategories } from '@utils/utils'; // Assuming generateGameNumber is moved to utils
 import { useEffect, useRef } from 'react';
-import { generateGameNumber, upperCategories } from '../utils/utils'; // Assuming generateGameNumber is moved to utils
 
 export default function AutoPlayer({
     rollDice,
@@ -191,6 +192,9 @@ export default function AutoPlayer({
             try {
                 localStorage.setItem('turnLog', JSON.stringify([]));
                 localStorage.setItem('gameStats', JSON.stringify([]));
+
+                saveGameToFirebase(newGame);
+                saveTurnsToFirebase(turnLog);
             } catch (error) {
                 console.error('[AutoPlayer] Error resetting data:', error);
             }

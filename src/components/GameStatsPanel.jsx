@@ -43,7 +43,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
         }
         const convertedTurnLog = storedTurnLog.map(turn => ({
             ...turn,
-            category: prettyName(turn.category),
+            category: turn?.category ? prettyName(turn.category) : '(uncategorized)',
         }));
         setTurnLog(convertedTurnLog);
 
