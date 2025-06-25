@@ -1,3 +1,4 @@
+import { loadFromStorage } from '@utils/storageUtils';
 import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
@@ -6,8 +7,9 @@ export default function Dashboard() {
 
     useEffect(() => {
         const updateStats = () => {
-            const games = JSON.parse(localStorage.getItem('gameStats') || '[]');
-            const turns = JSON.parse(localStorage.getItem('turnResults') || '[]');
+
+            const games = JSON.parse(loadFromStorage('gameStats') || '[]');
+            const turns = JSON.parse(loadFromStorage('turnResults') || '[]');
             setGameStats(games);
             setTurnResults(turns);
         };

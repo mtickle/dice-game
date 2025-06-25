@@ -2,7 +2,8 @@
 
 export const saveToStorage = (key, value) => {
     try {
-        localStorage.setItem(key, JSON.stringify(value));
+        localStorage.setItem(key, JSON.stringify(value ?? []));
+        //localStorage.setItem(key, value);
     } catch (e) {
         console.error(`[storageUtils] Failed to save ${key}:`, e);
     }

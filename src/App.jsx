@@ -4,17 +4,17 @@ import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
 import TurnLogPanel from '@components/TurnLogPanel';
 import { useGameLogic } from '@hooks/useGameLogic';
+import { loadFromStorage, saveToStorage } from '@utils/storageUtils';
 import { generateGameNumber } from '@utils/utils';
 import { useCallback, useEffect, useState } from 'react';
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
 
-
   const [gameLog, setGameLog] = useState([]);
   const [turnLog, setTurnLog] = useState(() => {
     try {
-      const saved = localStorage.getItem('turnLog');
+      const saved = loadFromStorage('turnLog');
       const parsed = saved ? JSON.parse(saved) : [];
       return parsed.filter(turn => typeof turn.gameNumber === 'string' && turn.gameNumber.match(/^\d{12}$/));
     } catch (error) {
@@ -24,7 +24,7 @@ function App() {
   });
   const [gameStats, setGameStats] = useState(() => {
     try {
-      const saved = localStorage.getItem('gameStats');
+      const saved = loadFromStorage('gameStats');
       const parsed = saved ? JSON.parse(saved) : [];
       return parsed.filter(game => typeof game.gameNumber === 'string' && game.gameNumber.match(/^\d{12}$/));
     } catch (error) {
@@ -41,8 +41,7 @@ function App() {
     setTurnLog((prev) => {
       const newLog = [...prev, turnWithGameNumber];
       try {
-        localStorage.setItem('turnLog', JSON.stringify(newLog));
-        //saveTurnsToFirebase(newLog);
+        saveToStorage('turnLog', newLog);
       } catch (error) {
         console.error('[App] Error saving turnLog:', error);
       }
@@ -55,10 +54,10 @@ function App() {
     setGameStats((prev) => {
       const existingIndex = prev.findIndex(g => g.gameNumber === statsWithGameNumber.gameNumber);
       const newStats = existingIndex >= 0
-        ? prev.map((g, i) => i === existingIndex ? statsWithGameNumber : g) // Update existing
-        : [...prev, statsWithGameNumber]; // Add new
+        ? prev.map((g, i) => i === existingIndex ? statsWithGameNumber : g)
+        : [...prev, statsWithGameNumber];
       try {
-        localStorage.setItem('gameStats', JSON.stringify(newStats));
+        saveToStorage('gameStats', newStats);
       } catch (error) {
         console.error('[App] Error saving gameStats:', error);
       }
@@ -95,6 +94,10 @@ function App() {
 
   return (
     <div className="container mx-auto p-4">
+      {/* New div to display game number */}
+      <div className="mb-4 p-2 bg-gray-100 rounded-lg text-gray-800 text-center shadow-sm">
+        Game Number {gameNumber} in progress ...
+      </div>
 
       {isAuthenticated ? (
         <>
@@ -143,7 +146,6 @@ function App() {
         gameNumber={gameNumber}
         showAllTurns={showAllTurns}
       />
-
     </div>
   );
 }

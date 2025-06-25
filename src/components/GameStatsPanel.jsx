@@ -26,6 +26,8 @@ ChartJS.register(
     Legend,
 );
 
+import { loadFromStorage } from '@utils/storageUtils';
+
 export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: initialTurnLog, refreshKey }) {
     const [summaryStats, setSummaryStats] = useState({
         gamesPlayed: 0,
@@ -37,7 +39,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
 
     useEffect(() => {
         // Load and convert turnLog from localStorage
-        let storedTurnLog = JSON.parse(localStorage.getItem('turnLog') || '[]');
+        let storedTurnLog = loadFromStorage('turnLog');
         if (storedTurnLog.length === 0 && initialTurnLog) {
             storedTurnLog = initialTurnLog;
         }
@@ -48,7 +50,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
         setTurnLog(convertedTurnLog);
 
         // Load and initialize gameStats from localStorage
-        let storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
+        let storedStats = loadFromStorage('gameStats');
         if (storedStats.length === 0 && initialGameStats) {
             storedStats = initialGameStats;
         }
@@ -64,7 +66,8 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
             ...game,
             gameNumber: game.gameNumber || generateGameNumber(),
         }));
-        localStorage.setItem('gameStats', JSON.stringify(storedStats));
+        //--- BOZO KNOCKED THIS OUT
+        //localStorage.setItem('gameStats', JSON.stringify(storedStats));
 
         // Only update gameStats when a game is complete
         if (turnLog.length > 0 && (!storedStats[storedStats.length - 1] || storedStats[storedStats.length - 1].turnLog !== turnLog)) {
@@ -77,8 +80,6 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                     timestamp: new Date().toISOString(),
                 };
                 storedStats = [...storedStats, newGame];
-                localStorage.setItem('gameStats', JSON.stringify(storedStats));
-                console.log('[GameStatsPanel] New game added:', newGame);
             }
         }
 
@@ -100,7 +101,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
     }, [refreshKey, initialGameStats, initialTurnLog]);
 
     const chartData = useMemo(() => {
-        const storedStats = JSON.parse(localStorage.getItem('gameStats') || '[]');
+        const storedStats = loadFromStorage('gameStats');
         if (!storedStats || storedStats.length === 0 || !turnLog || turnLog.length === 0) {
             return null;
         }

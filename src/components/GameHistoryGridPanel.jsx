@@ -4,8 +4,9 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+import { loadFromStorage } from '@utils/storageUtils';
+import { prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
-import { prettyName } from '../utils/utils';
 
 export default function GameHistoryGridPanel({ gameStats: initialGameStats, refreshKey }) {
     const [sorting, setSorting] = useState([]);
@@ -16,9 +17,10 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             console.log('[GameHistoryGridPanel] Loading gameStats from localStorage');
             let storedStats = [];
             try {
-                const storedData = localStorage.getItem('gameStats');
+                const storedData = loadFromStorage('gameStats');
                 if (storedData) {
-                    storedStats = JSON.parse(storedData);
+                    //storedStats = JSON.parse(storedData || '[]');
+                    //storedStats = JSON.parse(storedData || '[]');
                     if (!Array.isArray(storedStats)) {
                         console.warn('[GameHistoryGridPanel] Invalid gameStats format in localStorage; expected array.');
                         storedStats = [];

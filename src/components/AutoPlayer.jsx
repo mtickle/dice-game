@@ -1,7 +1,6 @@
-import { saveGameToFirebase } from '@utils/firebaseUtils';
-import { generateGameNumber, upperCategories } from '@utils/utils'; // Assuming generateGameNumber is moved to utils
+import { generateGameNumber, upperCategories } from '@utils/utils';
 import { useEffect, useRef } from 'react';
-//import { generateGameNumber, upperCategories } from '../utils/utils'; // Assuming generateGameNumber is moved to utils
+
 
 export default function AutoPlayer({
     rollDice,
@@ -39,8 +38,13 @@ export default function AutoPlayer({
             };
             setGameStats(prev => {
                 const updatedStats = [...prev, newGame];
-                localStorage.setItem('gameStats', JSON.stringify(updatedStats));
-                saveGameToFirebase(newGame);
+                //localStorage.setItem('gameStats', JSON.stringify(updatedStats));
+                //saveGameToFirebase(newGame);
+                //saveToStorage(newGame);
+
+                //--- Let's save the game here using a util
+
+
 
                 return updatedStats;
             });
@@ -210,11 +214,14 @@ export default function AutoPlayer({
         exportData(gameStats, `yahtzee_gameStats_${new Date().toISOString()}.json`);
     };
 
+
+    //--- This is a full DATA RESET
     const handleReset = () => {
         if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
             setTurnLog([]);
             setGameStats([]);
             try {
+                //--- Empty out the local storage.
                 localStorage.setItem('turnLog', JSON.stringify([]));
                 localStorage.setItem('gameStats', JSON.stringify([]));
             } catch (error) {

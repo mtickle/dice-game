@@ -1,5 +1,6 @@
+import { loadFromStorage } from '@utils/storageUtils';
+import { prettyName } from '@utils/utils';
 import { useEffect, useState } from 'react';
-import { prettyName } from '../utils/utils';
 
 export default function GameHistoryPanel({ gameStats, refreshKey }) {
     const [openIndices, setOpenIndices] = useState([]);
@@ -16,7 +17,7 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
         // Fallback: Log errors if gameStats is empty
         if (!gameStats || gameStats.length === 0) {
             try {
-                const storedStats = localStorage.getItem('gameStats');
+                const storedStats = loadFromStorage('gameStats');
                 if (storedStats) {
                     const parsedStats = JSON.parse(storedStats);
                     if (!Array.isArray(parsedStats)) {
