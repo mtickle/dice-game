@@ -78,10 +78,10 @@ export default function ScoreCardLayout({
 }) {
     return (
         // OUTER CONTAINER
-        <div className="flex justify-between p-6 bg-white rounded-lg shadow-sm gap-4 mb-4">
+        <div className="flex justify-between p-6 bg-white rounded-b-3xl shadow-sm gap-4 mb-4">
 
             {/* LEFT SIDE */}
-            <div className="w-[400px]">
+            <div className="w-[640px]">
                 <ScoreCardSection
                     categories={upperCategories}
                     scores={scores}
@@ -102,7 +102,7 @@ export default function ScoreCardLayout({
                 />
             </div>
             {/* RIGHT SIDE */}
-            <div className="w-[400px]">
+            <div className="w-[640px]">
                 <ScoreCardSection
                     categories={lowerCategories}
                     scores={scores}
@@ -122,7 +122,7 @@ export default function ScoreCardLayout({
                 />
             </div>
             {/* MIDDLE */}
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 w-[640px]">
                 <DiceField dice={dice} rollDice={rollDice} toggleHold={toggleHold} rollCount={rollCount}
                     autoPlaying={autoPlaying}
                     setAutoPlaying={setAutoPlaying} />

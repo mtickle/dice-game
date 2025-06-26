@@ -11,7 +11,7 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoP
     }
 
     return (
-        <div className="flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
+        <div className="flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] w-full ">
             {/* Dice Display */}
             <div className="flex gap-4">
                 {dice.map((die, index) => (
@@ -31,7 +31,7 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoP
             <button
                 onClick={rollDice}
                 disabled={rollCount >= 3 || setAutoPlaying}
-                className={`px-5 py-2 rounded-xl text-md font-semibold transition-all duration-150
+                className={`px-5 py-1 rounded-xl text-xs font-semibold transition-all duration-150
           ${rollCount >= 3 ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700'}
         `}
             >

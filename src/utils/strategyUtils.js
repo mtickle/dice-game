@@ -79,7 +79,7 @@ export function getStrategyAdvice(dice, scores) {
 
     // General fallback
     if (advice.length === 0) {
-        advice.push("Reroll? Chance? Dump a category?");
+        advice.push("Sacrifice a category ...");
     }
 
     return {
