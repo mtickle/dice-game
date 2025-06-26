@@ -1,6 +1,6 @@
 import { Dice } from '@components/Dice';
 
-export default function DiceField({ dice, rollDice, toggleHold, rollCount }) {
+export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoPlaying, setAutoPlaying }) {
     if (!dice || !Array.isArray(dice)) {
         console.error('[DiceField] Invalid dice prop:', dice);
         return (
@@ -30,7 +30,7 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount }) {
 
             <button
                 onClick={rollDice}
-                disabled={rollCount >= 3}
+                disabled={rollCount >= 3 || setAutoPlaying}
                 className={`px-5 py-2 rounded-xl text-md font-semibold transition-all duration-150
           ${rollCount >= 3 ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700'}
         `}

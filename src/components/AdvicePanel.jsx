@@ -31,7 +31,7 @@ export default function AdvicePanel({ strategy, rollCount, suggestedScores, pret
                             Object.entries(suggestedScores).map(([category, score]) => (
                                 <div
                                     key={category}
-                                    className="flex justify-between items-center bg-white p-2 rounded shadow-sm"
+                                    className="flex justify-between items-center bg-white p-1 rounded shadow-sm"
                                 >
                                     <span className="font-medium">{prettyName(category)}</span>
                                     <span className="font-mono">{score}</span>

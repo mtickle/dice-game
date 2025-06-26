@@ -123,7 +123,9 @@ export default function ScoreCardLayout({
             </div>
             {/* MIDDLE */}
             <div className="flex flex-col items-center gap-4">
-                <DiceField dice={dice} rollDice={rollDice} toggleHold={toggleHold} rollCount={rollCount} />
+                <DiceField dice={dice} rollDice={rollDice} toggleHold={toggleHold} rollCount={rollCount}
+                    autoPlaying={autoPlaying}
+                    setAutoPlaying={setAutoPlaying} />
                 <AutoPlayer
                     rollDice={rollDice}
                     applyScore={applyScore}
@@ -146,14 +148,14 @@ export default function ScoreCardLayout({
                     gameNumber={gameNumber}
                     setGameNumber={setGameNumber}
                 />
-                {!autoPlaying && (
-                    <AdvicePanel
-                        strategy={suggestions}
-                        rollCount={rollCount}
-                        suggestedScores={suggestedScores}
-                        prettyName={prettyName}
-                    />
-                )}
+                {/* {!autoPlaying && ( */}
+                <AdvicePanel
+                    strategy={suggestions}
+                    rollCount={rollCount}
+                    suggestedScores={suggestedScores}
+                    prettyName={prettyName}
+                />
+                {/* )} */}
             </div>
 
 
