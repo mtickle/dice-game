@@ -6,7 +6,7 @@ export default function TopNavBar() {
 
     return (
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-3xl">
-            <h1 className="text-2xl font-semibold tracking-tight">🎲 Brick Breaker AI Lab</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">🎲 Dice Breaker AI Lab</h1>
 
             <div>
                 {isAuthenticated ? (

@@ -1,6 +1,6 @@
 import { Dice } from '@components/Dice';
 
-export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoPlaying, setAutoPlaying }) {
+export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoPlaying }) {
     if (!dice || !Array.isArray(dice)) {
         console.error('[DiceField] Invalid dice prop:', dice);
         return (
@@ -11,9 +11,9 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoP
     }
 
     return (
-        <div className="flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] w-full ">
+        <div className="flex flex-col gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] w-full ">
             {/* Dice Display */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 justify-center">
                 {dice.map((die, index) => (
                     <div
                         key={index}
@@ -30,9 +30,9 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount, autoP
 
             <button
                 onClick={rollDice}
-                disabled={rollCount >= 3 || setAutoPlaying}
-                className={`px-5 py-1 rounded-xl text-xs font-semibold transition-all duration-150
-          ${rollCount >= 3 ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700'}
+                disabled={rollCount >= 3 || autoPlaying}
+                className={`w-full px-5 py-2 rounded-xl text-sm  transition-all duration-150
+          ${rollCount >= 3 || autoPlaying ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700'}
         `}
             >
                 {rollCount >= 3 ? 'Roll (3/3)' : `Roll (${rollCount}/3)`}

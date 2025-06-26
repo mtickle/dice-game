@@ -123,9 +123,13 @@ export default function ScoreCardLayout({
             </div>
             {/* MIDDLE */}
             <div className="flex flex-col items-center gap-4 w-[640px]">
-                <DiceField dice={dice} rollDice={rollDice} toggleHold={toggleHold} rollCount={rollCount}
+                <DiceField
+                    dice={dice}
+                    rollDice={rollDice}
+                    toggleHold={toggleHold}
+                    rollCount={rollCount}
                     autoPlaying={autoPlaying}
-                    setAutoPlaying={setAutoPlaying} />
+                />
                 <AutoPlayer
                     rollDice={rollDice}
                     applyScore={applyScore}
