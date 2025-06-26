@@ -178,7 +178,7 @@ export default function AutoPlayer({
 
                 const categoryToSacrifice = sacrificePriority.find(cat => remaining.includes(cat)) || remaining[0];
 
-                console.warn(`[AutoPlayer] Forcing score of 0 in "${categoryToSacrifice}" due to no valid plays.`);
+                //console.warn(`[AutoPlayer] Forcing score of 0 in "${categoryToSacrifice}" due to no valid plays.`);
 
                 try {
                     applyScore(categoryToSacrifice);
