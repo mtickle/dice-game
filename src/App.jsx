@@ -96,16 +96,6 @@ function App() {
   return (
     <div className="container mx-auto p-4">
 
-      {isAuthenticated ? (
-        <>
-          <p>Welcome, {user.name}</p>
-          <button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-            Log Out
-          </button>
-        </>
-      ) : (
-        <button onClick={loginWithRedirect}>Log In</button>
-      )}
       <TopNavBar />
       <ScoreCardLayout
         scores={scores}

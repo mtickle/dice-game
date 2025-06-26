@@ -239,9 +239,14 @@ export default function AutoPlayer({
     };
 
     return (
-        <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm w-full">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800">Auto Player & Controls</h2>
-            <div className="flex gap-3 mb-4">
+
+
+
+
+
+        // <div className="pb-0 p-4 bg-white rounded-lg border border-gray-200 shadow-sm w-full">
+        <div className="w-full flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
+            <div className="flex gap-3 mb-0">
                 <button
                     className="px-4 bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleExport}

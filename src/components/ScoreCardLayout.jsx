@@ -77,7 +77,10 @@ export default function ScoreCardLayout({
     setGameNumber
 }) {
     return (
+        // OUTER CONTAINER
         <div className="flex justify-between p-6 bg-white rounded-lg shadow-sm gap-4 mb-4">
+
+            {/* LEFT SIDE */}
             <div className="w-[400px]">
                 <ScoreCardSection
                     categories={upperCategories}
@@ -98,6 +101,27 @@ export default function ScoreCardLayout({
                     }
                 />
             </div>
+            {/* RIGHT SIDE */}
+            <div className="w-[400px]">
+                <ScoreCardSection
+                    categories={lowerCategories}
+                    scores={scores}
+                    suggestedScores={suggestedScores}
+                    applyScore={applyScore}
+                    rollCount={rollCount}
+                    turnComplete={turnComplete}
+                    prettyName={prettyName}
+                    isUpperSection={false}
+                    earnedBonuses={earnedBonuses}
+                    totalsNode={
+                        <LowerSectionTotals
+                            lowerTotal={totals.lowerTotal}
+                            grandTotal={totals.grandTotal}
+                        />
+                    }
+                />
+            </div>
+            {/* MIDDLE */}
             <div className="flex flex-col items-center gap-4">
                 <DiceField dice={dice} rollDice={rollDice} toggleHold={toggleHold} rollCount={rollCount} />
                 <AutoPlayer
@@ -131,25 +155,8 @@ export default function ScoreCardLayout({
                     />
                 )}
             </div>
-            <div className="w-[400px]">
-                <ScoreCardSection
-                    categories={lowerCategories}
-                    scores={scores}
-                    suggestedScores={suggestedScores}
-                    applyScore={applyScore}
-                    rollCount={rollCount}
-                    turnComplete={turnComplete}
-                    prettyName={prettyName}
-                    isUpperSection={false}
-                    earnedBonuses={earnedBonuses}
-                    totalsNode={
-                        <LowerSectionTotals
-                            lowerTotal={totals.lowerTotal}
-                            grandTotal={totals.grandTotal}
-                        />
-                    }
-                />
-            </div>
+
+
         </div>
     );
 }

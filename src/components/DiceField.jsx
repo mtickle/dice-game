@@ -28,7 +28,6 @@ export default function DiceField({ dice, rollDice, toggleHold, rollCount }) {
                 ))}
             </div>
 
-            {/* Roll Button */}
             <button
                 onClick={rollDice}
                 disabled={rollCount >= 3}
