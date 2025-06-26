@@ -14,7 +14,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            console.log('[GameHistoryGridPanel] Loading gameStats from localStorage');
+            //console.log('[GameHistoryGridPanel] Loading gameStats from localStorage');
             let storedStats = [];
             try {
                 const storedData = loadFromStorage('gameStats');

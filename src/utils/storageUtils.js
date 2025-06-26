@@ -9,15 +9,15 @@ export const saveToStorage = (key, value) => {
     }
 };
 
-export const loadFromStorage = (key, fallback = []) => {
+export function loadFromStorage(key) {
     try {
-        const value = localStorage.getItem(key);
-        return value ? JSON.parse(value) : fallback;
-    } catch (e) {
-        console.error(`[storageUtils] Failed to load ${key}:`, e);
-        return fallback;
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : [];
+    } catch (error) {
+        console.error(`[storageUtils] Error loading ${key}:`, error);
+        return [];
     }
-};
+}
 
 export const clearStorageKey = (key) => {
     try {

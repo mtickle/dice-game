@@ -5,7 +5,7 @@ import { allCategories, generateGameNumber, initialScores, lowerCategories, uppe
 
 function calculateTotals(scores) {
     const upperSubtotal = upperCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
-    const bonus = upperSubtotal >= 63 ? 35 : 0;
+    const bonus = upperSubtotal >= 69 ? 35 : 0;
     const upperTotal = upperSubtotal + bonus;
     const lowerTotal = lowerCategories.reduce((sum, cat) => sum + (scores[cat] || 0), 0);
     const grandTotal = upperTotal + lowerTotal;
@@ -146,7 +146,7 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
             const totals = calculateTotals(scores);
             let bestCategory = null;
             let bestScore = -1;
-            const needsBonus = totals.upperSubtotal < 63;
+            const needsBonus = totals.upperSubtotal < 69;
 
             for (const cat of allCategories) {
                 if (scores[cat] == null) {

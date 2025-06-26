@@ -14,7 +14,10 @@ export function calculateScore(category, diceObjs) {
             const num = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'].indexOf(category) + 1;
             return dice.filter(d => d === num).reduce((a, b) => a + b, 0);
         }
-
+        case 'odds':
+            return (counts[0] || 0) * 1 + (counts[2] || 0) * 3 + (counts[4] || 0) * 5; // 1s, 3s, 5s
+        case 'evens':
+            return (counts[1] || 0) * 2 + (counts[3] || 0) * 4 + (counts[5] || 0) * 6; // 2s, 4s, 6s
         case 'threeKind':
             return hasThreeOfKind(counts) ? total : 0;
         case 'fourKind':
@@ -45,7 +48,6 @@ export function calculateScore(category, diceObjs) {
 }
 
 export function calculateSuggestedScores(diceObjs, currentScores = {}) {
-
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
     const counts = Array(6).fill(0);
     dice.forEach(d => counts[d - 1]++);
@@ -54,10 +56,20 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
 
     for (let i = 1; i <= 6; i++) {
         const cat = getCategoryName(i);
-        if (currentScores[cat] === null) {
+        if (currentScores[cat] === null || currentScores[cat] === undefined) {
             const val = dice.filter(d => d === i).reduce((a, b) => a + b, 0);
             if (val > 0) score[cat] = val;
         }
+    }
+
+    // Add ODDS and EVENS suggestions
+    if (currentScores.odds === null || currentScores.odds === undefined) {
+        const oddsScore = (counts[0] || 0) * 1 + (counts[2] || 0) * 3 + (counts[4] || 0) * 5;
+        if (oddsScore > 0) score.odds = oddsScore;
+    }
+    if (currentScores.evens === null || currentScores.evens === undefined) {
+        const evensScore = (counts[1] || 0) * 2 + (counts[3] || 0) * 4 + (counts[5] || 0) * 6;
+        if (evensScore > 0) score.evens = evensScore;
     }
 
     if (currentScores.threeKind === null && hasThreeOfKind(counts)) score.threeKind = total;
@@ -83,7 +95,7 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
 // --- Helper functions ---
 
 function getCategoryName(i) {
-    return ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'][i - 1];
+    return ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'][i - 1] || null; // Only 1-6 mapped
 }
 
 function hasThreeOfKind(counts) {

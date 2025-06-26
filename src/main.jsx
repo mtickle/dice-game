@@ -15,6 +15,8 @@ createRoot(document.getElementById('root')).render(
             authorizationParams={{
                 redirect_uri: window.location.origin,
             }}
+            cacheLocation="localstorage"
+            useRefreshTokens={true}
         >
             <ErrorBoundary>
                 <App />

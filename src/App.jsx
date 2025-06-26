@@ -2,6 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import GameHistoryGridPanel from '@components/GameHistoryGridPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
+import TopNavBar from '@components/TopNavBar';
 import TurnLogPanel from '@components/TurnLogPanel';
 import { useGameLogic } from '@hooks/useGameLogic';
 import { loadFromStorage, saveToStorage } from '@utils/storageUtils';
@@ -94,10 +95,6 @@ function App() {
 
   return (
     <div className="container mx-auto p-4">
-      {/* New div to display game number */}
-      <div className="mb-4 p-2 bg-gray-100 rounded-lg text-gray-800 text-center shadow-sm">
-        Game Number {gameNumber} in progress ...
-      </div>
 
       {isAuthenticated ? (
         <>
@@ -109,7 +106,7 @@ function App() {
       ) : (
         <button onClick={loginWithRedirect}>Log In</button>
       )}
-
+      <TopNavBar />
       <ScoreCardLayout
         scores={scores}
         totals={totals}

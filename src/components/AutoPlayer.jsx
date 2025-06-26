@@ -71,6 +71,8 @@ export default function AutoPlayer({
             return;
         }
 
+
+
         const categoryThresholds = {
             yahtzee: 50,
             fullHouse: 25,
@@ -123,7 +125,7 @@ export default function AutoPlayer({
 
         // End-of-turn decision making (after 3 rolls)
         const upperSubtotal = totals?.upperSubtotal || 0;
-        const bonusThreshold = 63;
+        const bonusThreshold = 69;
         const bonusGap = bonusThreshold - upperSubtotal;
         const upperTargets = {
             ones: 5,
@@ -171,7 +173,7 @@ export default function AutoPlayer({
             if (remaining.length > 0) {
                 const sacrificePriority = [
                     'ones', 'twos', 'threes', 'chance',
-                    'fourOfAKind', 'threeOfAKind', 'onePair', 'twoPair'
+                    'fourOfAKind', 'threeOfAKind', 'onePair', 'twoPair', 'odds', 'evens'
                 ];
 
                 const categoryToSacrifice = sacrificePriority.find(cat => remaining.includes(cat)) || remaining[0];

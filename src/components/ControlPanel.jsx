@@ -16,6 +16,11 @@ export default function ControlPanel({ onExport, onReset, onToggleTurns, onAutoP
     const handleReset = () => {
         if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
             onReset();
+
+            // setTimeout(() => {
+            //     setIsAutoPlaying(true);
+            //     onAutoPlay(true);
+            // }, 100);
         }
     };
 

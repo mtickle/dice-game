@@ -1,4 +1,4 @@
-export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
+export const upperCategories = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes', 'odds', 'evens'];
 export const lowerCategories = [
     'onePair',
     'twoPair',
@@ -21,6 +21,8 @@ export const prettyName = (category) => {
         fours: 'Fours',
         fives: 'Fives',
         sixes: 'Sixes',
+        odds: 'Odds',
+        evens: 'Evens',
         onePair: 'One Pair',
         twoPair: 'Two Pair',
         threeKind: '3 of a Kind',
