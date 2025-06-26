@@ -124,8 +124,8 @@ function App() {
         gameNumber={gameNumber}
         setGameNumber={setGameNumber}
       />
-      <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />
       <GameStatsPanel gameStats={gameStats} turnLog={turnLog} />
+      <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />
 
       <TurnLogPanel
         gameLog={showAllTurns ? turnLog : gameLog}
