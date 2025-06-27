@@ -1,7 +1,6 @@
-export default function AdvicePanel({ strategy, rollCount, suggestedScores, prettyName }) {
+export default function AdvicePanel({ strategy, rollCount }) {
     return (
         <div className="w-full flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] h-full min-h-0">
-            {/* Strategy Advice */}
             <div className="w-full min-w-[300px] rounded p-2 min-h-[100px] overflow-y-auto flex-1">
                 <h2 className="text-md font-bold mb-2">Turn Analysis</h2>
                 {rollCount === 0 ? (

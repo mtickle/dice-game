@@ -105,6 +105,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
         getSortedRowModel: getSortedRowModel(),
     });
 
+    //--- No games recorded yet
     if (!gameStats || !Array.isArray(gameStats) || gameStats.length === 0) {
         return (
             <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">

@@ -18,7 +18,6 @@ export default function AutoPlayer({
     setTurnLog,
     gameStats,
     setGameStats,
-    showAllTurns,
     setShowAllTurns,
     resetGame,
     gameNumber,
@@ -71,8 +70,6 @@ export default function AutoPlayer({
             return;
         }
 
-
-
         const categoryThresholds = {
             yahtzee: 50,
             fullHouse: 25,
@@ -83,7 +80,7 @@ export default function AutoPlayer({
             onePair: 18,
             twoPair: 22,
             chance: 30,
-            ones: 3,
+            ones: 4,
             twos: 6,
             threes: 9,
             fours: 12,
@@ -117,11 +114,13 @@ export default function AutoPlayer({
             }
         }
 
+
         // If no early score, continue rolling (if rolls remain)
         if (rollCount < 3) {
             rollDice();
             return;
         }
+
 
         // End-of-turn decision making (after 3 rolls)
         const upperSubtotal = totals?.upperSubtotal || 0;
@@ -139,6 +138,7 @@ export default function AutoPlayer({
         let categoryToScore = null;
         let bestScore = -1;
 
+
         // Try to help upper bonus if we're close
         if (bonusGap > 0 && bonusGap <= 18) {
             const upperAvailable = availableSuggested.filter((cat) => upperCategories.includes(cat));
@@ -155,6 +155,7 @@ export default function AutoPlayer({
             }
         }
 
+
         // Pick best of remaining if nothing prioritized
         if (!categoryToScore && availableSuggested.length > 0) {
             categoryToScore = availableSuggested.reduce((best, cat) => {
@@ -167,6 +168,7 @@ export default function AutoPlayer({
             }, availableSuggested[0]);
         }
 
+
         // Fallback: nothing valid to score — sacrifice something
         if (!categoryToScore) {
             const remaining = Object.keys(scores).filter((cat) => scores[cat] == null);
@@ -177,8 +179,6 @@ export default function AutoPlayer({
                 ];
 
                 const categoryToSacrifice = sacrificePriority.find(cat => remaining.includes(cat)) || remaining[0];
-
-                //console.warn(`[AutoPlayer] Forcing score of 0 in "${categoryToSacrifice}" due to no valid plays.`);
 
                 try {
                     applyScore(categoryToSacrifice);
@@ -234,17 +234,8 @@ export default function AutoPlayer({
         }
     };
 
-    const handleToggleTurns = () => {
-        setShowAllTurns((prev) => !prev);
-    };
-
     return (
 
-
-
-
-
-        // <div className="pb-0 p-4 bg-white rounded-lg border border-gray-200 shadow-sm w-full">
         <div className="w-full flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
             <div className="flex gap-3 mb-0">
                 <button

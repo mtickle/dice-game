@@ -93,10 +93,42 @@ function App() {
     }
   }, [isGameOver]);
 
+  const tabs = [
+    { id: "scorecard", label: "Score Card" },
+    { id: "stats", label: "Game Stats" },
+    { id: "history", label: "History" },
+    { id: "log", label: "Turn Log" },
+  ];
+  const [activeTab, setActiveTab] = useState("scorecard");
   return (
     <div className="container mx-auto p-4">
 
       <TopNavBar />
+
+      {/* TAB BAR */}
+      <div className="flex space-x-1 py-5 px-1 bg-white ">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm font-medium rounded-t-md border-t border-l border-r ${isActive
+                ? "border-t-blue-600 bg-white border-gray-400 text-black -mb-[1px] border-t-4"
+                : "bg-[#e0e0e0] border-transparent text-gray-700 border-t-4 hover:bg-[#f0f0f0]"
+                }`}
+              style={{
+                boxShadow: isActive
+                  ? "inset 0 0 0 1px #ffffff"
+                  : "inset 0 1px 2px rgba(0,0,0,0.1)",
+              }}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
       <ScoreCardLayout
         scores={scores}
         totals={totals}

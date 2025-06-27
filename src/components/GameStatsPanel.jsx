@@ -66,8 +66,6 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
             ...game,
             gameNumber: game.gameNumber || generateGameNumber(),
         }));
-        //--- BOZO KNOCKED THIS OUT
-        //localStorage.setItem('gameStats', JSON.stringify(storedStats));
 
         // Only update gameStats when a game is complete
         if (turnLog.length > 0 && (!storedStats[storedStats.length - 1] || storedStats[storedStats.length - 1].turnLog !== turnLog)) {
@@ -106,6 +104,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
             return null;
         }
 
+        //--- Calculate numbers for the line chart.
         const totalScoresData = {
             labels: storedStats.map((game) => `Game ${game.gameNumber}`),
             datasets: [
@@ -120,6 +119,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
             ],
         };
 
+        //--- Calculate average scores
         const categories = Object.keys(storedStats[0]?.scores || {});
         const avgScores = categories.map((cat) => {
             const total = storedStats.reduce((sum, game) => sum + (game.scores[cat] || 0), 0);
@@ -131,16 +131,59 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                 {
                     label: 'Average Score',
                     data: avgScores,
-                    backgroundColor: '#10b981',
-                    borderColor: '#10b981',
+                    backgroundColor: [
+                        '#10B981', // emerald
+                        '#3B82F6', // blue
+                        '#F59E0B', // amber
+                        '#EF4444', // red
+                        '#8B5CF6', // violet
+                        '#22D3EE', // cyan
+                        '#F472B6', // pink
+                        '#6366F1', // indigo
+                        '#84CC16', // lime
+                        '#EC4899', // fuchsia
+                        '#0EA5E9', // sky
+                        '#A855F7', // purple
+                        '#D946EF', // magenta
+                        '#14B8A6', // teal
+                        '#E11D48', // rose
+                        '#FDBA74', // orange
+                        '#4ADE80', // green
+                        '#60A5FA', // light blue
+                    ],
+                    hoverBackgroundColor: [
+                        '#0e9e6f', // emerald - darker
+                        '#2563eb', // blue - darker
+                        '#d97706', // amber - darker
+                        '#dc2626', // red - darker
+                        '#7c3aed', // violet - darker
+                        '#06b6d4', // cyan - darker
+                        '#ec4899', // pink - darker
+                        '#4f46e5', // indigo - darker
+                        '#65a30d', // lime - darker
+                        '#db2777', // fuchsia - darker
+                        '#0284c7', // sky - darker
+                        '#9333ea', // purple - darker
+                        '#c026d3', // magenta - darker
+                        '#0d9488', // teal - darker
+                        '#be123c', // rose - darker
+                        '#fb923c', // orange - darker
+                        '#22c55e', // green - darker
+                        '#3b82f6', // light blue - darker
+                    ],
+                    borderColor: '#1F2937', // consistent dark border
                     borderWidth: 1,
+                    borderRadius: 4,
                 },
             ],
         };
 
+
+
+        //------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------
+        //--- This is calculating die frequency.
         const dieFrequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-
-
         turnLog.forEach((turn) => {
             if (Array.isArray(turn.dice)) {
                 turn.dice.forEach((die) => {
@@ -151,27 +194,26 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
             }
         });
 
-
-        // turnLog.forEach((turn) => {
-        //     turn.dice.forEach((die) => {
-        //         if (die !== null && die >= 1 && die <= 6) {
-        //             dieFrequency[die] += 1;
-        //         }
-        //     });
-        // });
-
         const dieFrequencyData = {
             labels: ['1s', '2s', '3s', '4s', '5s', '6s'],
             datasets: [
                 {
                     label: 'Rolled Dice',
                     data: [dieFrequency[1], dieFrequency[2], dieFrequency[3], dieFrequency[4], dieFrequency[5], dieFrequency[6]],
-                    backgroundColor: ['#2563eb', '#10b981', '#6366f1', '#f59e0b', '#6b7280', '#ef4444'],
-                    borderColor: ['#2563eb', '#10b981', '#6366f1', '#f59e0b', '#6b7280', '#ef4444'],
-                    borderWidth: 2,
+                    backgroundColor: [
+                        '#10B981', // emerald
+                        '#3B82F6', // blue
+                        '#F59E0B', // amber
+                        '#EF4444', // red
+                        '#8B5CF6', // violet
+                        '#22D3EE'],
+                    borderColor: '#1F2937',
+                    borderWidth: 1,
                 },
             ],
         };
+        //------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------
 
         return { totalScoresData, avgScoresData, dieFrequencyData };
     }, [turnLog]);
@@ -186,14 +228,13 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
     }
 
     return (
-        <div key={refreshKey} className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm animate-[flash_0.5s_ease-out]">
-            <style>{`
-                @keyframes flash {
-                  0% { background-color: #f0fdf4; }
-                  100% { background-color: #ffffff; }
-                }
-            `}</style>
-            <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">Game Statistics</div>
+
+
+
+        <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
+                Stats Panel
+            </div>
             <div className="bg-gray-50 px-4 py-3 space-y-6">
                 <div>
                     <h3 className="text-lg font-medium text-gray-700 mb-2">Game Summary Statistics</h3>
