@@ -4,13 +4,17 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+import { getUsedDiceIndexesForCategory } from '@utils/diceUtils';
 import { loadFromStorage } from '@utils/storageUtils';
 import { prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
+import { getDiceSvg } from '../utils/diceIcons';
 
 export default function GameHistoryGridPanel({ gameStats: initialGameStats, refreshKey }) {
     const [sorting, setSorting] = useState([]);
     const [gameStats, setGameStats] = useState(initialGameStats || []);
+    const [selectedGameNumber, setSelectedGameNumber] = useState(null);
+    const [turnHistory, setTurnHistory] = useState([]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -19,11 +23,11 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             try {
                 const storedData = loadFromStorage('gameStats');
                 if (storedData) {
-                    //storedStats = JSON.parse(storedData || '[]');
-                    //storedStats = JSON.parse(storedData || '[]');
-                    if (!Array.isArray(storedStats)) {
+                    if (!Array.isArray(storedData)) {
                         console.warn('[GameHistoryGridPanel] Invalid gameStats format in localStorage; expected array.');
                         storedStats = [];
+                    } else {
+                        storedStats = storedData;
                     }
                 }
             } catch (err) {
@@ -46,6 +50,24 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
 
         return () => clearTimeout(timeout);
     }, [initialGameStats, refreshKey]);
+
+    useEffect(() => {
+        if (selectedGameNumber) {
+            try {
+                const storedTurnLog = loadFromStorage('turnLog') || [];
+                if (!Array.isArray(storedTurnLog)) {
+                    console.warn('[GameHistoryGridPanel] Invalid turnLog format in localStorage; expected array.');
+                    setTurnHistory([]);
+                } else {
+                    const filteredTurns = storedTurnLog.filter(turn => turn.gameNumber === selectedGameNumber);
+                    setTurnHistory(filteredTurns);
+                }
+            } catch (err) {
+                console.error('[GameHistoryGridPanel] Error parsing turnLog from localStorage:', err);
+                setTurnHistory([]);
+            }
+        }
+    }, [selectedGameNumber]);
 
     const categoryOrder = [
         'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
@@ -92,6 +114,18 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                 return <span className={colorClass}>{score}</span>;
             },
         },
+        {
+            id: 'turnHistory',
+            header: () => 'Turn History',
+            cell: ({ row }) => (
+                <button
+                    onClick={() => setSelectedGameNumber(row.original.gameNumber)}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
+                >
+                    Show Turn History
+                </button>
+            ),
+        },
     ], [allCategories]);
 
     const data = useMemo(() => gameStats.slice(), [gameStats]);
@@ -104,6 +138,8 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
     });
+
+    const closeModal = () => setSelectedGameNumber(null);
 
     //--- No games recorded yet
     if (!gameStats || !Array.isArray(gameStats) || gameStats.length === 0) {
@@ -172,6 +208,83 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                     </tbody>
                 </table>
             </div>
+
+            {/* Modal for Turn History */}
+            {selectedGameNumber && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity animate-fade-in">
+                    <div className="relative w-full max-w-3xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
+                        {/* Close Button - top right floating */}
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-sm transition"
+                            aria-label="Close"
+                        >
+                            &times;
+                        </button>
+
+                        <div className="border-b border-gray-200 px-6 py-4">
+                            <h3 className="text-lg font-semibold text-gray-800">
+                                Turn History for Game #{selectedGameNumber}
+                            </h3>
+                        </div>
+
+                        <div className="relative max-h-[70vh] overflow-y-auto px-6 pb-6">
+                            {turnHistory.length === 0 ? (
+                                <p className="text-gray-500">No turn history available for this game.</p>
+                            ) : (
+                                <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-0">
+                                    <thead className="bg-gray-100 text-xs text-gray-600 uppercase sticky top-0 z-20">
+                                        <tr>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Turn</th>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Category</th>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Score</th>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Dice</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {turnHistory.map((turn, index) => (
+                                            <tr
+                                                key={index}
+                                                className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition"
+                                            >
+                                                <td className="px-3 py-2 border-b border-gray-100">{index + 1}</td>
+                                                <td className="px-3 py-2 border-b border-gray-100">
+                                                    {prettyName(turn.category) || '(uncategorized)'}
+                                                </td>
+                                                <td className="px-3 py-2 border-b border-gray-100">
+                                                    {turn.score !== undefined ? turn.score : '-'}
+                                                </td>
+                                                <td className="px-3 py-2 border-b border-gray-100">
+                                                    {Array.isArray(turn.dice)
+                                                        ? (() => {
+                                                            const dice = [...turn.dice];
+                                                            const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
+
+                                                            return dice.map((die, i) => {
+                                                                const isUsed = usedFlags[i];
+                                                                const bg = isUsed ? '#fef9c3' : '#fff'; // Tailwind yellow-100
+                                                                return (
+                                                                    <span key={`${index}-${i}`}>
+                                                                        {getDiceSvg(die, bg)}
+                                                                    </span>
+                                                                );
+                                                            });
+                                                        })()
+                                                        : '-'}
+                                                </td>
+
+
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
