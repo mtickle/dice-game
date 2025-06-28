@@ -15,9 +15,12 @@ function App() {
   const [gameLog, setGameLog] = useState([]);
   const [turnLog, setTurnLog] = useState(() => {
     try {
+
       const saved = loadFromStorage('turnLog');
-      const parsed = saved ? JSON.parse(saved) : [];
-      return parsed.filter(turn => typeof turn.gameNumber === 'string' && turn.gameNumber.match(/^\d{12}$/));
+      //const parsed = saved ? JSON.parse(saved) : [];
+
+      //return parsed.filter(turn => typeof turn.gameNumber === 'string' && turn.gameNumber.match(/^\d{12}$/));
+      return saved.filter(turn => typeof turn.gameNumber === 'string' && turn.gameNumber.match(/^\d{12}$/));
     } catch (error) {
       console.error('[App] Error loading turnLog:', error);
       return [];
@@ -26,8 +29,8 @@ function App() {
   const [gameStats, setGameStats] = useState(() => {
     try {
       const saved = loadFromStorage('gameStats');
-      const parsed = saved ? JSON.parse(saved) : [];
-      return parsed.filter(game => typeof game.gameNumber === 'string' && game.gameNumber.match(/^\d{12}$/));
+      //const parsed = saved ? JSON.parse(saved) : [];
+      return saved.filter(game => typeof game.gameNumber === 'string' && game.gameNumber.match(/^\d{12}$/));
     } catch (error) {
       console.error('[App] Error loading gameStats:', error);
       return [];

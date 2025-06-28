@@ -1,5 +1,7 @@
+import { getUsedDiceIndexesForCategory } from '@utils/diceUtils';
 import { prettyName } from '@utils/utils';
 import { useEffect } from 'react';
+import { getDiceSvg } from '../utils/diceIcons';
 
 export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurns }) {
     useEffect(() => {
@@ -65,10 +67,6 @@ export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurn
 
     return (
 
-
-
-
-
         <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
                 Turn History
@@ -102,14 +100,25 @@ export default function TurnLogPanel({ gameLog, turnLog, gameNumber, showAllTurn
                                     <tr key={index} className="border-b hover:bg-gray-50">
                                         <td className="p-2">{turn.turnNumber || index}</td>
                                         <td className="p-2">
-                                            {diceToShow.map((die, i) =>
-                                                die !== null && die >= 1 && die <= 6 ? (
-                                                    <span key={`${turn.turnNumber || index}-${i}-${die}`}>{diceSvgs[die]}</span>
-                                                ) : (
-                                                    <span key={`${turn.turnNumber || index}-${i}-null`} className="inline-block w-6 h-6 mr-1 bg-gray-300"></span>
-                                                )
-                                            )}
+                                            {(() => {
+                                                const dice = Array.isArray(turn.dice) ? [...turn.dice].sort((a, b) => b - a) : Array(5).fill(null);
+                                                const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
+
+                                                return dice.map((die, i) =>
+                                                    die !== null && die >= 1 && die <= 6 ? (
+                                                        <span key={`${turn.turnNumber || index}-${i}-${die}`}>
+                                                            {getDiceSvg(die, usedFlags[i] ? '#fef9c3' : '#fff')}
+                                                        </span>
+                                                    ) : (
+                                                        <span
+                                                            key={`${turn.turnNumber || index}-${i}-null`}
+                                                            className="inline-block w-6 h-6 mr-1 bg-gray-300"
+                                                        />
+                                                    )
+                                                );
+                                            })()}
                                         </td>
+
                                         <td className="p-2">{rollCount}</td>
                                         <td className="p-2">{prettyName(category)}</td>
                                         <td className="p-2">{score}</td>
