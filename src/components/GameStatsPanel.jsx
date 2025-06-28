@@ -220,8 +220,9 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
 
     if (!chartData) {
         return (
-            <div key={refreshKey} className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">Game Statistics</div>
+            <div key={refreshKey} className="mb-4 border border-gray-200 bg-white shadow-sm rounded-t-2xl rounded-b-2xl overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-2xl">
+                    <h3 className="text-1xl font-semibold tracking-tight">📊 Game Statistics</h3></div>
                 <div className="bg-gray-50 px-4 py-3 text-gray-500">No games or turns recorded for statistics.</div>
             </div>
         );
@@ -231,10 +232,9 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
 
 
 
-        <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
-                Stats Panel
-            </div>
+        <div className="mb-4 border border-gray-200 bg-white shadow-sm rounded-t-2xl rounded-b-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-2xl">
+                <h3 className="text-1xl font-semibold tracking-tight">📊 Game Statistics</h3></div>
             <div className="bg-gray-50 px-4 py-3 space-y-6">
                 <div>
                     <h3 className="text-lg font-medium text-gray-700 mb-2">Game Summary Statistics</h3>
@@ -270,21 +270,24 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-lg font-medium text-gray-700 mb-2">Total Scores Over Games</h3>
-                    <div className="h-64">
-                        <Line
-                            data={chartData.totalScoresData}
-                            options={{
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: { title: { display: true, text: 'Game Number' } },
-                                    y: { title: { display: true, text: 'Total Score' }, beginAtZero: true },
-                                },
-                                plugins: { legend: { display: false } },
-                            }}
-                        />
+                    <div className="w-full bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] h-full min-h-0">
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">Total Scores Over Games</h3>
+                        <div className="w-full h-full min-h-[200px]">
+                            <Line
+                                data={chartData.totalScoresData}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: { title: { display: true, text: 'Game Number' } },
+                                        y: { title: { display: true, text: 'Total Score' }, beginAtZero: true },
+                                    },
+                                    plugins: { legend: { display: false } },
+                                }}
+                            />
+                        </div>
                     </div>
+
                 </div>
                 <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[300px]">

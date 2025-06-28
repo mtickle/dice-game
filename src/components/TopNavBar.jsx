@@ -5,7 +5,7 @@ export default function TopNavBar() {
     const { loginWithRedirect, logout, isAuthenticated, user, isLoading } = useAuth0();
 
     return (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-3xl">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-2xl">
             <h1 className="text-2xl font-semibold tracking-tight">🎲 Dice Breaker AI Lab</h1>
 
             <div>
