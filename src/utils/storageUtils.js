@@ -37,8 +37,11 @@ export async function saveGameToDatabase(gameSummary) {
 
     //console.log('Saving game to database:', gameSummary);
 
+    //apiUrl = 'http://localhost:3001/api/postGameResults';
+    let apiUrl = 'https://game-api-zjod.onrender.com/api/postGameResults'
+
     try {
-        const response = await fetch('http://localhost:3001/api/postGameResults', {
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

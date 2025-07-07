@@ -40,6 +40,9 @@ function App() {
   const [gameNumber, setGameNumber] = useState(generateGameNumber());
 
   const logTurnResult = useCallback((result) => {
+
+
+
     const turnWithGameNumber = { ...result, gameNumber };
     setGameLog((prev) => [...prev, turnWithGameNumber]);
     setTurnLog((prev) => {

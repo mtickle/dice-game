@@ -27,30 +27,26 @@ export default function AutoPlayer({
 }) {
     const hasLoggedGameOver = useRef(false);
 
+
+
     // Log game-over once
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
-            //console.log('[AutoPlayer] Game ' + gameNumber + ' Over detected. Logging game stats...');
 
-            //console.log('[AutoPlayer] Scores:', scores);
-            // console.log('[AutoPlayer] Scores:', scores);
-            //console.log('[AutoPlayer] Total Scores:', totals);
-
-
+            //--- The game is over, let's get scores together and save them.
             const combineScoresData = (inputData) => {
                 const { scores, totals } = inputData;
                 return {
                     scores: {
                         gameNumber: gameNumber,
                         playerName: user?.nickname || 'Anonymous',
-                        ...scores, // Spread the scores (ones, twos, etc.)
-                        ...totals, // Spread the totals (turn, upperSubtotal, etc.)
+                        ...scores,
+                        ...totals,
                     },
                 };
             };
 
-            //console.log('[AutoPlayer] Scores created. Sending downrange:', combineScoresData({ scores, totals }));
-
+            //-- Fire the laser.
             saveGameToDatabase(combineScoresData({ scores, totals }));
 
             hasLoggedGameOver.current = true;
@@ -62,14 +58,6 @@ export default function AutoPlayer({
             };
             setGameStats(prev => {
                 const updatedStats = [...prev, newGame];
-                //localStorage.setItem('gameStats', JSON.stringify(updatedStats));
-                //saveGameToFirebase(newGame);
-                //saveToStorage(newGame);
-
-                //--- Let's save the game here using a util
-
-
-
                 return updatedStats;
             });
         } else if (!isGameOver) {
