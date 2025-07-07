@@ -72,7 +72,7 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
             const lastTurn = turnLog[turnLog.length - 1];
             if (lastTurn && lastTurn.isGameEnd) {
                 const newGame = {
-                    gameNumber: lastTurn.gameNumber, // Use the gameNumber from the last turn
+                    gameNumber: lastTurn.gameNumber,
                     totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
                     scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
                     timestamp: new Date().toISOString(),
@@ -98,29 +98,56 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
         }
     }, [refreshKey, initialGameStats, initialTurnLog]);
 
+    const categoryOrder = [
+        'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
+        'threeOfAKind', 'fourOfAKind', 'fullHouse',
+        'smallStraight', 'largeStraight', 'yahtzee', 'chance'
+    ];
+
     const chartData = useMemo(() => {
         const storedStats = loadFromStorage('gameStats');
         if (!storedStats || storedStats.length === 0 || !turnLog || turnLog.length === 0) {
             return null;
         }
 
-        //--- Calculate numbers for the line chart.
+        // Calculate total scores for line chart
+        const totalScores = storedStats.map((game) => game.totalScore);
+        const meanScore = totalScores.reduce((sum, score) => sum + score, 0) / totalScores.length;
         const totalScoresData = {
             labels: storedStats.map((game) => `Game ${game.gameNumber}`),
             datasets: [
                 {
                     label: 'Total Score',
-                    data: storedStats.map((game) => game.totalScore),
+                    data: totalScores,
                     borderColor: '#2563eb',
                     backgroundColor: '#2563eb',
                     fill: false,
                     tension: 0.1,
                 },
+                {
+                    label: 'Mean Score',
+                    data: Array(totalScores.length).fill(meanScore),
+                    borderColor: '#EF4444', // Red to distinguish from main line
+                    backgroundColor: '#EF4444',
+                    borderDash: [2, 2], // Dashed line for mean
+                    pointRadius: 0, // No points on mean line
+                    fill: false,
+                },
             ],
         };
 
-        //--- Calculate average scores
-        const categories = Object.keys(storedStats[0]?.scores || {});
+        // Calculate average scores
+        const categories = [...new Set(
+            storedStats.flatMap(game => Object.keys(game.scores || {}))
+        )].sort((a, b) => {
+            const indexA = categoryOrder.indexOf(a);
+            const indexB = categoryOrder.indexOf(b);
+            if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+            if (indexA === -1) return 1;
+            if (indexB === -1) return -1;
+            return indexA - indexB;
+        });
+
         const avgScores = categories.map((cat) => {
             const total = storedStats.reduce((sum, game) => sum + (game.scores[cat] || 0), 0);
             return total / storedStats.length || 0;
@@ -145,11 +172,6 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                         '#0EA5E9', // sky
                         '#A855F7', // purple
                         '#D946EF', // magenta
-                        '#14B8A6', // teal
-                        '#E11D48', // rose
-                        '#FDBA74', // orange
-                        '#4ADE80', // green
-                        '#60A5FA', // light blue
                     ],
                     hoverBackgroundColor: [
                         '#0e9e6f', // emerald - darker
@@ -165,24 +187,15 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                         '#0284c7', // sky - darker
                         '#9333ea', // purple - darker
                         '#c026d3', // magenta - darker
-                        '#0d9488', // teal - darker
-                        '#be123c', // rose - darker
-                        '#fb923c', // orange - darker
-                        '#22c55e', // green - darker
-                        '#3b82f6', // light blue - darker
                     ],
-                    borderColor: '#1F2937', // consistent dark border
+                    borderColor: '#1F2937',
                     borderWidth: 1,
                     borderRadius: 4,
                 },
             ],
         };
 
-
-
-        //------------------------------------------------------------------------------------------
-        //------------------------------------------------------------------------------------------
-        //--- This is calculating die frequency.
+        // Calculate die frequency
         const dieFrequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
         turnLog.forEach((turn) => {
             if (Array.isArray(turn.dice)) {
@@ -206,34 +219,53 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                         '#F59E0B', // amber
                         '#EF4444', // red
                         '#8B5CF6', // violet
-                        '#22D3EE'],
+                        '#22D3EE', // cyan
+                    ],
                     borderColor: '#1F2937',
                     borderWidth: 1,
                 },
             ],
         };
-        //------------------------------------------------------------------------------------------
-        //------------------------------------------------------------------------------------------
 
-        return { totalScoresData, avgScoresData, dieFrequencyData };
+        // Calculate zero-score frequency
+        const zeroScores = categories.map(category => {
+            return storedStats.reduce((count, game) => {
+                const score = game.scores?.[category];
+                return count + (score === 0 || score === undefined ? 1 : 0);
+            }, 0);
+        });
+        const zeroScoresData = {
+            labels: categories.map(prettyName),
+            datasets: [
+                {
+                    label: 'Zero Scores',
+                    data: zeroScores,
+                    backgroundColor: '#EF4444', // Red for zero scores
+                    borderColor: '#b91c1c',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                },
+            ],
+        };
+
+        return { totalScoresData, avgScoresData, dieFrequencyData, zeroScoresData };
     }, [turnLog]);
 
     if (!chartData) {
         return (
-            <div key={refreshKey} className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">Game Statistics</div>
+            <div key={refreshKey} className="mb-4 border border-gray-200 bg-white shadow-sm rounded-t-2xl rounded-b-2xl overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-2xl">
+                    <h3 className="text-1xl font-semibold tracking-tight">📊 Game Statistics</h3>
+                </div>
                 <div className="bg-gray-50 px-4 py-3 text-gray-500">No games or turns recorded for statistics.</div>
             </div>
         );
     }
 
     return (
-
-
-
-        <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="border-b border-gray-200 px-4 py-3 font-semibold text-gray-800">
-                Stats Panel
+        <div className="mb-4 border border-gray-200 bg-white shadow-sm rounded-t-2xl rounded-b-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-2xl">
+                <h3 className="text-1xl font-semibold tracking-tight">📊 Game Statistics</h3>
             </div>
             <div className="bg-gray-50 px-4 py-3 space-y-6">
                 <div>
@@ -270,66 +302,112 @@ export default function GameStatsPanel({ gameStats: initialGameStats, turnLog: i
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-lg font-medium text-gray-700 mb-2">Total Scores Over Games</h3>
-                    <div className="h-64">
-                        <Line
-                            data={chartData.totalScoresData}
-                            options={{
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: { title: { display: true, text: 'Game Number' } },
-                                    y: { title: { display: true, text: 'Total Score' }, beginAtZero: true },
-                                },
-                                plugins: { legend: { display: false } },
-                            }}
-                        />
-                    </div>
-                </div>
-                <div className="flex flex-wrap gap-4">
-                    <div className="flex-1 min-w-[300px]">
-                        <h3 className="text-lg font-medium text-gray-700 mb-2">Average Score per Category</h3>
-                        <div className="h-64">
-                            <Bar
-                                data={chartData.avgScoresData}
+                    <div className="w-full bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
+                        <h3 className="text-lg font-medium text-gray-700 mb-2">Total Scores Over Games</h3>
+                        <div className="w-full h-[250px]">
+                            <Line
+                                data={chartData.totalScoresData}
                                 options={{
                                     responsive: true,
                                     maintainAspectRatio: false,
                                     scales: {
-                                        x: { title: { display: false, text: 'Category' } },
-                                        y: { title: { display: true, text: 'Average Score' }, beginAtZero: true },
+                                        x: { title: { display: true, text: 'Game Number' } },
+                                        y: { title: { display: true, text: 'Total Score' }, beginAtZero: true },
                                     },
-                                    plugins: { legend: { display: false } },
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                            labels: { color: '#374151', font: { size: 12 } },
+                                        },
+                                    },
                                 }}
                             />
                         </div>
                     </div>
+                </div>
+                <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[300px]">
-                        <h3 className="text-lg font-medium text-gray-700 mb-2">Die Frequency</h3>
-                        <div className="h-64">
-                            <Pie
-                                data={chartData.dieFrequencyData}
-                                options={{
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'bottom',
-                                            labels: { color: '#374151', font: { size: 14 } },
+                        <div className="w-full bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
+                            <h3 className="text-lg font-medium text-gray-700 mb-2">Average Score Per Category</h3>
+                            <div className="w-full h-[250px]">
+                                <Bar
+                                    data={chartData.avgScoresData}
+                                    options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: { title: { display: false, text: 'Category' } },
+                                            y: { title: { display: true, text: 'Average Score' }, beginAtZero: true },
                                         },
-                                        datalabels: {
-                                            color: '#111827',
-                                            font: { weight: 'bold', size: 13 },
-                                            formatter: (value, context) => {
-                                                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                                const percentage = ((value / total) * 100).toFixed(1) + '%';
-                                                return `${value} (${percentage})`;
+                                        plugins: { legend: { display: false } },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex-1 min-w-[300px]">
+                        <div className="w-full bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
+                            <h3 className="text-lg font-medium text-gray-700 mb-2">Die Distribution</h3>
+                            <div className="w-full h-[250px]">
+                                <Pie
+                                    data={chartData.dieFrequencyData}
+                                    options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                                position: 'right',
+                                                labels: { color: '#374151', font: { size: 14 } },
+                                            },
+                                            datalabels: {
+                                                color: '#111827',
+                                                font: { weight: 'bold', size: 13 },
+                                                formatter: (value, context) => {
+                                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                                    const percentage = ((value / total) * 100).toFixed(1) + '%';
+                                                    return `${value} (${percentage})`;
+                                                },
                                             },
                                         },
-                                    },
-                                }}
-                            />
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex-1 min-w-[300px]">
+                        <div className="w-full bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
+                            <h3 className="text-lg font-medium text-gray-700 mb-2">Zero Score Frequency</h3>
+                            <div className="w-full h-[250px]">
+                                <Bar
+                                    data={chartData.zeroScoresData}
+                                    options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: { title: { display: true, text: 'Category' } },
+                                            y: {
+                                                title: { display: true, text: 'Number of Zero Scores' },
+                                                beginAtZero: true,
+                                                ticks: { stepSize: 1, precision: 0 },
+                                                grid: { color: '#e5e7eb' },
+                                            },
+                                        },
+                                        plugins: {
+                                            legend: { display: false },
+                                            tooltip: {
+                                                backgroundColor: '#1f2937',
+                                                titleFont: { size: 14 },
+                                                bodyFont: { size: 12 },
+                                                callbacks: {
+                                                    label: (context) => `${context.raw} zero scores`,
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

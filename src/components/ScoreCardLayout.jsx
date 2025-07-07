@@ -79,7 +79,7 @@ export default function ScoreCardLayout({
 }) {
     return (
         // OUTER CONTAINER
-        <div className="flex justify-between p-6 bg-white rounded-b-3xl shadow-sm gap-4 mb-4 mt-0">
+        <div className="flex justify-between p-6 bg-white rounded-b-3xl shadow-sm gap-4 mb-4">
 
             {/* LEFT SIDE */}
             <div className="w-[640px]">
@@ -160,6 +160,8 @@ export default function ScoreCardLayout({
                     rollCount={rollCount}
                     suggestedScores={suggestedScores}
                     prettyName={prettyName}
+                    gameNumber={gameNumber}
+                    autoPlaying={autoPlaying}
                 />
                 {/* )} */}
             </div>
