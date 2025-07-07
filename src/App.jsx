@@ -66,6 +66,8 @@ function App() {
     });
   }, [gameNumber]);
 
+  //console.log(user);
+
   const {
     gameCount,
     isGameOver,
@@ -155,6 +157,7 @@ function App() {
         resetGame={resetGame}
         gameNumber={gameNumber}
         setGameNumber={setGameNumber}
+        user={user}
       />
       <GameStatsPanel gameStats={gameStats} turnLog={turnLog} />
       <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />

@@ -1,6 +1,7 @@
+
+import { saveGameToDatabase } from '@utils/storageUtils';
 import { generateGameNumber, upperCategories } from '@utils/utils';
 import { useEffect, useRef } from 'react';
-
 
 export default function AutoPlayer({
     rollDice,
@@ -21,13 +22,37 @@ export default function AutoPlayer({
     setShowAllTurns,
     resetGame,
     gameNumber,
-    setGameNumber
+    setGameNumber,
+    user
 }) {
     const hasLoggedGameOver = useRef(false);
 
     // Log game-over once
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
+            //console.log('[AutoPlayer] Game ' + gameNumber + ' Over detected. Logging game stats...');
+
+            //console.log('[AutoPlayer] Scores:', scores);
+            // console.log('[AutoPlayer] Scores:', scores);
+            //console.log('[AutoPlayer] Total Scores:', totals);
+
+
+            const combineScoresData = (inputData) => {
+                const { scores, totals } = inputData;
+                return {
+                    scores: {
+                        gameNumber: gameNumber,
+                        playerName: user?.nickname || 'Anonymous',
+                        ...scores, // Spread the scores (ones, twos, etc.)
+                        ...totals, // Spread the totals (turn, upperSubtotal, etc.)
+                    },
+                };
+            };
+
+            console.log('[AutoPlayer] Scores created. Sending downrange:', combineScoresData({ scores, totals }));
+
+            saveGameToDatabase(combineScoresData({ scores, totals }));
+
             hasLoggedGameOver.current = true;
             const newGame = {
                 gameNumber,

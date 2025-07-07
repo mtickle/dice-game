@@ -33,6 +33,26 @@ export const clearStorageKey = (key) => {
     }
 };
 
+export async function saveGameToDatabase(gameSummary) {
+
+    console.log('Saving game to database:', gameSummary);
+
+    try {
+        const response = await fetch('http://localhost:3001/api/postGameResults', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(gameSummary),
+        });
+
+        if (!response.ok) throw new Error('Failed to save game');
+        return await response.json();
+    } catch (err) {
+        console.error('Error saving game:', err);
+    }
+}
+
 export const uploadToAtlas = async (gameStats) => {
     const playerId = useAuth0().user.sub;
     if (!playerId) {
