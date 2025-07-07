@@ -1,7 +1,9 @@
 
+
 import { saveThingsToDatabase } from '@utils/storageUtils';
 import { generateGameNumber, upperCategories } from '@utils/utils';
 import { useEffect, useRef } from 'react';
+
 
 export default function AutoPlayer({
     rollDice,
@@ -34,8 +36,8 @@ export default function AutoPlayer({
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
 
 
+            //--- Filter out the turns for the current game and prepare the data for saving.
             const turnsForThisGame = turnLog.filter(turn => turn.gameNumber === gameNumber);
-            console.log(turnsForThisGame);
 
             //--- The game is over, let's get scores together and save them.
             const combineScoresData = (inputData) => {
@@ -50,11 +52,9 @@ export default function AutoPlayer({
                 };
             };
 
-            //-- Fire the laser.
+            //-- Fire the laser. Game results and turns are saved to the database.
             saveThingsToDatabase('postGameResults', combineScoresData({ scores, totals }));
             saveThingsToDatabase('postGameTurns', turnsForThisGame);
-
-            console.log(combineScoresData({ scores, totals }));
 
             hasLoggedGameOver.current = true;
             const newGame = {

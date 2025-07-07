@@ -35,10 +35,8 @@ export const clearStorageKey = (key) => {
 
 export async function saveThingsToDatabase(endpoint, data) {
 
-    //console.log('Saving game to database:', gameSummary);
-
-    let apiUrl = 'http://localhost:3001/api/' + endpoint;
-    //let apiUrl = 'https://game-api-zjod.onrender.com/api/' + endpoint;
+    //let apiUrl = 'http://localhost:3001/api/' + endpoint;
+    let apiUrl = 'https://game-api-zjod.onrender.com/api/' + endpoint;
 
     try {
         const response = await fetch(apiUrl, {
