@@ -33,12 +33,12 @@ export const clearStorageKey = (key) => {
     }
 };
 
-export async function saveGameToDatabase(gameSummary) {
+export async function saveThingsToDatabase(endpoint, data) {
 
     //console.log('Saving game to database:', gameSummary);
 
-    //apiUrl = 'http://localhost:3001/api/postGameResults';
-    let apiUrl = 'https://game-api-zjod.onrender.com/api/postGameResults'
+    let apiUrl = 'http://localhost:3001/api/' + endpoint;
+    //let apiUrl = 'https://game-api-zjod.onrender.com/api/' + endpoint;
 
     try {
         const response = await fetch(apiUrl, {
@@ -46,7 +46,7 @@ export async function saveGameToDatabase(gameSummary) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(gameSummary),
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) throw new Error('Failed to save game');

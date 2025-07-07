@@ -1,5 +1,5 @@
 
-import { saveGameToDatabase } from '@utils/storageUtils';
+import { saveThingsToDatabase } from '@utils/storageUtils';
 import { generateGameNumber, upperCategories } from '@utils/utils';
 import { useEffect, useRef } from 'react';
 
@@ -29,9 +29,13 @@ export default function AutoPlayer({
 
 
 
-    // Log game-over once
+    //--- GAME OVER DUDE
     useEffect(() => {
         if (isGameOver && autoPlaying && !hasLoggedGameOver.current) {
+
+
+            const turnsForThisGame = turnLog.filter(turn => turn.gameNumber === gameNumber);
+            console.log(turnsForThisGame);
 
             //--- The game is over, let's get scores together and save them.
             const combineScoresData = (inputData) => {
@@ -41,13 +45,16 @@ export default function AutoPlayer({
                         gameNumber: gameNumber,
                         playerName: user?.nickname || 'Anonymous',
                         ...scores,
-                        ...totals,
+                        ...totals
                     },
                 };
             };
 
             //-- Fire the laser.
-            saveGameToDatabase(combineScoresData({ scores, totals }));
+            saveThingsToDatabase('postGameResults', combineScoresData({ scores, totals }));
+            saveThingsToDatabase('postGameTurns', turnsForThisGame);
+
+            console.log(combineScoresData({ scores, totals }));
 
             hasLoggedGameOver.current = true;
             const newGame = {
@@ -55,6 +62,7 @@ export default function AutoPlayer({
                 totalScore: turnLog.reduce((sum, turn) => sum + (turn.score || 0), 0),
                 scores: turnLog.reduce((acc, turn) => ({ ...acc, [turn.category]: turn.score }), {}),
                 timestamp: new Date().toISOString(),
+
             };
             setGameStats(prev => {
                 const updatedStats = [...prev, newGame];
@@ -63,6 +71,9 @@ export default function AutoPlayer({
         } else if (!isGameOver) {
             hasLoggedGameOver.current = false;
         }
+
+
+
     }, [isGameOver, autoPlaying, turnLog, gameStats, setGameStats, gameNumber]);
 
     // Handle AI moves

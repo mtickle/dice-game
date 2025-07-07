@@ -22,6 +22,7 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
     const [turn, setTurn] = useState(1);
     const [adviceText, setAdviceText] = useState('');
     const [turnInProgress, setTurnInProgress] = useState(false);
+    const [gameSessionLog, setGameSessionLog] = useState([]);
 
     const isGameOver = Object.values(scores).every(score => score !== null);
     const rawSuggestedScores = calculateSuggestedScores(dice, scores);
@@ -73,15 +74,18 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
         const isEligibleForBonus = qualifyingFirstRollBonusCategories.includes(category);
         const qualifiesForBonus = isFirstRoll && isEligibleForBonus && matchesCategory(category, dice);
 
+        // Apply bonus if conditions are met
         if (qualifiesForBonus) {
             score += 10;
             setEarnedBonuses(prev => ({ ...prev, [category]: true }));
         }
 
+        // Update score state
         const updatedScores = { ...scores, [category]: score };
         setScores(updatedScores);
         setTurnComplete(true);
 
+        // Log the result of this turn
         if (logTurnResult) {
             const turnResult = {
                 gameNumber,
@@ -98,6 +102,7 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
             logTurnResult(turnResult);
         }
 
+        // Reset dice and state after a short delay
         setTimeout(() => {
             setDice(Array(5).fill().map(() => ({ value: null, held: false })));
             setRollCount(0);
@@ -105,7 +110,20 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
             setAdviceText('');
             setTurn(prev => prev + 1);
         }, 100);
-    }, [scores, dice, rollCount, turnComplete, turn, suggestedScores, logTurnResult, gameNumber]);
+
+    }, [
+        scores,
+        dice,
+        rollCount,
+        turnComplete,
+        turn,
+        suggestedScores,
+        logTurnResult,
+        gameNumber,
+        qualifyingFirstRollBonusCategories,
+        matchesCategory,
+    ]);
+
 
     const resetGame = useCallback((skipSave = false) => {
         if (!skipSave) {
