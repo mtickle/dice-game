@@ -49,7 +49,7 @@ export default function AutoPlayer({
                 };
             };
 
-            console.log('[AutoPlayer] Scores created. Sending downrange:', combineScoresData({ scores, totals }));
+            //console.log('[AutoPlayer] Scores created. Sending downrange:', combineScoresData({ scores, totals }));
 
             saveGameToDatabase(combineScoresData({ scores, totals }));
 

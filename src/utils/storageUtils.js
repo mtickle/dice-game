@@ -35,7 +35,7 @@ export const clearStorageKey = (key) => {
 
 export async function saveGameToDatabase(gameSummary) {
 
-    console.log('Saving game to database:', gameSummary);
+    //console.log('Saving game to database:', gameSummary);
 
     try {
         const response = await fetch('http://localhost:3001/api/postGameResults', {
@@ -49,7 +49,7 @@ export async function saveGameToDatabase(gameSummary) {
         if (!response.ok) throw new Error('Failed to save game');
         return await response.json();
     } catch (err) {
-        console.error('Error saving game:', err);
+        console.error('Error saving game:', err.body || err.message || err``);
     }
 }
 
