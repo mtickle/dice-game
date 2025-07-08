@@ -58,9 +58,12 @@ export async function loadThingsFromDatabase(endpoint, data) {
         const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${data}`;
 
         const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         if (!response.ok) {
-            throw new Error(`Failed to fetch from ${apiUrl}: ${response.statusText}`);
+            console.log(`Failed to fetch from ${apiUrl}: ${response.statusText}`);
         }
 
         const jsonData = await response.json();
