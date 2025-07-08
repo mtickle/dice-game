@@ -1,5 +1,4 @@
 // src/utils/storageUtils.js
-import { useAuth0 } from '@auth0/auth0-react';
 
 export const saveToStorage = (key, value) => {
 
@@ -54,24 +53,21 @@ export async function saveThingsToDatabase(endpoint, data) {
     }
 }
 
-export const uploadToAtlas = async (gameStats) => {
-    const playerId = useAuth0().user.sub;
-    if (!playerId) {
-        console.error('[storageUtils] No playerId available for upload');
-        return;
-    }
-
+export async function loadThingsFromDatabase(endpoint, data) {
     try {
-        const response = await fetch('http://localhost:3001/api/upload-game', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ playerId, gameStats }),
-        });
+        const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${data}`;
 
-        const result = await response.json();
-        if (!result.success) throw new Error(result.error);
-        console.log(`[storageUtils] Uploaded game ${result.gameNumber} to Atlas`);
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch from ${apiUrl}: ${response.statusText}`);
+        }
+
+        const jsonData = await response.json();
+        return jsonData;
+
     } catch (error) {
-        console.error('[storageUtils] Upload to Atlas failed:', error);
+        console.error('Error loading data from database:', error);
+        return null; // Or throw, depending on use case
     }
-};
+}
