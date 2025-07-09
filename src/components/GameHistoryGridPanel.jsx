@@ -40,7 +40,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                 const gameNumbers = normalized.map(game => game.gameNumber);
                 const duplicates = gameNumbers.filter((num, i) => gameNumbers.indexOf(num) !== i);
                 if (duplicates.length > 0) {
-                    console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
+                    //console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
                 }
 
             } catch (err) {
