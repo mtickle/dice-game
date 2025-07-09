@@ -5,8 +5,8 @@ import ClassicScoreRow from './ClassicScoreRow';
 export default function ClassicScoreCard({ scores, suggestedScores, onScoreSelect, turnComplete }) {
     const categories = [
         'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
-        'threeKind', 'fourKind', 'fullHouse', 'smallStraight',
-        'largeStraight', 'yahtzee', 'chance', 'onePair', 'twoPair'
+        'threeofakind', 'fourofakind', 'fullhouse', 'smallstraight',
+        'largestraight', 'yahtzee', 'chance', 'onepair', 'twopair'
     ];
 
     return (

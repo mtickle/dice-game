@@ -7,12 +7,12 @@ import { lowerCategories, upperCategories } from './utils'; // adjust path if ne
 // Prioritized categories for targeting
 const priorityCategories = [
     'yahtzee',
-    'fourKind',
-    'threeKind',
-    'fullHouse',
-    'largeStraight',
-    'smallStraight',
-    'twoPair',
+    'fourofakind',
+    'threeofakind',
+    'fullhouse',
+    'largestraight',
+    'smallstraight',
+    'twopair',
     'chance',
 ];
 

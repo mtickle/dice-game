@@ -18,23 +18,23 @@ export function calculateScore(category, diceObjs) {
             return (counts[0] || 0) * 1 + (counts[2] || 0) * 3 + (counts[4] || 0) * 5; // 1s, 3s, 5s
         case 'evens':
             return (counts[1] || 0) * 2 + (counts[3] || 0) * 4 + (counts[5] || 0) * 6; // 2s, 4s, 6s
-        case 'threeKind':
+        case 'threeofakind':
             return hasThreeOfKind(counts) ? total : 0;
-        case 'fourKind':
+        case 'fourofaind':
             return hasFourOfKind(counts) ? total : 0;
-        case 'fullHouse':
+        case 'fullhouse':
             return hasFullHouse(counts) ? 25 : 0;
-        case 'smallStraight':
+        case 'smallstraight':
             return hasSmallStraight(dice) ? 30 : 0;
-        case 'largeStraight':
+        case 'largestraight':
             return hasLargeStraight(dice) ? 40 : 0;
         case 'yahtzee':
             return counts.includes(5) ? 50 : 0;
         case 'chance':
             return total;
-        case 'twoPair':
+        case 'twopair':
             return hasTwoPair(counts) ? getTwoPairScore(counts) : 0;
-        case 'onePair': {
+        case 'onepair': {
             for (let i = 5; i >= 0; i--) {
                 if (counts[i] >= 2) {
                     return (i + 1) * 2;
@@ -72,18 +72,18 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
         if (evensScore > 0) score.evens = evensScore;
     }
 
-    if (currentScores.threeKind === null && hasThreeOfKind(counts)) score.threeKind = total;
-    if (currentScores.fourKind === null && hasFourOfKind(counts)) score.fourKind = total;
-    if (currentScores.fullHouse === null && hasFullHouse(counts)) score.fullHouse = 25;
-    if (currentScores.smallStraight === null && hasSmallStraight(dice)) score.smallStraight = 30;
-    if (currentScores.largeStraight === null && hasLargeStraight(dice)) score.largeStraight = 40;
+    if (currentScores.threeofakind === null && hasThreeOfKind(counts)) score.threeofakind = total;
+    if (currentScores.fourofakind === null && hasFourOfKind(counts)) score.fourofakind = total;
+    if (currentScores.fullhouse === null && hasFullHouse(counts)) score.fullhouse = 25;
+    if (currentScores.smallstraight === null && hasSmallStraight(dice)) score.smallstraight = 30;
+    if (currentScores.largestraight === null && hasLargeStraight(dice)) score.largestraight = 40;
     if (currentScores.yahtzee === null && counts.includes(5)) score.yahtzee = 50;
     if (currentScores.chance === null) score.chance = total;
-    if (currentScores.twoPair === null && hasTwoPair(counts)) score.twoPair = getTwoPairScore(counts);
-    if (currentScores.onePair === null) {
+    if (currentScores.twopair === null && hasTwoPair(counts)) score.twopair = getTwoPairScore(counts);
+    if (currentScores.onepair === null) {
         for (let i = 5; i >= 0; i--) {
             if (counts[i] >= 2) {
-                score.onePair = (i + 1) * 2;
+                score.onepair = (i + 1) * 2;
                 break;
             }
         }
@@ -143,10 +143,10 @@ export function matchesCategory(category, diceObjs) {
     dice.forEach(d => counts[d - 1]++);
 
     switch (category) {
-        case 'fullHouse': return hasFullHouse(counts);
-        case 'smallStraight': return hasSmallStraight(dice);
-        case 'largeStraight': return hasLargeStraight(dice);
-        case 'fourKind': return hasFourOfKind(counts);
+        case 'fullhouse': return hasFullHouse(counts);
+        case 'smallstraight': return hasSmallStraight(dice);
+        case 'largestraight': return hasLargeStraight(dice);
+        case 'fourofakind': return hasFourOfKind(counts);
         default: return false;
     }
 }

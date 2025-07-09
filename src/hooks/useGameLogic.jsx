@@ -32,12 +32,12 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
     const totals = calculateTotals(scores);
 
     const qualifyingFirstRollBonusCategories = [
-        'fullHouse',
-        'smallStraight',
-        'largeStraight',
-        'fourKind',
-        'onePair',
-        'twoPair',
+        'fullhouse',
+        'smallstraight',
+        'largestraight',
+        'fourofakind',
+        'onepair',
+        'twopair',
     ];
 
     const rollDice = useCallback(() => {

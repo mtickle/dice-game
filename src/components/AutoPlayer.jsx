@@ -96,13 +96,13 @@ export default function AutoPlayer({
 
         const categoryThresholds = {
             yahtzee: 50,
-            fullHouse: 25,
-            largeStraight: 40,
-            smallStraight: 30,
-            fourOfAKind: 30,
-            threeOfAKind: 25,
-            onePair: 18,
-            twoPair: 22,
+            fullhouse: 25,
+            largestraight: 40,
+            smallstraight: 30,
+            fourofakind: 30,
+            threeofakind: 25,
+            onepair: 18,
+            twopair: 22,
             chance: 30,
             ones: 4,
             twos: 6,
@@ -199,7 +199,7 @@ export default function AutoPlayer({
             if (remaining.length > 0) {
                 const sacrificePriority = [
                     'ones', 'twos', 'threes', 'chance',
-                    'fourOfAKind', 'threeOfAKind', 'onePair', 'twoPair', 'odds', 'evens'
+                    'fourofakind', 'threeofakind', 'onepair', 'twopair', 'odds', 'evens'
                 ];
 
                 const categoryToSacrifice = sacrificePriority.find(cat => remaining.includes(cat)) || remaining[0];
@@ -262,12 +262,12 @@ export default function AutoPlayer({
 
         <div className="w-full flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
             <div className="flex gap-3 mb-0">
-                <button
+                {/* <button
                     className="px-4 bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleExport}
                 >
                     Export Data
-                </button>
+                </button> */}
                 <button
                     className="px-4 bg-red-600 text-white rounded-xl py-2 hover:bg-red-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleReset}

@@ -11,11 +11,10 @@ import {
     Title,
     Tooltip,
 } from 'chart.js';
+
+import { allCategories, prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { Bar, Line, Pie } from 'react-chartjs-2';
-//import { prettyName } from '../utils/utils';
-import { allCategories, prettyName } from '@utils/utils';
-
 
 ChartJS.register(
     CategoryScale,
@@ -33,11 +32,13 @@ export default function GameStatsPanel({ refreshKey }) {
     const [gameStats, setGameStats] = useState([]);
     const [turnLog, setTurnLog] = useState([]);
 
+
+    //--- Load the turn log from Postgres for the current user.
     useEffect(() => {
         const fetchStats = async () => {
             try {
+                //--- Get the game data from Postgres for the current user.
                 const fetchedGameStats = await loadThingsFromDatabase('getGameResults', 'mtickle');
-                //console.log('Fetched gameStats:', fetchedGameStats);
                 const normalizeGame = (game) => {
                     const result = {};
                     for (const key in game) {
@@ -47,7 +48,7 @@ export default function GameStatsPanel({ refreshKey }) {
                     }
                     return result;
                 };
-
+                //--- Clean the data and put it in gameStats.
                 setGameStats(fetchedGameStats.map(normalizeGame));
             } catch (err) {
                 console.error('Failed to load stats from API:', err);
@@ -57,6 +58,7 @@ export default function GameStatsPanel({ refreshKey }) {
         fetchStats();
     }, [refreshKey]);
 
+    //--- This is for the big numbers.
     const summaryStats = useMemo(() => {
         if (!gameStats || gameStats.length === 0) {
             return {
@@ -72,7 +74,6 @@ export default function GameStatsPanel({ refreshKey }) {
             .filter(score => typeof score === 'number' && isFinite(score));
 
         const gamesPlayed = scores.length;
-        //console.log('Games played:', gamesPlayed, 'Scores:', scores);
         const lowestScore = gamesPlayed > 0 ? Math.min(...scores) : 0;
         const highestScore = gamesPlayed > 0 ? Math.max(...scores) : 0;
         const averageScore = gamesPlayed > 0
@@ -87,6 +88,8 @@ export default function GameStatsPanel({ refreshKey }) {
         };
     }, [gameStats]);
 
+
+    //--- And here is chart data for the line chart.
     const chartData = useMemo(() => {
         if (!gameStats.length) return null;
 
@@ -117,12 +120,15 @@ export default function GameStatsPanel({ refreshKey }) {
         };
 
 
-
+        //--- Average scores per category.
         const categories = allCategories.filter(cat =>
-            gameStats.some(game => game[cat] !== undefined && game[cat] !== null)
+            gameStats.some(game => {
+                const val = Number(game[cat]);
+                return !isNaN(val) && isFinite(val);
+            })
         );
 
-
+        //--- These two work together for average score chart.
         const avgScores = categories.map(cat => {
             const total = gameStats.reduce((sum, game) => {
                 const val = Number(game[cat]);
@@ -242,7 +248,7 @@ export default function GameStatsPanel({ refreshKey }) {
 
                     {/* Charts Section */}
                     <div className="flex flex-wrap gap-6">
-                        <div className="flex-1 min-w-[300px]">
+                        <div className="flex-1 min-w-[350px]">
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Average Score Per Category</h3>
                                 <div className="w-full h-[250px] p-2">
@@ -253,7 +259,7 @@ export default function GameStatsPanel({ refreshKey }) {
                                             maintainAspectRatio: false,
                                             scales: {
                                                 x: { title: { display: false, text: 'Category' } },
-                                                y: { title: { display: true, text: 'Average Score' }, beginAtZero: true },
+                                                y: { title: { display: false, text: 'Average Score' }, beginAtZero: true },
                                             },
                                             plugins: { legend: { display: false } },
                                         }}

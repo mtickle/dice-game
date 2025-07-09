@@ -4,11 +4,13 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+
+import { getDiceSvg } from '@utils/diceIcons';
 import { getUsedDiceIndexesForCategory } from '@utils/diceUtils';
-import { loadFromStorage } from '@utils/storageUtils';
+import { loadFromStorage, loadThingsFromDatabase } from '@utils/storageUtils';
 import { prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
-import { getDiceSvg } from '../utils/diceIcons';
+
 
 export default function GameHistoryGridPanel({ gameStats: initialGameStats, refreshKey }) {
     const [sorting, setSorting] = useState([]);
@@ -16,40 +18,42 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
     const [selectedGameNumber, setSelectedGameNumber] = useState(null);
     const [turnHistory, setTurnHistory] = useState([]);
 
+
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            //console.log('[GameHistoryGridPanel] Loading gameStats from localStorage');
-            let storedStats = [];
+        const fetchGameHistory = async () => {
             try {
-                const storedData = loadFromStorage('gameStats');
-                if (storedData) {
-                    if (!Array.isArray(storedData)) {
-                        console.warn('[GameHistoryGridPanel] Invalid gameStats format in localStorage; expected array.');
-                        storedStats = [];
-                    } else {
-                        storedStats = storedData;
+                const fetchedStats = await loadThingsFromDatabase('getGameResults', 'mtickle');
+                const columns = ['gameNumber', ...allCategories, 'grandtotal'];
+                const normalizeGame = (game) => {
+                    const result = {};
+                    for (const key in game) {
+                        const value = game[key];
+                        const num = Number(value);
+                        result[key] = isNaN(num) ? value : num;
                     }
+                    return result;
+                };
+
+                const normalized = fetchedStats.map(normalizeGame);
+                setGameStats(normalized);
+
+                const gameNumbers = normalized.map(game => game.gameNumber);
+                const duplicates = gameNumbers.filter((num, i) => gameNumbers.indexOf(num) !== i);
+                if (duplicates.length > 0) {
+                    console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
                 }
+
             } catch (err) {
-                console.error('[GameHistoryGridPanel] Error parsing gameStats from localStorage:', err);
-                storedStats = [];
+                console.error('[GameHistoryGridPanel] Failed to fetch game history:', err);
             }
+        };
 
-            if (storedStats.length === 0 && initialGameStats && Array.isArray(initialGameStats)) {
-                storedStats = initialGameStats;
-            }
-
-            setGameStats(storedStats);
-
-            const gameNumbers = storedStats.map(game => game.gameNumber);
-            const duplicates = gameNumbers.filter((num, i) => gameNumbers.indexOf(num) !== i);
-            if (duplicates.length > 0) {
-                console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
-            }
-        }, 100);
+        const timeout = setTimeout(() => {
+            fetchGameHistory();
+        }, 100); // Optional: delay if needed to wait for backend propagation
 
         return () => clearTimeout(timeout);
-    }, [initialGameStats, refreshKey]);
+    }, [refreshKey]);
 
     useEffect(() => {
         if (selectedGameNumber) {
@@ -71,8 +75,8 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
 
     const categoryOrder = [
         'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
-        'threeOfAKind', 'fourOfAKind', 'fullHouse',
-        'smallStraight', 'largeStraight', 'yahtzee', 'chance'
+        'threeofakind', 'fourofakind', 'fullhouse',
+        'smallstraight', 'largestraight', 'yahtzee', 'chance'
     ];
 
     const allCategories = [...new Set(
@@ -160,6 +164,9 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             <div className="border-b border-gray-200 px-4 py-3 text-lg font-semibold text-gray-800">
                 Game History
             </div>
+            {/* <GameHistoryTable
+
+            /> */}
             <div className="bg-gray-50 relative overflow-y-auto h-[500px]">
                 <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-0">
                     <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm text-xs text-gray-600 uppercase">

@@ -70,9 +70,9 @@ export function getUsedDiceIndexesForCategory(category, dice) {
             break;
         }
 
-        case 'threeOfAKind':
-        case 'fourOfAKind': {
-            const needed = category === 'threeOfAKind' ? 3 : 4;
+        case 'threeofakind':
+        case 'fourofakind': {
+            const needed = category === 'threeofakind' ? 3 : 4;
             for (const val in count) {
                 if (count[val] >= needed) {
                     markIndices(Number(val), needed);
@@ -94,7 +94,7 @@ export function getUsedDiceIndexesForCategory(category, dice) {
             break;
         }
 
-        case 'fullHouse': {
+        case 'fullhouse': {
             let triple = null;
             let pair = null;
             for (const val in count) {
@@ -106,9 +106,9 @@ export function getUsedDiceIndexesForCategory(category, dice) {
             break;
         }
 
-        case 'smallStraight':
-        case 'largeStraight': {
-            const needed = category === 'largeStraight' ? 5 : 4;
+        case 'smallstraight':
+        case 'largestraight': {
+            const needed = category === 'largestraight' ? 5 : 4;
             const unique = [...new Set(dice)].sort();
             const sequences = [
                 [1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6], // small
@@ -147,7 +147,7 @@ export function getUsedDiceIndexesForCategory(category, dice) {
             break;
         }
 
-        case 'twoPair': {
+        case 'twopair': {
             const pairs = Object.entries(count).filter(([v, c]) => c >= 2).map(([v]) => Number(v));
             if (pairs.length >= 2) {
                 markIndices(pairs[0], 2);
@@ -156,7 +156,7 @@ export function getUsedDiceIndexesForCategory(category, dice) {
             break;
         }
 
-        case 'onePair': {
+        case 'onepair': {
             const pair = Object.entries(count).find(([v, c]) => c >= 2);
             if (pair) markIndices(Number(pair[0]), 2);
             break;

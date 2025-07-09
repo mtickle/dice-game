@@ -21,7 +21,7 @@ export default function SuggestedScores({ suggestedScores = {}, applyScore, scor
                             exit={{ opacity: 0, scale: 0.8 }}
                             transition={{ duration: 0.2 }}
                             onClick={() => applyScore(category)}
-                            className={`suggestion-card ${['yahtzee', 'largeStraight', 'fourKind'].includes(category) ? 'highlight' : ''}`}
+                            className={`suggestion-card ${['yahtzee', 'largestraight', 'fourofakind'].includes(category) ? 'highlight' : ''}`}
                             title={`Score ${score} for ${prettyName(category)}`}
                         >
                             <span className="emoji">{iconMap[category] || '🎯'}</span>{' '}

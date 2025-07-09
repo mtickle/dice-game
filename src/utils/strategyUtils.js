@@ -3,12 +3,12 @@
 import { getCounts } from './diceUtils';
 
 const rollOdds = {
-    fullHouse: '1 in 15',
+    fullhouse: '1 in 15',
     yahtzee: '1 in 1296',
-    largeStraight: '1 in 154',
-    smallStraight: '1 in 25',
-    fourKind: '1 in 24',
-    threeKind: '1 in 8',
+    largestraight: '1 in 154',
+    smallstraight: '1 in 25',
+    fourofkind: '1 in 24',
+    threeofaind: '1 in 8',
 };
 
 export function getStrategyAdvice(dice, scores) {
@@ -33,31 +33,31 @@ export function getStrategyAdvice(dice, scores) {
     if (hasFive && scores.yahtzee === null) {
         advice.push("🎯 Yahtzee! Score it now.");
         target = "yahtzee";
-    } else if (hasQuad && scores.fourKind === null) {
+    } else if (hasQuad && scores.fourofakind === null) {
         advice.push(`💥 Four of a kind! Lock in ${total} points.`);
-        target = "fourKind";
-        odds = rollOdds.fourKind;
-    } else if (hasTriple && hasPair && scores.fullHouse === null) {
+        target = "fourofakind";
+        odds = rollOdds.fourofakind;
+    } else if (hasTriple && hasPair && scores.fullhouse === null) {
         advice.push("🏠 Full House! Solid 25 points.");
-        target = "fullHouse";
-        odds = rollOdds.fullHouse;
-    } else if (isStraight(counts, 5) && scores.largeStraight === null) {
+        target = "fullhouse";
+        odds = rollOdds.fullhouse;
+    } else if (isStraight(counts, 5) && scores.largestraight === null) {
         advice.push("📈 Large Straight! Rare and valuable.");
-        target = "largeStraight";
-        odds = rollOdds.largeStraight;
-    } else if (isStraight(counts, 4) && scores.smallStraight === null) {
+        target = "largestraight";
+        odds = rollOdds.largestraight;
+    } else if (isStraight(counts, 4) && scores.smallstraight === null) {
         advice.push(`📉 Small Straight - Solid 30 points.`);
-        target = "smallStraight";
-        odds = rollOdds.smallStraight;
-    } else if (hasTriple && scores.threeKind === null) {
+        target = "smallstraight";
+        odds = rollOdds.smallstraight;
+    } else if (hasTriple && scores.threeofakind === null) {
         advice.push(`👌 Three of a kind! ${total} points.`);
-        target = "threeKind";
-        odds = rollOdds.threeKind;
-    } else if (hasPair && scores.onePair === null) {
+        target = "threeofakind";
+        odds = rollOdds.threeofakind;
+    } else if (hasPair && scores.onepair === null) {
         const bestPairValue = counts.lastIndexOf(2);
         advice.push(`👥 One Pair of ${bestPairValue + 1}s for ${(bestPairValue + 1) * 2} points.`);
-        target ||= 'onePair';
-        odds = rollOdds.onePair;
+        target ||= 'onepair';
+        odds = rollOdds.onepair;
     } else if (scores.chance === null) {
         advice.push(`🎲 Consider scoring Chance for ${total} points.`);
         target = "chance";
