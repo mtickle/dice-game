@@ -32,9 +32,10 @@ export default function GameStatsPanel({ refreshKey }) {
     const [gameStats, setGameStats] = useState([]);
     const [turnLog, setTurnLog] = useState([]);
 
-
+    //console.log('[GameStatsPanel] Received refreshKey prop:', refreshKey);
     //--- Load the turn log from Postgres for the current user.
     useEffect(() => {
+        // console.log('[GameStatsPanel] Refresh triggered:', refreshKey);
         const fetchStats = async () => {
             try {
                 //--- Get the game data from Postgres for the current user.
@@ -198,7 +199,7 @@ export default function GameStatsPanel({ refreshKey }) {
                 <h3 className="text-1xl font-semibold tracking-tight">📊 Game Statistics</h3>
             </div>
             {!chartData ? (
-                <div className="text-gray-500">No data available.</div>
+                <div className="bg-gray-50 px-4 py-3 text-gray-500">No data available.</div>
             ) : (
                 <div className="space-y-6 p-6">
                     {/* Summary Statistics Section */}

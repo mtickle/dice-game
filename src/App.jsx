@@ -11,21 +11,22 @@ import { useCallback, useEffect, useState } from 'react';
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
-
+  const [showAllTurns, setShowAllTurns] = useState(false);
+  const [gameNumber, setGameNumber] = useState(generateGameNumber());
+  const [refreshKey, setRefreshKey] = useState(0);
   const [gameLog, setGameLog] = useState([]);
+
   const [turnLog, setTurnLog] = useState(() => {
     try {
 
       const saved = loadFromStorage('turnLog');
-      //const parsed = saved ? JSON.parse(saved) : [];
-
-      //return parsed.filter(turn => typeof turn.gameNumber === 'string' && turn.gameNumber.match(/^\d{12}$/));
       return saved.filter(turn => typeof turn.gameNumber === 'string' && turn.gameNumber.match(/^\d{12}$/));
     } catch (error) {
       console.error('[App] Error loading turnLog:', error);
       return [];
     }
   });
+
   const [gameStats, setGameStats] = useState(() => {
     try {
       const saved = loadFromStorage('gameStats');
@@ -36,11 +37,9 @@ function App() {
       return [];
     }
   });
-  const [showAllTurns, setShowAllTurns] = useState(false);
-  const [gameNumber, setGameNumber] = useState(generateGameNumber());
+
 
   const logTurnResult = useCallback((result) => {
-
 
 
     const turnWithGameNumber = { ...result, gameNumber };
@@ -98,6 +97,10 @@ function App() {
     if (isGameOver) {
       setGameLog([]);
       setGameNumber(generateGameNumber()); // New gameNumber on game over
+      setRefreshKey(prev => {
+        const next = prev + 1;
+        return next;
+      });
     }
   }, [isGameOver]);
 
@@ -106,8 +109,6 @@ function App() {
     <div className="container mx-auto p-4">
 
       <TopNavBar />
-
-
 
       <ScoreCardLayout
         scores={scores}
@@ -136,8 +137,9 @@ function App() {
         gameNumber={gameNumber}
         setGameNumber={setGameNumber}
         user={user}
+        setRefreshKey={setRefreshKey}
       />
-      <GameStatsPanel gameStats={gameStats} turnLog={turnLog} />
+      <GameStatsPanel gameStats={gameStats} turnLog={turnLog} setRefreshKey={setRefreshKey} />
       <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />
 
       <TurnLogPanel

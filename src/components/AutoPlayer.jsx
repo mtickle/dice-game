@@ -25,7 +25,8 @@ export default function AutoPlayer({
     resetGame,
     gameNumber,
     setGameNumber,
-    user
+    user,
+    setRefreshKey
 }) {
     const hasLoggedGameOver = useRef(false);
 
@@ -37,7 +38,7 @@ export default function AutoPlayer({
 
 
             //--- Filter out the turns for the current game and prepare the data for saving.
-            const turnsForThisGame = turnLog.filter(turn => turn.gameNumber === gameNumber);
+            //const turnsForThisGame = turnLog.filter(turn => turn.gameNumber === gameNumber);
 
             //--- The game is over, let's get scores together and save them.
             const combineScoresData = (inputData) => {
@@ -52,9 +53,22 @@ export default function AutoPlayer({
                 };
             };
 
+            const turnsForThisGame = turnLog
+                .filter(turn => turn.gameNumber === gameNumber)
+                .map(turn => ({
+                    ...turn,
+                    playerName: user?.nickname || 'Anonymous',
+                }));
+
             //-- Fire the laser. Game results and turns are saved to the database.
             saveThingsToDatabase('postGameResults', combineScoresData({ scores, totals }));
             saveThingsToDatabase('postGameTurns', turnsForThisGame);
+
+            //--- This should reload the stats.
+            setTimeout(() => {
+                setRefreshKey(prev => prev + 1);
+
+            }, 1000);
 
             hasLoggedGameOver.current = true;
             const newGame = {
@@ -71,8 +85,6 @@ export default function AutoPlayer({
         } else if (!isGameOver) {
             hasLoggedGameOver.current = false;
         }
-
-
 
     }, [isGameOver, autoPlaying, turnLog, gameStats, setGameStats, gameNumber]);
 

@@ -7,7 +7,7 @@ export default function GameHistoryPanel({ gameStats, refreshKey }) {
 
     useEffect(() => {
         // Debug log to check for duplicate gameNumbers
-        console.log('[GameHistoryPanel] gameStats:', gameStats);
+        // console.log('[GameHistoryPanel] gameStats:', gameStats);
         const gameNumbers = gameStats.map(game => game.gameNumber);
         const duplicates = gameNumbers.filter((num, index) => gameNumbers.indexOf(num) !== index);
         if (duplicates.length > 0) {

@@ -75,7 +75,8 @@ export default function ScoreCardLayout({
     resetGame,
     gameNumber,
     setGameNumber,
-    user
+    user,
+    setRefreshKey
 }) {
     return (
         // OUTER CONTAINER
@@ -153,6 +154,7 @@ export default function ScoreCardLayout({
                     gameNumber={gameNumber}
                     setGameNumber={setGameNumber}
                     user={user}
+                    setRefreshKey={setRefreshKey}
                 />
                 {/* {!autoPlaying && ( */}
                 <AdvicePanel
