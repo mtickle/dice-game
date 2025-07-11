@@ -99,6 +99,7 @@ export default function AutoPlayer({
         return () => clearTimeout(timer);
     }, [autoPlaying, rollCount, turnComplete, isGameOver, suggestedScores, scores]);
 
+
     const makeAIMove = () => {
         if (!scores || typeof scores !== 'object') {
             console.error('[AutoPlayer] Invalid scores object. Stopping autoplay.');
@@ -163,12 +164,12 @@ export default function AutoPlayer({
         const bonusThreshold = 69;
         const bonusGap = bonusThreshold - upperSubtotal;
         const upperTargets = {
-            ones: 5,
+            ones: 3,
             twos: 6,
             threes: 9,
             fours: 12,
-            fives: 20,
-            sixes: 24,
+            fives: 15,
+            sixes: 18,
         };
 
         let categoryToScore = null;
@@ -176,7 +177,7 @@ export default function AutoPlayer({
 
 
         // Try to help upper bonus if we're close
-        if (bonusGap > 0 && bonusGap <= 18) {
+        if (bonusGap > 0 && bonusGap <= 12) {
             const upperAvailable = availableSuggested.filter((cat) => upperCategories.includes(cat));
             if (upperAvailable.length > 0) {
                 categoryToScore = upperAvailable.reduce((best, cat) => {

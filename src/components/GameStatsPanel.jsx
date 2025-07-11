@@ -29,17 +29,19 @@ ChartJS.register(
 );
 
 export default function GameStatsPanel({ refreshKey }) {
+
+
+    //--- ------------------------------------------------------------------------- 
+    //--- GET ALL THE DATA
+    //--- ------------------------------------------------------------------------- 
     const [gameStats, setGameStats] = useState([]);
     const [turnLog, setTurnLog] = useState([]);
 
-    //console.log('[GameStatsPanel] Received refreshKey prop:', refreshKey);
-    //--- Load the turn log from Postgres for the current user.
     useEffect(() => {
-        // console.log('[GameStatsPanel] Refresh triggered:', refreshKey);
-        const fetchStats = async () => {
+        const fetchStatsAndTurns = async () => {
             try {
-                //--- Get the game data from Postgres for the current user.
-                const fetchedGameStats = await loadThingsFromDatabase('getGameResults', 'mtickle');
+                // Fetch and normalize game stats
+                const fetchedGameStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
                 const normalizeGame = (game) => {
                     const result = {};
                     for (const key in game) {
@@ -49,15 +51,94 @@ export default function GameStatsPanel({ refreshKey }) {
                     }
                     return result;
                 };
-                //--- Clean the data and put it in gameStats.
-                setGameStats(fetchedGameStats.map(normalizeGame));
+                setGameStats(Array.isArray(fetchedGameStats) ? fetchedGameStats.map(normalizeGame) : []);
+
+
+                //console.log('Normalized gameStats:', gameStats);
+
+                // Fetch and normalize turn logs
+                const fetchedTurnLog = await loadThingsFromDatabase('getAllTurnResults', 'mtickle');
+                const normalizedTurnLog = Array.isArray(fetchedTurnLog)
+                    ? fetchedTurnLog.map((turn) => {
+                        let diceArray = [];
+                        if (typeof turn.dice === 'string') {
+                            try {
+                                const cleanedDice = turn.dice
+                                    .replace(/[{'}]/g, '') // Remove { and }
+                                    .split(',') // Split by comma
+                                    .map((item) => item.replace(/['"]/g, '').trim()); // Remove quotes and trim
+                                diceArray = cleanedDice.map(Number).filter((num) => !isNaN(num) && num >= 1 && num <= 6);
+                            } catch (err) {
+                                console.warn(`Failed to parse dice string for turn ${turn.gameNumber}:`, turn.dice, err);
+                            }
+                        } else if (Array.isArray(turn.dice)) {
+                            diceArray = turn.dice.map(Number).filter((num) => !isNaN(num) && num >= 1 && num <= 6);
+                        }
+
+                        return {
+                            ...turn,
+                            score: Number(turn.score) || 0,
+                            dice: diceArray,
+                            gameNumber: Number(turn.gameNumber) || 0,
+                        };
+                    })
+                    : [];
+
+                setTurnLog(normalizedTurnLog);
             } catch (err) {
-                console.error('Failed to load stats from API:', err);
+                console.error('Failed to load stats or turns from API:', err);
+                setGameStats([]);
+                setTurnLog([]);
             }
         };
 
-        fetchStats();
+        fetchStatsAndTurns();
     }, [refreshKey]);
+    //--- ------------------------------------------------------------------------- 
+
+    // //--- ------------------------------------------------------------------------- 
+    // //--- GET ALL THE DATA
+    // //--- ------------------------------------------------------------------------- 
+    // const [gameStats, setGameStats] = useState([]);
+    // const [turnLog, setTurnLog] = useState([]);
+
+    // useEffect(() => {
+    //     const fetchStatsAndTurns = async () => {
+    //         try {
+    //             // Fetch and normalize game stats
+    //             const fetchedGameStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
+    //             const normalizeGame = (game) => {
+    //                 const result = {};
+    //                 for (const key in game) {
+    //                     const value = game[key];
+    //                     const num = Number(value);
+    //                     result[key] = isNaN(num) ? value : num;
+    //                 }
+    //                 return result;
+    //             };
+    //             setGameStats(fetchedGameStats.map(normalizeGame));
+
+    //             // Fetch and normalize turn logs
+    //             const fetchedTurnLog = await loadThingsFromDatabase('getAllTurnResults', 'mtickle');
+    //             const normalizedTurnLog = Array.isArray(fetchedTurnLog)
+    //                 ? fetchedTurnLog.map((turn) => ({
+    //                     ...turn,
+    //                     score: Number(turn.score) || 0,
+    //                     dice: Array.isArray(turn.dice) ? turn.dice.map(Number) : [],
+    //                     gameNumber: Number(turn.gameNumber) || 0,
+    //                 }))
+    //                 : [];
+
+    //             setTurnLog(normalizedTurnLog);
+    //         } catch (err) {
+    //             console.error('Failed to load stats or turns from API:', err);
+    //         }
+    //     };
+
+    //     fetchStatsAndTurns();
+    // }, [refreshKey]);
+    // //--- ------------------------------------------------------------------------- 
+
 
     //--- This is for the big numbers.
     const summaryStats = useMemo(() => {
@@ -128,7 +209,6 @@ export default function GameStatsPanel({ refreshKey }) {
                 return !isNaN(val) && isFinite(val);
             })
         );
-
         //--- These two work together for average score chart.
         const avgScores = categories.map(cat => {
             const total = gameStats.reduce((sum, game) => {
@@ -137,7 +217,6 @@ export default function GameStatsPanel({ refreshKey }) {
             }, 0);
             return total / gameStats.length || 0;
         });
-
         const avgScoresData = {
             labels: categories.map(prettyName),
             datasets: [
@@ -151,11 +230,18 @@ export default function GameStatsPanel({ refreshKey }) {
             ]
         };
 
+
+        // console.log('[GameStatsPanel] turnLog length:', turnLog?.length);
+        //console.log('[GameStatsPanel] Sample turn:', turnLog?.[0]);
         const dieFrequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
         turnLog.forEach(turn => {
-            turn?.dice?.forEach(die => {
-                if (die >= 1 && die <= 6) dieFrequency[die]++;
-            });
+            if (!Array.isArray(turn?.dice)) {
+                console.warn('[GameStatsPanel] Invalid dice array:', turn?.dice);
+            } else {
+                turn.dice.forEach(die => {
+                    if (die >= 1 && die <= 6) dieFrequency[die]++;
+                });
+            }
         });
 
         const dieFrequencyData = {
@@ -164,15 +250,25 @@ export default function GameStatsPanel({ refreshKey }) {
                 {
                     label: 'Rolled Dice',
                     data: [1, 2, 3, 4, 5, 6].map(i => dieFrequency[i]),
-                    backgroundColor: '#10B981',
-                    borderColor: '#1F2937'
+                    backgroundColor: [
+                        '#10B981', // Emerald green for 1s
+                        '#3B82F6', // Blue for 2s
+                        '#F59E0B', // Amber for 3s
+                        '#EF4444', // Red for 4s
+                        '#8B5CF6', // Purple for 5s
+                        '#EC4899', // Pink for 6s
+                    ],
+                    borderColor: '#1F2937', // Dark gray border
+                    borderWidth: 1
                 }
             ]
         };
 
+
+
         const zeroScores = categories.map(cat => {
             return gameStats.reduce((count, game) => {
-                const score = game.scores?.[cat];
+                const score = game[cat];
                 return count + (score === 0 || score === undefined ? 1 : 0);
             }, 0);
         });
@@ -183,8 +279,26 @@ export default function GameStatsPanel({ refreshKey }) {
                 {
                     label: 'Zero Scores',
                     data: zeroScores,
-                    backgroundColor: '#EF4444',
-                    borderColor: '#b91c1c',
+                    backgroundColor: [
+                        '#EF4444', // Red
+                        '#F59E0B', // Amber
+                        '#3B82F6', // Blue
+                        '#10B981', // Emerald
+                        '#8B5CF6', // Purple
+                        '#EC4899', // Pink
+                        '#F97316', // Orange
+                        '#6EE7B7', // Light Emerald
+                        '#D1D5DB', // Gray
+                        '#F43F5E', // Rose
+                        '#7C3AED', // Violet
+                        '#FBBF24', // Yellow
+                        '#34D399', // Teal
+                        '#60A5FA', // Sky
+                        '#A78BFA', // Indigo
+                        '#E11D48', // Crimson
+                        '#059669', // Green
+                    ],
+                    borderColor: '#1F2937', // Dark gray border
                     borderWidth: 1
                 }
             ]

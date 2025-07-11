@@ -22,7 +22,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
     useEffect(() => {
         const fetchGameHistory = async () => {
             try {
-                const fetchedStats = await loadThingsFromDatabase('getGameResults', 'mtickle');
+                const fetchedStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
                 const columns = ['gameNumber', ...allCategories, 'grandtotal'];
                 const normalizeGame = (game) => {
                     const result = {};
