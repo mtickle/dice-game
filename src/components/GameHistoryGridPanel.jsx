@@ -7,10 +7,9 @@ import {
 
 import { getDiceSvg } from '@utils/diceIcons';
 import { getUsedDiceIndexesForCategory } from '@utils/diceUtils';
-import { loadFromStorage, loadThingsFromDatabase } from '@utils/storageUtils';
+import { loadThingsFromDatabase } from '@utils/storageUtils';
 import { prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
-
 
 export default function GameHistoryGridPanel({ gameStats: initialGameStats, refreshKey }) {
     const [sorting, setSorting] = useState([]);
@@ -18,100 +17,73 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
     const [selectedGameNumber, setSelectedGameNumber] = useState(null);
     const [turnHistory, setTurnHistory] = useState([]);
 
+    const columnOrder = [
+        'gamenumber',
+        'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
+        'evens', 'odds', 'onepair', 'twopair',
+        'threeofakind', 'fourofakind', 'fullhouse',
+        'smallstraight', 'largestraight', 'yahtzee', 'chance',
+        'uppertotal', 'upperbonus', 'lowertotal', 'grandtotal'
+    ];
 
     useEffect(() => {
-        const fetchGameHistory = async () => {
+        const fetchAllGameData = async () => {
             try {
                 const fetchedStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
-                const columns = ['gameNumber', ...allCategories, 'grandtotal'];
-                const normalizeGame = (game) => {
+                const fetchedTurns = await loadThingsFromDatabase('getAllTurnResults', 'mtickle');
+
+                const normalize = (obj) => {
                     const result = {};
-                    for (const key in game) {
-                        const value = game[key];
-                        const num = Number(value);
-                        result[key] = isNaN(num) ? value : num;
+                    for (const key in obj) {
+                        const num = Number(obj[key]);
+                        result[key] = isNaN(num) ? obj[key] : num;
                     }
                     return result;
                 };
 
-                const normalized = fetchedStats.map(normalizeGame);
-                setGameStats(normalized);
+                const normalizedGames = fetchedStats.map(normalize);
+                const normalizedTurns = fetchedTurns.map(normalize);
 
-                const gameNumbers = normalized.map(game => game.gameNumber);
-                const duplicates = gameNumbers.filter((num, i) => gameNumbers.indexOf(num) !== i);
-                if (duplicates.length > 0) {
-                    //console.warn('[GameHistoryGridPanel] Duplicate gameNumbers found:', duplicates);
-                }
+                setGameStats(normalizedGames);
 
-            } catch (err) {
-                console.error('[GameHistoryGridPanel] Failed to fetch game history:', err);
-            }
-        };
-
-        const timeout = setTimeout(() => {
-            fetchGameHistory();
-        }, 100); // Optional: delay if needed to wait for backend propagation
-
-        return () => clearTimeout(timeout);
-    }, [refreshKey]);
-
-    useEffect(() => {
-        if (selectedGameNumber) {
-            try {
-                const storedTurnLog = loadFromStorage('turnLog') || [];
-                if (!Array.isArray(storedTurnLog)) {
-                    console.warn('[GameHistoryGridPanel] Invalid turnLog format in localStorage; expected array.');
-                    setTurnHistory([]);
-                } else {
-                    const filteredTurns = storedTurnLog.filter(turn => turn.gameNumber === selectedGameNumber);
+                if (selectedGameNumber) {
+                    const filteredTurns = normalizedTurns.filter(
+                        (t) => String(t.gamenumber) === String(selectedGameNumber)
+                    );
                     setTurnHistory(filteredTurns);
                 }
             } catch (err) {
-                console.error('[GameHistoryGridPanel] Error parsing turnLog from localStorage:', err);
-                setTurnHistory([]);
+                console.error('[GameHistoryGridPanel] Failed to fetch stats or turns:', err);
             }
-        }
-    }, [selectedGameNumber]);
+        };
 
-    const categoryOrder = [
-        'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
-        'threeofakind', 'fourofakind', 'fullhouse',
-        'smallstraight', 'largestraight', 'yahtzee', 'chance'
-    ];
+        fetchAllGameData();
+    }, [refreshKey, selectedGameNumber]);
 
-    const allCategories = [...new Set(
-        gameStats.flatMap(game => Object.keys(game.scores || {}))
-    )].sort((a, b) => {
-        const indexA = categoryOrder.indexOf(a);
-        const indexB = categoryOrder.indexOf(b);
-        if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-        if (indexA === -1) return 1;
-        if (indexB === -1) return -1;
-        return indexA - indexB;
-    });
+    console.log('GameStats:', turnHistory, gameStats);
 
     const columns = useMemo(() => [
         {
-            accessorKey: 'gameNumber',
+            accessorKey: 'gamenumber',
             header: () => 'Game #',
             enableSorting: true,
-            cell: ({ row }) => row.original.gameNumber || '-',
+            cell: ({ row }) => row.original.gamenumber || '-',
         },
-        ...allCategories.map(category => ({
-            accessorKey: category,
-            header: () => prettyName(category),
+        ...columnOrder.filter(c => c !== 'gamenumber' && c !== 'grandtotal').map(col => ({
+            accessorKey: col,
+            header: () => prettyName(col),
             enableSorting: true,
             cell: ({ row }) =>
-                row.original.scores?.[category] !== undefined
-                    ? row.original.scores[category]
+                row.original[col] !== undefined
+                    ? row.original[col]
                     : '-',
         })),
         {
-            accessorKey: 'totalScore',
+            accessorKey: 'grandtotal',
             header: () => 'Total Score',
             enableSorting: true,
             cell: ({ row }) => {
-                const score = row.original.totalScore || 0;
+                const score = row.original.grandtotal || 0;
                 let colorClass = 'text-gray-700';
                 if (score >= 300) colorClass = 'text-green-600 font-semibold';
                 else if (score < 200) colorClass = 'text-red-500 font-medium';
@@ -123,14 +95,14 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             header: () => 'Turn History',
             cell: ({ row }) => (
                 <button
-                    onClick={() => setSelectedGameNumber(row.original.gameNumber)}
+                    onClick={() => setSelectedGameNumber(row.original.gamenumber)}
                     className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
                 >
                     Show Turn History
                 </button>
             ),
         },
-    ], [allCategories]);
+    ], []);
 
     const data = useMemo(() => gameStats.slice(), [gameStats]);
 
@@ -145,7 +117,8 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
 
     const closeModal = () => setSelectedGameNumber(null);
 
-    //--- No games recorded yet
+    console.log(turnHistory)
+
     if (!gameStats || !Array.isArray(gameStats) || gameStats.length === 0) {
         return (
             <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -164,9 +137,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             <div className="border-b border-gray-200 px-4 py-3 text-lg font-semibold text-gray-800">
                 Game History
             </div>
-            {/* <GameHistoryTable
 
-            /> */}
             <div className="bg-gray-50 relative overflow-y-auto h-[500px]">
                 <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-0">
                     <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm text-xs text-gray-600 uppercase">
@@ -216,11 +187,9 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                 </table>
             </div>
 
-            {/* Modal for Turn History */}
             {selectedGameNumber && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity animate-fade-in">
                     <div className="relative w-full max-w-3xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
-                        {/* Close Button - top right floating */}
                         <button
                             onClick={closeModal}
                             className="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-sm transition"
@@ -266,10 +235,9 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                                                         ? (() => {
                                                             const dice = [...turn.dice];
                                                             const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
-
                                                             return dice.map((die, i) => {
                                                                 const isUsed = usedFlags[i];
-                                                                const bg = isUsed ? '#fef9c3' : '#fff'; // Tailwind yellow-100
+                                                                const bg = isUsed ? '#fef9c3' : '#fff';
                                                                 return (
                                                                     <span key={`${index}-${i}`}>
                                                                         {getDiceSvg(die, bg)}
@@ -279,19 +247,15 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                                                         })()
                                                         : '-'}
                                                 </td>
-
-
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             )}
                         </div>
-
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

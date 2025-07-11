@@ -15,7 +15,9 @@ createRoot(document.getElementById('root')).render(
             domain={domain}
             clientId={clientId}
             authorizationParams={{
-                redirect_uri: redirectUri
+                redirect_uri: process.env.NODE_ENV === 'production'
+                    ? 'https://mtickle.github.io/dice-game'
+                    : 'http://localhost:5173',
             }}
             cacheLocation="localstorage"
             useRefreshTokens={true}

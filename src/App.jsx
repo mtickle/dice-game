@@ -139,8 +139,9 @@ function App() {
         user={user}
         setRefreshKey={setRefreshKey}
       />
-      <GameStatsPanel gameStats={gameStats} turnLog={turnLog} setRefreshKey={setRefreshKey} />
       <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />
+      <GameStatsPanel gameStats={gameStats} turnLog={turnLog} setRefreshKey={setRefreshKey} />
+
 
       <TurnLogPanel
         gameLog={showAllTurns ? turnLog : gameLog}

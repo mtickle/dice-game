@@ -1,6 +1,5 @@
 // src/utils/storageUtils.js
 
-import { API_BASE_URL } from '@config/apiConfig';
 
 export const saveToStorage = (key, value) => {
 
@@ -35,9 +34,9 @@ export const clearStorageKey = (key) => {
 };
 
 export async function saveThingsToDatabase(endpoint, data) {
-    const apiUrl = `${API_BASE_URL}/${endpoint}`;
+    //const apiUrl = `${API_BASE_URL}/${endpoint}`;
 
-    //let apiUrl = 'http://localhost:3001/api/' + endpoint;
+    let apiUrl = 'http://localhost:3001/api/' + endpoint;
     //let apiUrl = 'https://game-api-zjod.onrender.com/api/' + endpoint;
 
     //console.log('Saving to database:', apiUrl, data);
@@ -63,8 +62,8 @@ export async function loadThingsFromDatabase(endpoint, data) {
 
 
     try {
-        const apiUrl = `${API_BASE_URL}/${endpoint}`;
-        //let apiUrl = `http://localhost:3001/api/${endpoint}/${data}`
+        //const apiUrl = `${API_BASE_URL}/${endpoint}`;
+        let apiUrl = `http://localhost:3001/api/${endpoint}/${data}`
         //const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${data}`;
 
         const response = await fetch(apiUrl);
