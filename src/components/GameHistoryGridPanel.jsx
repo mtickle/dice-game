@@ -67,7 +67,11 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             enableSorting: true,
             cell: ({ row }) => (
                 <button
-                    onClick={() => setSelectedGameNumber(row.original.gamenumber)}
+                    onClick={() => {
+                        const turnsForGame = allTurns.filter(t => String(t.gamenumber) === String(row.original.gamenumber));
+                        setSelectedGameNumber(row.original.gamenumber);
+                        setTurnHistory(turnsForGame);
+                    }}
                     className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
                 >
                     {row.original.gamenumber || '-'}

@@ -2,7 +2,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
 import TopNavBar from '@components/TopNavBar';
-import TurnLogPanel from '@components/TurnLogPanel';
 import { useGameLogic } from '@hooks/useGameLogic';
 import { loadFromStorage, saveToStorage } from '@utils/storageUtils';
 import { generateGameNumber } from '@utils/utils';
@@ -142,12 +141,12 @@ function App() {
       <GameStatsPanel gameStats={gameStats} turnLog={turnLog} setRefreshKey={setRefreshKey} />
 
 
-      <TurnLogPanel
+      {/* <TurnLogPanel
         gameLog={showAllTurns ? turnLog : gameLog}
         turnLog={turnLog}
         gameNumber={gameNumber}
         showAllTurns={showAllTurns}
-      />
+      /> */}
     </div>
   );
 }
