@@ -1,5 +1,4 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import GameHistoryGridPanel from '@components/GameHistoryGridPanel';
 import GameStatsPanel from '@components/GameStatsPanel';
 import ScoreCardLayout from '@components/ScoreCardLayout';
 import TopNavBar from '@components/TopNavBar';
@@ -139,7 +138,7 @@ function App() {
         user={user}
         setRefreshKey={setRefreshKey}
       />
-      <GameHistoryGridPanel gameStats={gameStats} refreshKey={gameCount} />
+
       <GameStatsPanel gameStats={gameStats} turnLog={turnLog} setRefreshKey={setRefreshKey} />
 
 

@@ -1,6 +1,7 @@
 import {
     flexRender,
     getCoreRowModel,
+    getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
@@ -18,7 +19,6 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
     const [turnHistory, setTurnHistory] = useState([]);
 
     const columnOrder = [
-        'gamenumber',
         'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
         'evens', 'odds', 'onepair', 'twopair',
         'threeofakind', 'fourofakind', 'fullhouse',
@@ -60,16 +60,21 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
         fetchAllGameData();
     }, [refreshKey, selectedGameNumber]);
 
-    console.log('GameStats:', turnHistory, gameStats);
-
     const columns = useMemo(() => [
         {
             accessorKey: 'gamenumber',
             header: () => 'Game #',
             enableSorting: true,
-            cell: ({ row }) => row.original.gamenumber || '-',
+            cell: ({ row }) => (
+                <button
+                    onClick={() => setSelectedGameNumber(row.original.gamenumber)}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
+                >
+                    {row.original.gamenumber || '-'}
+                </button>
+            ),
         },
-        ...columnOrder.filter(c => c !== 'gamenumber' && c !== 'grandtotal').map(col => ({
+        ...columnOrder.map(col => ({
             accessorKey: col,
             header: () => prettyName(col),
             enableSorting: true,
@@ -77,47 +82,20 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                 row.original[col] !== undefined
                     ? row.original[col]
                     : '-',
-        })),
-        {
-            accessorKey: 'grandtotal',
-            header: () => 'Total Score',
-            enableSorting: true,
-            cell: ({ row }) => {
-                const score = row.original.grandtotal || 0;
-                let colorClass = 'text-gray-700';
-                if (score >= 300) colorClass = 'text-green-600 font-semibold';
-                else if (score < 200) colorClass = 'text-red-500 font-medium';
-                return <span className={colorClass}>{score}</span>;
-            },
-        },
-        {
-            id: 'turnHistory',
-            header: () => 'Turn History',
-            cell: ({ row }) => (
-                <button
-                    onClick={() => setSelectedGameNumber(row.original.gamenumber)}
-                    className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
-                >
-                    Show Turn History
-                </button>
-            ),
-        },
+        }))
     ], []);
 
-    const data = useMemo(() => gameStats.slice(), [gameStats]);
-
     const table = useReactTable({
-        data,
+        data: gameStats,
         columns,
         state: { sorting },
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
     });
 
     const closeModal = () => setSelectedGameNumber(null);
-
-    console.log(turnHistory)
 
     if (!gameStats || !Array.isArray(gameStats) || gameStats.length === 0) {
         return (
@@ -133,12 +111,12 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
     }
 
     return (
-        <div className="mb-4 rounded-xl border border-gray-200 bg-white shadow-md overflow-x-auto">
+        <div className="flex flex-col gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc] w-full">
             <div className="border-b border-gray-200 px-4 py-3 text-lg font-semibold text-gray-800">
                 Game History
             </div>
 
-            <div className="bg-gray-50 relative overflow-y-auto h-[500px]">
+            <div className="bg-gray-50 relative overflow-y-auto max-h-[500px]">
                 <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-0">
                     <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm text-xs text-gray-600 uppercase">
                         {table.getHeaderGroups().map(headerGroup => (
@@ -185,6 +163,29 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between text-sm text-gray-700 px-2 pt-2">
+                <div>
+                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                </div>
+                <div className="flex gap-2">
+                    <button
+                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Previous
+                    </button>
+                    <button
+                        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
 
             {selectedGameNumber && (

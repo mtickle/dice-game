@@ -15,6 +15,7 @@ import {
 import { allCategories, prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { Bar, Line, Pie } from 'react-chartjs-2';
+import GameHistoryTable from './GameHistoryTable';
 
 ChartJS.register(
     CategoryScale,
@@ -29,18 +30,13 @@ ChartJS.register(
 );
 
 export default function GameStatsPanel({ refreshKey }) {
-
-
-    //--- ------------------------------------------------------------------------- 
-    //--- GET ALL THE DATA
-    //--- ------------------------------------------------------------------------- 
     const [gameStats, setGameStats] = useState([]);
     const [turnLog, setTurnLog] = useState([]);
+    const [selectedGameNumber, setSelectedGameNumber] = useState(null);
 
     useEffect(() => {
         const fetchStatsAndTurns = async () => {
             try {
-                // Fetch and normalize game stats
                 const fetchedGameStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
                 const normalizeGame = (game) => {
                     const result = {};
@@ -53,10 +49,6 @@ export default function GameStatsPanel({ refreshKey }) {
                 };
                 setGameStats(Array.isArray(fetchedGameStats) ? fetchedGameStats.map(normalizeGame) : []);
 
-
-                //console.log('Normalized gameStats:', gameStats);
-
-                // Fetch and normalize turn logs
                 const fetchedTurnLog = await loadThingsFromDatabase('getAllTurnResults', 'mtickle');
                 const normalizedTurnLog = Array.isArray(fetchedTurnLog)
                     ? fetchedTurnLog.map((turn) => {
@@ -64,9 +56,9 @@ export default function GameStatsPanel({ refreshKey }) {
                         if (typeof turn.dice === 'string') {
                             try {
                                 const cleanedDice = turn.dice
-                                    .replace(/[{'}]/g, '') // Remove { and }
-                                    .split(',') // Split by comma
-                                    .map((item) => item.replace(/['"]/g, '').trim()); // Remove quotes and trim
+                                    .replace(/[{'}]/g, '')
+                                    .split(',')
+                                    .map((item) => item.replace(/['"]/g, '').trim());
                                 diceArray = cleanedDice.map(Number).filter((num) => !isNaN(num) && num >= 1 && num <= 6);
                             } catch (err) {
                                 console.warn(`Failed to parse dice string for turn ${turn.gameNumber}:`, turn.dice, err);
@@ -94,53 +86,7 @@ export default function GameStatsPanel({ refreshKey }) {
 
         fetchStatsAndTurns();
     }, [refreshKey]);
-    //--- ------------------------------------------------------------------------- 
 
-    // //--- ------------------------------------------------------------------------- 
-    // //--- GET ALL THE DATA
-    // //--- ------------------------------------------------------------------------- 
-    // const [gameStats, setGameStats] = useState([]);
-    // const [turnLog, setTurnLog] = useState([]);
-
-    // useEffect(() => {
-    //     const fetchStatsAndTurns = async () => {
-    //         try {
-    //             // Fetch and normalize game stats
-    //             const fetchedGameStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
-    //             const normalizeGame = (game) => {
-    //                 const result = {};
-    //                 for (const key in game) {
-    //                     const value = game[key];
-    //                     const num = Number(value);
-    //                     result[key] = isNaN(num) ? value : num;
-    //                 }
-    //                 return result;
-    //             };
-    //             setGameStats(fetchedGameStats.map(normalizeGame));
-
-    //             // Fetch and normalize turn logs
-    //             const fetchedTurnLog = await loadThingsFromDatabase('getAllTurnResults', 'mtickle');
-    //             const normalizedTurnLog = Array.isArray(fetchedTurnLog)
-    //                 ? fetchedTurnLog.map((turn) => ({
-    //                     ...turn,
-    //                     score: Number(turn.score) || 0,
-    //                     dice: Array.isArray(turn.dice) ? turn.dice.map(Number) : [],
-    //                     gameNumber: Number(turn.gameNumber) || 0,
-    //                 }))
-    //                 : [];
-
-    //             setTurnLog(normalizedTurnLog);
-    //         } catch (err) {
-    //             console.error('Failed to load stats or turns from API:', err);
-    //         }
-    //     };
-
-    //     fetchStatsAndTurns();
-    // }, [refreshKey]);
-    // //--- ------------------------------------------------------------------------- 
-
-
-    //--- This is for the big numbers.
     const summaryStats = useMemo(() => {
         if (!gameStats || gameStats.length === 0) {
             return {
@@ -170,8 +116,6 @@ export default function GameStatsPanel({ refreshKey }) {
         };
     }, [gameStats]);
 
-
-    //--- And here is chart data for the line chart.
     const chartData = useMemo(() => {
         if (!gameStats.length) return null;
 
@@ -201,15 +145,13 @@ export default function GameStatsPanel({ refreshKey }) {
             ]
         };
 
-
-        //--- Average scores per category.
         const categories = allCategories.filter(cat =>
             gameStats.some(game => {
                 const val = Number(game[cat]);
                 return !isNaN(val) && isFinite(val);
             })
         );
-        //--- These two work together for average score chart.
+
         const avgScores = categories.map(cat => {
             const total = gameStats.reduce((sum, game) => {
                 const val = Number(game[cat]);
@@ -230,14 +172,9 @@ export default function GameStatsPanel({ refreshKey }) {
             ]
         };
 
-
-        // console.log('[GameStatsPanel] turnLog length:', turnLog?.length);
-        //console.log('[GameStatsPanel] Sample turn:', turnLog?.[0]);
         const dieFrequency = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
         turnLog.forEach(turn => {
-            if (!Array.isArray(turn?.dice)) {
-                console.warn('[GameStatsPanel] Invalid dice array:', turn?.dice);
-            } else {
+            if (Array.isArray(turn?.dice)) {
                 turn.dice.forEach(die => {
                     if (die >= 1 && die <= 6) dieFrequency[die]++;
                 });
@@ -251,20 +188,13 @@ export default function GameStatsPanel({ refreshKey }) {
                     label: 'Rolled Dice',
                     data: [1, 2, 3, 4, 5, 6].map(i => dieFrequency[i]),
                     backgroundColor: [
-                        '#10B981', // Emerald green for 1s
-                        '#3B82F6', // Blue for 2s
-                        '#F59E0B', // Amber for 3s
-                        '#EF4444', // Red for 4s
-                        '#8B5CF6', // Purple for 5s
-                        '#EC4899', // Pink for 6s
+                        '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899',
                     ],
-                    borderColor: '#1F2937', // Dark gray border
+                    borderColor: '#1F2937',
                     borderWidth: 1
                 }
             ]
         };
-
-
 
         const zeroScores = categories.map(cat => {
             return gameStats.reduce((count, game) => {
@@ -280,25 +210,11 @@ export default function GameStatsPanel({ refreshKey }) {
                     label: 'Zero Scores',
                     data: zeroScores,
                     backgroundColor: [
-                        '#EF4444', // Red
-                        '#F59E0B', // Amber
-                        '#3B82F6', // Blue
-                        '#10B981', // Emerald
-                        '#8B5CF6', // Purple
-                        '#EC4899', // Pink
-                        '#F97316', // Orange
-                        '#6EE7B7', // Light Emerald
-                        '#D1D5DB', // Gray
-                        '#F43F5E', // Rose
-                        '#7C3AED', // Violet
-                        '#FBBF24', // Yellow
-                        '#34D399', // Teal
-                        '#60A5FA', // Sky
-                        '#A78BFA', // Indigo
-                        '#E11D48', // Crimson
-                        '#059669', // Green
+                        '#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899',
+                        '#F97316', '#6EE7B7', '#D1D5DB', '#F43F5E', '#7C3AED', '#FBBF24',
+                        '#34D399', '#60A5FA', '#A78BFA', '#E11D48', '#059669',
                     ],
-                    borderColor: '#1F2937', // Dark gray border
+                    borderColor: '#1F2937',
                     borderWidth: 1
                 }
             ]
@@ -316,7 +232,6 @@ export default function GameStatsPanel({ refreshKey }) {
                 <div className="bg-gray-50 px-4 py-3 text-gray-500">No data available.</div>
             ) : (
                 <div className="space-y-6 p-6">
-                    {/* Summary Statistics Section */}
                     <div className="flex flex-wrap justify-around items-center gap-6 text-6xl font-bold text-gray-800">
                         <div className="flex-1 min-w-[150px] text-center bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                             {summaryStats.gamesPlayed}
@@ -336,49 +251,41 @@ export default function GameStatsPanel({ refreshKey }) {
                         </div>
                     </div>
 
-                    {/* Total Scores Chart */}
                     <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                         <h3 className="text-lg font-medium text-gray-700 mb-4">Total Scores Over Games</h3>
                         <div className="w-full h-[250px] p-2">
-                            <Line
-                                data={chartData.totalScoresData}
-                                options={{
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        x: { title: { display: true, text: 'Game Number' } },
-                                        y: { title: { display: true, text: 'Total Score' }, beginAtZero: true },
+                            <Line data={chartData.totalScoresData} options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: { title: { display: true, text: 'Game Number' } },
+                                    y: { title: { display: true, text: 'Total Score' }, beginAtZero: true },
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top',
+                                        labels: { color: '#374151', font: { size: 12 } },
                                     },
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'top',
-                                            labels: { color: '#374151', font: { size: 12 } },
-                                        },
-                                    },
-                                }}
-                            />
+                                },
+                            }} />
                         </div>
                     </div>
 
-                    {/* Charts Section */}
                     <div className="flex flex-wrap gap-6">
                         <div className="flex-1 min-w-[350px]">
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Average Score Per Category</h3>
                                 <div className="w-full h-[250px] p-2">
-                                    <Bar
-                                        data={chartData.avgScoresData}
-                                        options={{
-                                            responsive: true,
-                                            maintainAspectRatio: false,
-                                            scales: {
-                                                x: { title: { display: false, text: 'Category' } },
-                                                y: { title: { display: false, text: 'Average Score' }, beginAtZero: true },
-                                            },
-                                            plugins: { legend: { display: false } },
-                                        }}
-                                    />
+                                    <Bar data={chartData.avgScoresData} options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: { title: { display: false } },
+                                            y: { title: { display: false }, beginAtZero: true },
+                                        },
+                                        plugins: { legend: { display: false } },
+                                    }} />
                                 </div>
                             </div>
                         </div>
@@ -386,29 +293,17 @@ export default function GameStatsPanel({ refreshKey }) {
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Die Distribution</h3>
                                 <div className="w-full h-[250px] p-2">
-                                    <Pie
-                                        data={chartData.dieFrequencyData}
-                                        options={{
-                                            responsive: true,
-                                            maintainAspectRatio: false,
-                                            plugins: {
-                                                legend: {
-                                                    display: true,
-                                                    position: 'right',
-                                                    labels: { color: '#374151', font: { size: 14 } },
-                                                },
-                                                datalabels: {
-                                                    color: '#111827',
-                                                    font: { weight: 'bold', size: 13 },
-                                                    formatter: (value, context) => {
-                                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                                        const percentage = ((value / total) * 100).toFixed(1) + '%';
-                                                        return `${value} (${percentage})`;
-                                                    },
-                                                },
+                                    <Pie data={chartData.dieFrequencyData} options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                                position: 'right',
+                                                labels: { color: '#374151', font: { size: 14 } },
                                             },
-                                        }}
-                                    />
+                                        },
+                                    }} />
                                 </div>
                             </div>
                         </div>
@@ -416,37 +311,41 @@ export default function GameStatsPanel({ refreshKey }) {
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Zero Score Frequency</h3>
                                 <div className="w-full h-[250px] p-2">
-                                    <Bar
-                                        data={chartData.zeroScoresData}
-                                        options={{
-                                            responsive: true,
-                                            maintainAspectRatio: false,
-                                            scales: {
-                                                x: { title: { display: true, text: 'Category' } },
-                                                y: {
-                                                    title: { display: true, text: 'Number of Zero Scores' },
-                                                    beginAtZero: true,
-                                                    ticks: { stepSize: 1, precision: 0 },
-                                                    grid: { color: '#e5e7eb' },
+                                    <Bar data={chartData.zeroScoresData} options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: { title: { display: true, text: 'Category' } },
+                                            y: {
+                                                title: { display: true, text: 'Number of Zero Scores' },
+                                                beginAtZero: true,
+                                                ticks: { stepSize: 1, precision: 0 },
+                                                grid: { color: '#e5e7eb' },
+                                            },
+                                        },
+                                        plugins: {
+                                            legend: { display: false },
+                                            tooltip: {
+                                                backgroundColor: '#1f2937',
+                                                titleFont: { size: 14 },
+                                                bodyFont: { size: 12 },
+                                                callbacks: {
+                                                    label: (context) => `${context.raw} zero scores`,
                                                 },
                                             },
-                                            plugins: {
-                                                legend: { display: false },
-                                                tooltip: {
-                                                    backgroundColor: '#1f2937',
-                                                    titleFont: { size: 14 },
-                                                    bodyFont: { size: 12 },
-                                                    callbacks: {
-                                                        label: (context) => `${context.raw} zero scores`,
-                                                    },
-                                                },
-                                            },
-                                        }}
-                                    />
+                                        },
+                                    }} />
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <GameHistoryTable
+                        gameStats={gameStats}
+                        turnHistory={turnLog}
+                        selectedGameNumber={selectedGameNumber}
+                        setSelectedGameNumber={setSelectedGameNumber}
+                    />
                 </div>
             )}
         </div>
