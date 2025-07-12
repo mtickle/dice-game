@@ -281,12 +281,12 @@ export default function AutoPlayer({
                 >
                     Export Data
                 </button> */}
-                <button
+                {/* <button
                     className="px-4 bg-red-600 text-white rounded-xl py-2 hover:bg-red-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
                     onClick={handleReset}
                 >
                     Reset All Data
-                </button>
+                </button> */}
                 <button
                     className={`px-4 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md 
                         ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
