@@ -112,7 +112,7 @@ export default function AutoPlayer({
             fullhouse: 25,
             largestraight: 40,
             smallstraight: 30,
-            fourofakind: 30,
+            fourofakind: 15,
             threeofakind: 25,
             onepair: 18,
             twopair: 22,
@@ -151,13 +151,11 @@ export default function AutoPlayer({
             }
         }
 
-
         // If no early score, continue rolling (if rolls remain)
         if (rollCount < 3) {
             rollDice();
             return;
         }
-
 
         // End-of-turn decision making (after 3 rolls)
         const upperSubtotal = totals?.upperSubtotal || 0;
@@ -212,7 +210,7 @@ export default function AutoPlayer({
             if (remaining.length > 0) {
                 const sacrificePriority = [
                     'ones', 'twos', 'threes', 'chance',
-                    'fourofakind', 'threeofakind', 'onepair', 'twopair', 'odds', 'evens'
+                    'threeofakind', 'onepair', 'twopair', 'odds', 'evens', 'fourofakind'
                 ];
 
                 const categoryToSacrifice = sacrificePriority.find(cat => remaining.includes(cat)) || remaining[0];
@@ -275,18 +273,7 @@ export default function AutoPlayer({
 
         <div className="w-full flex gap-4 justify-center bg-[#fffdf7] p-4 rounded-2xl shadow-md border-2 border-[#e2dccc]">
             <div className="flex gap-3 mb-0">
-                {/* <button
-                    className="px-4 bg-blue-600 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
-                    onClick={handleExport}
-                >
-                    Export Data
-                </button> */}
-                {/* <button
-                    className="px-4 bg-red-600 text-white rounded-xl py-2 hover:bg-red-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
-                    onClick={handleReset}
-                >
-                    Reset All Data
-                </button> */}
+
                 <button
                     className={`px-4 text-white rounded-xl py-2 hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-md 
                         ${autoPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
