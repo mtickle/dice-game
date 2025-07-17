@@ -123,11 +123,11 @@ export default function GameStatsPanel({ refreshKey }) {
         const meanScore = totalScores.reduce((a, b) => a + b, 0) / totalScores.length;
 
         const totalScoresData = {
-            labels: gameStats.map((g, i) => `Game ${i + 1}`),
+            labels: gameStats.slice(-30).map((g, i, arr) => `Game ${gameStats.length - arr.length + i + 1}`),
             datasets: [
                 {
                     label: 'Total Score',
-                    data: totalScores,
+                    data: totalScores.slice(-30),
                     borderColor: '#2563eb',
                     backgroundColor: '#2563eb',
                     fill: false,
@@ -135,7 +135,7 @@ export default function GameStatsPanel({ refreshKey }) {
                 },
                 {
                     label: 'Mean Score',
-                    data: Array(gameStats.length).fill(meanScore),
+                    data: Array(Math.min(30, gameStats.length)).fill(meanScore),
                     borderColor: '#EF4444',
                     backgroundColor: '#EF4444',
                     borderDash: [2, 2],
@@ -165,7 +165,11 @@ export default function GameStatsPanel({ refreshKey }) {
                 {
                     label: 'Average Score',
                     data: avgScores,
-                    backgroundColor: '#3B82F6',
+                    backgroundColor: [
+                        '#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899',
+                        '#F97316', '#6EE7B7', '#D1D5DB', '#F43F5E', '#7C3AED', '#FBBF24',
+                        '#34D399', '#60A5FA', '#A78BFA', '#E11D48', '#059669',
+                    ],
                     borderColor: '#1F2937',
                     borderWidth: 1,
                 }
@@ -252,7 +256,7 @@ export default function GameStatsPanel({ refreshKey }) {
                     </div>
 
                     <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
-                        <h3 className="text-lg font-medium text-gray-700 mb-4">Total Scores Over Games</h3>
+                        <h3 className="text-lg font-medium text-gray-700 mb-4">Total Scores Over Last 30 Games</h3>
                         <div className="w-full h-[250px] p-2">
                             <Line data={chartData.totalScoresData} options={{
                                 responsive: true,
@@ -273,68 +277,82 @@ export default function GameStatsPanel({ refreshKey }) {
                     </div>
 
                     <div className="flex flex-wrap gap-6">
-                        <div className="flex-1 min-w-[350px]">
+                        {/* Average Score per Category - Full Width */}
+                        <div className="w-full">
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Average Score Per Category</h3>
                                 <div className="w-full h-[250px] p-2">
-                                    <Bar data={chartData.avgScoresData} options={{
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        scales: {
-                                            x: { title: { display: false } },
-                                            y: { title: { display: false }, beginAtZero: true },
-                                        },
-                                        plugins: { legend: { display: false } },
-                                    }} />
+                                    <Bar
+                                        data={chartData.avgScoresData}
+                                        options={{
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            scales: {
+                                                x: { title: { display: false } },
+                                                y: { title: { display: false }, beginAtZero: true },
+                                            },
+                                            plugins: { legend: { display: false } },
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </div>
+
+                        {/* Die Distribution */}
                         <div className="flex-1 min-w-[300px]">
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Die Distribution</h3>
                                 <div className="w-full h-[250px] p-2">
-                                    <Pie data={chartData.dieFrequencyData} options={{
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                                position: 'right',
-                                                labels: { color: '#374151', font: { size: 14 } },
+                                    <Pie
+                                        data={chartData.dieFrequencyData}
+                                        options={{
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: {
+                                                    display: true,
+                                                    position: 'right',
+                                                    labels: { color: '#374151', font: { size: 14 } },
+                                                },
                                             },
-                                        },
-                                    }} />
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </div>
+
+                        {/* Zero Score Frequency */}
                         <div className="flex-1 min-w-[300px]">
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
                                 <h3 className="text-lg font-medium text-gray-700 mb-4">Zero Score Frequency</h3>
                                 <div className="w-full h-[250px] p-2">
-                                    <Bar data={chartData.zeroScoresData} options={{
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        scales: {
-                                            x: { title: { display: true, text: 'Category' } },
-                                            y: {
-                                                title: { display: true, text: 'Number of Zero Scores' },
-                                                beginAtZero: true,
-                                                ticks: { stepSize: 1, precision: 0 },
-                                                grid: { color: '#e5e7eb' },
-                                            },
-                                        },
-                                        plugins: {
-                                            legend: { display: false },
-                                            tooltip: {
-                                                backgroundColor: '#1f2937',
-                                                titleFont: { size: 14 },
-                                                bodyFont: { size: 12 },
-                                                callbacks: {
-                                                    label: (context) => `${context.raw} zero scores`,
+                                    <Bar
+                                        data={chartData.zeroScoresData}
+                                        options={{
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            scales: {
+                                                x: { title: { display: true, text: 'Category' } },
+                                                y: {
+                                                    title: { display: true, text: 'Number of Zero Scores' },
+                                                    beginAtZero: true,
+                                                    ticks: { stepSize: 1, precision: 0 },
+                                                    grid: { color: '#e5e7eb' },
                                                 },
                                             },
-                                        },
-                                    }} />
+                                            plugins: {
+                                                legend: { display: false },
+                                                tooltip: {
+                                                    backgroundColor: '#1f2937',
+                                                    titleFont: { size: 14 },
+                                                    bodyFont: { size: 12 },
+                                                    callbacks: {
+                                                        label: (context) => `${context.raw} zero scores`,
+                                                    },
+                                                },
+                                            },
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </div>
