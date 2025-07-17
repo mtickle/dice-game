@@ -47,13 +47,14 @@ export function calculateScore(category, diceObjs) {
     }
 }
 
-export function calculateSuggestedScores(diceObjs, currentScores = {}) {
+export function calculateSuggestedScores(diceObjs, currentScores = {}, rollCount = 3) {
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
     const counts = Array(6).fill(0);
     dice.forEach(d => counts[d - 1]++);
     const total = dice.reduce((a, b) => a + b, 0);
     const score = {};
 
+    // Upper categories: ones to sixes
     for (let i = 1; i <= 6; i++) {
         const cat = getCategoryName(i);
         if (currentScores[cat] === null || currentScores[cat] === undefined) {
@@ -62,7 +63,7 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
         }
     }
 
-    // Add ODDS and EVENS suggestions
+    // ODDS and EVENS
     if (currentScores.odds === null || currentScores.odds === undefined) {
         const oddsScore = (counts[0] || 0) * 1 + (counts[2] || 0) * 3 + (counts[4] || 0) * 5;
         if (oddsScore > 0) score.odds = oddsScore;
@@ -72,14 +73,57 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
         if (evensScore > 0) score.evens = evensScore;
     }
 
-    if (currentScores.threeofakind === null && hasThreeOfKind(counts)) score.threeofakind = total;
-    if (currentScores.fourofakind === null && hasFourOfKind(counts)) score.fourofakind = total;
-    if (currentScores.fullhouse === null && hasFullHouse(counts)) score.fullhouse = 25;
-    if (currentScores.smallstraight === null && hasSmallStraight(dice)) score.smallstraight = 30;
-    if (currentScores.largestraight === null && hasLargeStraight(dice)) score.largestraight = 40;
-    if (currentScores.yahtzee === null && counts.includes(5)) score.yahtzee = 50;
-    if (currentScores.chance === null) score.chance = total;
-    if (currentScores.twopair === null && hasTwoPair(counts)) score.twopair = getTwoPairScore(counts);
+    // Three of a kind
+    if (currentScores.threeofakind === null && hasThreeOfKind(counts)) {
+        score.threeofakind = total;
+    }
+
+    // Four of a kind – now using correct function
+
+    if (currentScores.fourofakind === null) {
+        // console.log('*******[calculateSuggestedScores] Dice used for four-of-a-kind:', dice);
+        const baseScore = getFourOfKindScore(dice);
+        if (baseScore > 0) {
+            const bonus = rollCount === 1 ? 10 : 0;
+            score.fourofakind = baseScore + bonus;
+            // console.log('[Scoring] Four of a Kind:', {
+            //     dice,
+            //     baseScore,
+            //     bonus,
+            //     total: baseScore + bonus
+            // });
+        }
+    }
+
+    // Full house
+    if (currentScores.fullhouse === null && hasFullHouse(counts)) {
+        score.fullhouse = 25;
+    }
+
+    // Straights
+    if (currentScores.smallstraight === null && hasSmallStraight(dice)) {
+        score.smallstraight = 30;
+    }
+    if (currentScores.largestraight === null && hasLargeStraight(dice)) {
+        score.largestraight = 40;
+    }
+
+    // Yahtzee
+    if (currentScores.yahtzee === null && counts.includes(5)) {
+        score.yahtzee = 50;
+    }
+
+    // Chance
+    if (currentScores.chance === null) {
+        score.chance = total;
+    }
+
+    // Two Pair
+    if (currentScores.twopair === null && hasTwoPair(counts)) {
+        score.twopair = getTwoPairScore(counts);
+    }
+
+    // One Pair
     if (currentScores.onepair === null) {
         for (let i = 5; i >= 0; i--) {
             if (counts[i] >= 2) {
@@ -91,6 +135,7 @@ export function calculateSuggestedScores(diceObjs, currentScores = {}) {
 
     return score;
 }
+
 
 // --- Helper functions ---
 
@@ -105,6 +150,18 @@ function hasThreeOfKind(counts) {
 function hasFourOfKind(counts) {
     return counts.some(c => c >= 4);
 }
+
+function getFourOfKindScore(dice) {
+    const counts = {};
+    dice.forEach(d => {
+        counts[d] = (counts[d] || 0) + 1;
+    });
+    const hasFour = Object.values(counts).some(c => c >= 4);
+    const sum = dice.reduce((a, b) => a + b, 0);
+    //console.log('[getFourOfKindScore]', { counts, hasFour, sum, dice });
+    return hasFour ? sum : 0;
+}
+
 
 function hasFullHouse(counts) {
     return counts.includes(3) && counts.includes(2);
@@ -139,14 +196,27 @@ function getTwoPairScore(counts) {
 
 export function matchesCategory(category, diceObjs) {
     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
-    const counts = Array(6).fill(0);
-    dice.forEach(d => counts[d - 1]++);
 
     switch (category) {
-        case 'fullhouse': return hasFullHouse(counts);
-        case 'smallstraight': return hasSmallStraight(dice);
-        case 'largestraight': return hasLargeStraight(dice);
-        case 'fourofakind': return hasFourOfKind(counts);
+        case 'fullhouse': return getFullHouseScore(dice) > 0;
+        case 'smallstraight': return getSmallStraightScore(dice) > 0;
+        case 'largestraight': return getLargeStraightScore(dice) > 0;
+        case 'fourofakind': return getFourOfKindScore(dice) > 0;
         default: return false;
     }
 }
+
+
+// export function matchesCategory(category, diceObjs) {
+//     const dice = diceObjs.map(d => d.value).filter(v => typeof v === 'number');
+//     const counts = Array(6).fill(0);
+//     dice.forEach(d => counts[d - 1]++);
+
+//     switch (category) {
+//         case 'fullhouse': return hasFullHouse(counts);
+//         case 'smallstraight': return hasSmallStraight(dice);
+//         case 'largestraight': return hasLargeStraight(dice);
+//         case 'fourofakind': return hasFourOfKind(counts);
+//         default: return false;
+//     }
+// }

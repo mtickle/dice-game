@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { calculateScore, calculateSuggestedScores, matchesCategory } from '../utils/scoreUtils';
+import { calculateScore, calculateSuggestedScores } from '../utils/scoreUtils';
 import { getStrategyAdvice } from '../utils/strategyUtils';
 import { allCategories, generateGameNumber, initialScores, lowerCategories, upperCategories } from '../utils/utils';
 
@@ -69,12 +69,12 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
     const applyScore = useCallback((category) => {
         if (turnComplete || scores[category] != null || rollCount === 0) return;
 
-        let score = calculateScore(category, dice);
+        const baseScore = calculateScore(category, dice);
         const isFirstRoll = rollCount === 1;
         const isEligibleForBonus = qualifyingFirstRollBonusCategories.includes(category);
-        const qualifiesForBonus = isFirstRoll && isEligibleForBonus && matchesCategory(category, dice);
+        const qualifiesForBonus = isFirstRoll && isEligibleForBonus && baseScore > 0;
 
-        // Apply bonus if conditions are met
+        let score = baseScore;
         if (qualifiesForBonus) {
             score += 10;
             setEarnedBonuses(prev => ({ ...prev, [category]: true }));
@@ -102,7 +102,7 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
             logTurnResult(turnResult);
         }
 
-        // Reset dice and state after a short delay
+        // Reset after short delay
         setTimeout(() => {
             setDice(Array(5).fill().map(() => ({ value: null, held: false })));
             setRollCount(0);
@@ -121,8 +121,9 @@ export function useGameLogic(logTurnResult, logGameStats, gameNumber, setGameNum
         logTurnResult,
         gameNumber,
         qualifyingFirstRollBonusCategories,
-        matchesCategory,
     ]);
+
+
 
 
     const resetGame = useCallback((skipSave = false) => {
