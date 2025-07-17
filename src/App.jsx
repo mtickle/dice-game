@@ -93,10 +93,14 @@ function App() {
 
   useEffect(() => {
     if (isGameOver) {
+      console.log("🧨 Game over detected. Refreshing stats now...");
+
       setGameLog([]);
-      setGameNumber(generateGameNumber()); // New gameNumber on game over
+      setGameNumber(generateGameNumber());
+
       setRefreshKey(prev => {
         const next = prev + 1;
+        console.log("🔄 Refresh key incremented:", next);
         return next;
       });
     }

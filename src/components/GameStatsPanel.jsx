@@ -33,6 +33,7 @@ export default function GameStatsPanel({ refreshKey }) {
     const [gameStats, setGameStats] = useState([]);
     const [turnLog, setTurnLog] = useState([]);
     const [selectedGameNumber, setSelectedGameNumber] = useState(null);
+    const [refreshCounter, setRefreshCounter] = useState(0);
 
     useEffect(() => {
         const fetchStatsAndTurns = async () => {
@@ -85,7 +86,7 @@ export default function GameStatsPanel({ refreshKey }) {
         };
 
         fetchStatsAndTurns();
-    }, [refreshKey]);
+    }, [refreshKey, refreshCounter]);
 
     const summaryStats = useMemo(() => {
         if (!gameStats || gameStats.length === 0) {
@@ -231,6 +232,12 @@ export default function GameStatsPanel({ refreshKey }) {
         <div className="mb-4 border border-gray-200 bg-white shadow-sm rounded-t-2xl rounded-b-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-md flex justify-between items-center rounded-t-2xl">
                 <h3 className="text-1xl font-semibold tracking-tight">📊 Game Statistics</h3>
+                <button
+                    onClick={() => setRefreshCounter((prev) => prev + 1)}
+                    className="bg-white text-blue-700 px-3 py-1 rounded-lg text-sm font-medium shadow hover:bg-blue-50 transition"
+                >
+                    🔁 Refresh Data
+                </button>
             </div>
             {!chartData ? (
                 <div className="bg-gray-50 px-4 py-3 text-gray-500">No data available.</div>

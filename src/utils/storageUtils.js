@@ -59,14 +59,21 @@ export async function saveThingsToDatabase(endpoint, data) {
 
 export async function loadThingsFromDatabase(endpoint, data) {
 
-
-
     try {
         //const apiUrl = `${API_BASE_URL}/${endpoint}`;
         //let apiUrl = `http://localhost:3001/api/${endpoint}/${data}`
         const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${data}`;
 
-        const response = await fetch(apiUrl);
+        //const response = await fetch(apiUrl);
+
+        const response = await fetch(apiUrl, {
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+            }
+        });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
