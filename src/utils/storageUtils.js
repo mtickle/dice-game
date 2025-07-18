@@ -57,14 +57,10 @@ export async function saveThingsToDatabase(endpoint, data) {
     }
 }
 
-export async function loadThingsFromDatabase(endpoint, data) {
-
+export async function loadThingsFromDatabase(endpoint, ...params) {
     try {
-        //const apiUrl = `${API_BASE_URL}/${endpoint}`;
-        //let apiUrl = `http://localhost:3001/api/${endpoint}/${data}`
-        const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${data}`;
-
-        //const response = await fetch(apiUrl);
+        //const apiUrl = `http://localhost:3001/api/${endpoint}/${params.join('/')}`;
+        const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${params.join('/')}`;
 
         const response = await fetch(apiUrl, {
             headers: {
@@ -78,15 +74,45 @@ export async function loadThingsFromDatabase(endpoint, data) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        if (!response.ok) {
-            console.log(`Failed to fetch from ${apiUrl}: ${response.statusText}`);
-        }
-
-        const jsonData = await response.json();
-        return jsonData;
+        return await response.json();
 
     } catch (error) {
         console.error('Error loading data from database:', error);
-        return null; // Or throw, depending on use case
+        return null;
     }
 }
+
+
+// export async function loadThingsFromDatabase(endpoint, data) {
+
+//     try {
+//         //const apiUrl = `${API_BASE_URL}/${endpoint}`;
+//         let apiUrl = `http://localhost:3001/api/${endpoint}/${data}`
+//         //const apiUrl = `https://game-api-zjod.onrender.com/api/${endpoint}/${data}`;
+
+//         //const response = await fetch(apiUrl);
+
+//         const response = await fetch(apiUrl, {
+//             headers: {
+//                 'Cache-Control': 'no-cache',
+//                 'Pragma': 'no-cache',
+//                 'Expires': '0',
+//             }
+//         });
+
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+
+//         if (!response.ok) {
+//             console.log(`Failed to fetch from ${apiUrl}: ${response.statusText}`);
+//         }
+
+//         const jsonData = await response.json();
+//         return jsonData;
+
+//     } catch (error) {
+//         console.error('Error loading data from database:', error);
+//         return null; // Or throw, depending on use case
+//     }
+// }

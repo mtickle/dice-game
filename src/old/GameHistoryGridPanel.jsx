@@ -6,17 +6,20 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
-import { getDiceSvg } from '@utils/diceIcons';
-import { getUsedDiceIndexesForCategory } from '@utils/diceUtils';
+import { useAuth0 } from '@auth0/auth0-react'; // <-- Auth0 import
 import { loadThingsFromDatabase } from '@utils/storageUtils';
 import { prettyName } from '@utils/utils';
 import { useEffect, useMemo, useState } from 'react';
 
 export default function GameHistoryGridPanel({ gameStats: initialGameStats, refreshKey }) {
+    const { user, isAuthenticated } = useAuth0();
+    const playerName = user?.nickname || user?.name || user?.email || null;
+
     const [sorting, setSorting] = useState([]);
     const [gameStats, setGameStats] = useState(initialGameStats || []);
     const [selectedGameNumber, setSelectedGameNumber] = useState(null);
     const [turnHistory, setTurnHistory] = useState([]);
+    const [loadingTurns, setLoadingTurns] = useState(false);
 
     const columnOrder = [
         'ones', 'twos', 'threes', 'fours', 'fives', 'sixes',
@@ -26,11 +29,49 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
         'uppertotal', 'upperbonus', 'lowertotal', 'grandtotal'
     ];
 
+    // Fetch all game stats for the logged-in player
     useEffect(() => {
-        const fetchAllGameData = async () => {
+        if (!playerName) return;
+
+        const fetchGameStats = async () => {
             try {
-                const fetchedStats = await loadThingsFromDatabase('getAllGameResults', 'mtickle');
-                const fetchedTurns = await loadThingsFromDatabase('getAllTurnResults', 'mtickle');
+                const fetchedStats = await loadThingsFromDatabase('getAllGameResults', playerName);
+                const normalize = (obj) => {
+                    const result = {};
+                    for (const key in obj) {
+                        const num = Number(obj[key]);
+                        result[key] = isNaN(num) ? obj[key] : num;
+                    }
+                    return result;
+                };
+                const normalizedGames = fetchedStats.map(normalize);
+                setGameStats(normalizedGames);
+            } catch (err) {
+                console.error('[GameHistoryGridPanel] Failed to fetch game stats:', err);
+            }
+        };
+
+        fetchGameStats();
+    }, [playerName, refreshKey]);
+
+    // Fetch turns for a specific game when selectedGameNumber changes
+    useEffect(() => {
+        if (!playerName || !selectedGameNumber) {
+            setTurnHistory([]);
+            return;
+        }
+
+        const fetchTurnsForGame = async () => {
+            setLoadingTurns(true);
+            try {
+                // This assumes loadThingsFromDatabase supports fetching by gamenumber
+                // If not, you can write a fetch call like:
+                // const response = await fetch(`/api/getTurnsByGame/${playerName}/${selectedGameNumber}`);
+                // const turns = await response.json();
+
+                const turns = await loadThingsFromDatabase('getTurnsByGame', playerName, selectedGameNumber);
+
+                console.log(turns)
 
                 const normalize = (obj) => {
                     const result = {};
@@ -41,24 +82,19 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                     return result;
                 };
 
-                const normalizedGames = fetchedStats.map(normalize);
-                const normalizedTurns = fetchedTurns.map(normalize);
-
-                setGameStats(normalizedGames);
-
-                if (selectedGameNumber) {
-                    const filteredTurns = normalizedTurns.filter(
-                        (t) => String(t.gamenumber) === String(selectedGameNumber)
-                    );
-                    setTurnHistory(filteredTurns);
-                }
+                const normalizedTurns = turns.map(normalize);
+                setTurnHistory(normalizedTurns);
             } catch (err) {
-                console.error('[GameHistoryGridPanel] Failed to fetch stats or turns:', err);
+                console.error('[GameHistoryGridPanel] Failed to fetch turns for game:', err);
+                setTurnHistory([]);
+            } finally {
+                setLoadingTurns(false);
             }
         };
 
-        fetchAllGameData();
-    }, [refreshKey, selectedGameNumber]);
+        fetchTurnsForGame();
+    }, [playerName, selectedGameNumber]);
+
 
     const columns = useMemo(() => [
         {
@@ -67,11 +103,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
             enableSorting: true,
             cell: ({ row }) => (
                 <button
-                    onClick={() => {
-                        const turnsForGame = allTurns.filter(t => String(t.gamenumber) === String(row.original.gamenumber));
-                        setSelectedGameNumber(row.original.gamenumber);
-                        setTurnHistory(turnsForGame);
-                    }}
+                    onClick={() => setSelectedGameNumber(row.original.gamenumber)}
                     className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
                 >
                     {row.original.gamenumber || '-'}
@@ -87,7 +119,7 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                     ? row.original[col]
                     : '-',
         }))
-    ], []);
+    ], [columnOrder]);
 
     const table = useReactTable({
         data: gameStats,
@@ -100,6 +132,14 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
     });
 
     const closeModal = () => setSelectedGameNumber(null);
+
+    if (!playerName) {
+        return (
+            <div className="mb-4 rounded-lg border border-gray-200 bg-white shadow-sm p-4 text-center text-gray-600">
+                Please log in to see your game history.
+            </div>
+        );
+    }
 
     if (!gameStats || !Array.isArray(gameStats) || gameStats.length === 0) {
         return (
@@ -192,7 +232,10 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
                 </div>
             </div>
 
-            {selectedGameNumber && (
+            {/* Turn History Modal */}
+            {/* Turn History Modal */}
+            {/* {selectedGameNumber && (
+
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity animate-fade-in">
                     <div className="relative w-full max-w-3xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden animate-scale-in">
                         <button
@@ -205,62 +248,80 @@ export default function GameHistoryGridPanel({ gameStats: initialGameStats, refr
 
                         <div className="border-b border-gray-200 px-6 py-4">
                             <h3 className="text-lg font-semibold text-gray-800">
-                                Turn History for Game #{selectedGameNumber}
+                                Turn History for Game #{selectedGameNumber} FUCK
                             </h3>
                         </div>
 
                         <div className="relative max-h-[70vh] overflow-y-auto px-6 pb-6">
-                            {turnHistory.length === 0 ? (
+                            {loadingTurns ? (
+                                <p className="text-gray-500">Loading turn history...</p>
+                            ) : turnHistory.length === 0 ? (
                                 <p className="text-gray-500">No turn history available for this game.</p>
                             ) : (
                                 <table className="min-w-full text-sm text-gray-700 border-separate border-spacing-0">
                                     <thead className="bg-gray-100 text-xs text-gray-600 uppercase sticky top-0 z-20">
                                         <tr>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Turn</th>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Roll</th>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Category</th>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Score</th>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Dice</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {turnHistory.map((turn, index) => (
-                                            <tr
-                                                key={index}
-                                                className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition"
-                                            >
-                                                <td className="px-3 py-2 border-b border-gray-100">{index + 1}</td>
-                                                <td className="px-3 py-2 border-b border-gray-100">
-                                                    {prettyName(turn.category) || '(uncategorized)'}
-                                                </td>
-                                                <td className="px-3 py-2 border-b border-gray-100">
-                                                    {turn.score !== undefined ? turn.score : '-'}
-                                                </td>
-                                                <td className="px-3 py-2 border-b border-gray-100">
-                                                    {Array.isArray(turn.dice)
-                                                        ? (() => {
-                                                            const dice = [...turn.dice];
-                                                            const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
-                                                            return dice.map((die, i) => {
-                                                                const isUsed = usedFlags[i];
-                                                                const bg = isUsed ? '#fef9c3' : '#fff';
-                                                                return (
-                                                                    <span key={`${index}-${i}`}>
-                                                                        {getDiceSvg(die, bg)}
-                                                                    </span>
-                                                                );
-                                                            });
-                                                        })()
-                                                        : '-'}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {turnHistory
+                                            .filter(turn => String(turn.gamenumber) === String(selectedGameNumber))
+                                            .map((turn, index) => {
+                                                const rawDice = typeof turn.dice === 'string'
+                                                    ? turn.dice.replace(/[{}"]/g, '')
+                                                    : '';
+                                                const dice = rawDice ? rawDice.split(',').map(Number) : [];
+
+                                                const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
+
+                                                return (
+                                                    <tr
+                                                        key={index}
+                                                        className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition"
+                                                    >
+                                                        <td className="px-3 py-2 border-b border-gray-100">
+                                                            {turn.turnnumber ?? index + 1}
+                                                        </td>
+                                                        <td className="px-3 py-2 border-b border-gray-100">
+                                                            {turn.roll}
+                                                        </td>
+                                                        <td className="px-3 py-2 border-b border-gray-100">
+                                                            {prettyName(turn.category) || '(uncategorized)'}
+                                                        </td>
+                                                        <td className="px-3 py-2 border-b border-gray-100">
+                                                            {turn.score ?? '-'}
+                                                        </td>
+                                                        <td className="px-3 py-2 border-b border-gray-100">
+                                                            {dice.length === 5 ? (
+                                                                dice.map((die, i) => {
+                                                                    const isUsed = usedFlags[i];
+                                                                    const bg = isUsed ? '#fef9c3' : '#fff';
+                                                                    return (
+                                                                        <span key={`${index}-${i}`}>
+                                                                            {getDiceSvg(die, bg)}
+                                                                        </span>
+                                                                    );
+                                                                })
+                                                            ) : (
+                                                                '-'
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                     </tbody>
                                 </table>
                             )}
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
+
         </div>
     );
 }

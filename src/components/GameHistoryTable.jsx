@@ -155,7 +155,7 @@ export default function GameHistoryTable({
                         </button>
 
                         <div className="border-b border-gray-200 px-6 py-4">
-                            <h3 className="text-lg font-medium text-gray-700 mb-4">
+                            <h3 className="text-lg font-medium text-gray-700 mb-2">
                                 Turn History for Game #{selectedGameNumber}
                             </h3>
                         </div>
@@ -168,35 +168,40 @@ export default function GameHistoryTable({
                                     <thead className="bg-gray-100 text-xs text-gray-600 uppercase sticky top-0 z-20">
                                         <tr>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Turn</th>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Roll</th>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Category</th>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Score</th>
+                                            <th className="px-3 py-2 border-b border-gray-300 text-left">Bonus?</th>
                                             <th className="px-3 py-2 border-b border-gray-300 text-left">Dice</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {turnHistory.map((turn, index) => (
-                                            <tr
-                                                key={index}
-                                                className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition"
-                                            >
-                                                <td className="px-3 py-2 border-b border-gray-100">{index + 1}</td>
-                                                <td className="px-3 py-2 border-b border-gray-100">{prettyName(turn.category) || '(uncategorized)'}</td>
-                                                <td className="px-3 py-2 border-b border-gray-100">{turn.score ?? '-'}</td>
-                                                <td className="px-3 py-2 border-b border-gray-100">
-                                                    {Array.isArray(turn.dice)
-                                                        ? (() => {
-                                                            const dice = [...turn.dice];
-                                                            const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
-                                                            return dice.map((die, i) => {
-                                                                const isUsed = usedFlags[i];
-                                                                const bg = isUsed ? '#fef9c3' : '#fff';
-                                                                return <span key={`${index}-${i}`}>{getDiceSvg(die, bg)}</span>;
-                                                            });
-                                                        })()
-                                                        : '-'}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {turnHistory.filter(turn => String(turn.gamenumber) === String(selectedGameNumber))
+                                            .map((turn, index) => (
+                                                <tr
+                                                    key={index}
+                                                    className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition"
+                                                >
+                                                    <td className="px-3 py-2 border-b border-gray-100">{turn.turnnumber}</td>
+                                                    <td className="px-3 py-2 border-b border-gray-100">{turn.rollcount}</td>
+                                                    <td className="px-3 py-2 border-b border-gray-100">{prettyName(turn.category) || '(uncategorized)'}</td>
+                                                    <td className="px-3 py-2 border-b border-gray-100">{turn.score ?? '-'}</td>
+                                                    <td className="px-3 py-2 border-b border-gray-100">{turn.bonus ?? '-'}</td>
+                                                    <td className="px-3 py-2 border-b border-gray-100">
+                                                        {Array.isArray(turn.dice)
+                                                            ? (() => {
+                                                                const dice = [...turn.dice];
+                                                                const usedFlags = getUsedDiceIndexesForCategory(turn.category, dice);
+                                                                return dice.map((die, i) => {
+                                                                    const isUsed = usedFlags[i];
+                                                                    const bg = isUsed ? '#fef9c3' : '#fff';
+                                                                    return <span key={`${index}-${i}`}>{getDiceSvg(die, bg)}</span>;
+                                                                });
+                                                            })()
+                                                            : '-'}
+                                                    </td>
+                                                </tr>
+                                            ))}
                                     </tbody>
                                 </table>
                             )}
