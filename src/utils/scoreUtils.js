@@ -20,7 +20,7 @@ export function calculateScore(category, diceObjs) {
             return (counts[1] || 0) * 2 + (counts[3] || 0) * 4 + (counts[5] || 0) * 6; // 2s, 4s, 6s
         case 'threeofakind':
             return hasThreeOfKind(counts) ? total : 0;
-        case 'fourofaind':
+        case 'fourofakind':
             return hasFourOfKind(counts) ? total : 0;
         case 'fullhouse':
             return hasFullHouse(counts) ? 25 : 0;
