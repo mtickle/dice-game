@@ -1,7 +1,7 @@
 
 
 import { saveThingsToDatabase } from '@utils/storageUtils';
-import { generateGameNumber, upperCategories } from '@utils/utils';
+import { upperCategories } from '@utils/utils';
 import { useEffect, useRef } from 'react';
 
 
@@ -236,38 +236,9 @@ export default function AutoPlayer({
         }
     };
 
-    const exportData = (data, filename) => {
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const handleExport = () => {
-        exportData(turnLog, `yahtzee_turnLog_${new Date().toISOString()}.json`);
-        exportData(gameStats, `yahtzee_gameStats_${new Date().toISOString()}.json`);
-    };
 
 
-    //--- This is a full DATA RESET
-    const handleReset = () => {
-        if (window.confirm('Reset all turn and game data? This cannot be undone.')) {
-            setTurnLog([]);
-            setGameStats([]);
-            try {
-                //--- Empty out the local storage.
-                localStorage.setItem('turnLog', JSON.stringify([]));
-                localStorage.setItem('gameStats', JSON.stringify([]));
-            } catch (error) {
-                console.error('[AutoPlayer] Error resetting data:', error);
-            }
-            resetGame(true);
-            setGameNumber(generateGameNumber());
-        }
-    };
+
 
     return (
 

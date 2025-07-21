@@ -153,13 +153,27 @@ export default function GameStatsPanel({ refreshKey }) {
             })
         );
 
+        // const avgScores = categories.map(cat => {
+        //     const total = gameStats.reduce((sum, game) => {
+        //         const val = Number(game[cat]);
+        //         return isFinite(val) ? sum + val : sum;
+        //     }, 0);
+        //     return total / gameStats.length || 0;
+        // });
+
+
         const avgScores = categories.map(cat => {
-            const total = gameStats.reduce((sum, game) => {
-                const val = Number(game[cat]);
-                return isFinite(val) ? sum + val : sum;
-            }, 0);
-            return total / gameStats.length || 0;
+            const scores = turnLog
+                .filter(turn => turn.category === cat)
+                .map(turn => Number(turn.score))
+                .filter(score => isFinite(score));
+
+            const total = scores.reduce((sum, val) => sum + val, 0);
+            return total / (scores.length || 1); // avoid divide by 0
         });
+
+
+
         const avgScoresData = {
             labels: categories.map(prettyName),
             datasets: [
@@ -287,7 +301,7 @@ export default function GameStatsPanel({ refreshKey }) {
                         {/* Average Score per Category - Full Width */}
                         <div className="w-full">
                             <div className="w-full bg-[#fffdf7] p-6 rounded-2xl shadow-md border-2 border-[#e2dccc]">
-                                <h3 className="text-lg font-medium text-gray-700 mb-4">Average Score Per Category</h3>
+                                <h3 className="text-lg font-medium text-gray-700 mb-4">Average Score Per Category (Not Including First Roll Bonuses)</h3>
                                 <div className="w-full h-[250px] p-2">
                                     <Bar
                                         data={chartData.avgScoresData}
@@ -343,7 +357,7 @@ export default function GameStatsPanel({ refreshKey }) {
                                                 y: {
                                                     title: { display: true, text: 'Number of Zero Scores' },
                                                     beginAtZero: true,
-                                                    ticks: { stepSize: 1, precision: 0 },
+                                                    ticks: { precision: 0 },
                                                     grid: { color: '#e5e7eb' },
                                                 },
                                             },
